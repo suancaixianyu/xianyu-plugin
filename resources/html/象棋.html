@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>国际象棋</title>
+</head>
+<body>
+  <div id="box">
+    <div id="help"></div>
+  </div>
+  <div style="text-align: center;">Created by Yunzai-Bot & 象棋.js</div>
+
+  <script>
+
+    let box = document.getElementById("box")
+    let data_box = [] // 棋子数据
+
+    const img = {
+      red:{
+        車:'img/r_c.png',
+        馬:'img/r_m.png',
+        象:'img/r_x.png',
+        士:'img/r_s.png',
+        将:'img/r_j.png',
+        炮:'img/r_p.png',
+        兵:'img/r_z.png',
+      },
+      black:{
+        車:'img/b_c.png',
+        馬:'img/b_m.png',
+        象:'img/b_x.png',
+        士:'img/b_s.png',
+        将:'img/b_j.png',
+        炮:'img/b_p.png',
+        兵:'img/b_z.png',
+      }
+    }
+
+    let map = '{{map}}' // 地图
+    map = map.split(',');
+    let archive = '{{archive}}' // 双方棋子标记
+    archive = archive.split(',');
+
+    let ishelp = '{{ishelp}}' // 帮助菜单
+    let isrollback = '{{isrollback}}'
+    if(ishelp === 'off') {
+      document.getElementById("help").innerHTML = ""
+
+      if(isrollback === 'on'){
+        document.getElementById("box").style.backgroundImage = "url('img/bg2.png')";
+      }
+      
+      map.forEach((e,index)=> {
+      if(e !== '空' && archive[index] == '黑') { // 玩家A，黑棋
+        data_box.push(`<div class="lattice" style="background-image: url('${img.black[e]}')"></div>`)
+      }
+      if(e !== '空' && archive[index] == '红') { // 玩家A，黑棋
+        data_box.push(`<div class="lattice" style="background-image: url('${img.red[e]}')"></div>`)
+      }
+      if(e === '空'){
+        data_box.push(`<div class="lattice"></div>`)
+      }
+    });
+
+    box.innerHTML = data_box.join('')
+    }
+
+  </script>
+
+  <style>
+    body{
+      background-color: bisque;
+    }
+    #app{
+      display: flex;
+    }
+    #box{
+      display: flex;
+      height: 800px;
+
+      justify-content: center;
+      flex-wrap: wrap;
+      background-image: url(img/bg.png);
+      background-size: cover;
+      padding: 47px;
+      margin: 10px 0px;
+    }
+    #box .lattice{
+      width: 73px;
+      height: 75px;
+      margin: 0rem 0.09rem;
+      background-size: cover;
+    }
+    th{
+      text-align: center;
+      background-color: #fddbb3;
+    }
+    th, td, th, #help{
+      border: 2px solid #B58863;
+      border-left-color: #fff;
+      border-top-color: #fff;
+      text-align: left;
+      padding: 8px;
+    }
+  </style>
+  
+</body>
+</html>
