@@ -4,7 +4,6 @@ import panduan from "../model/ChineseChessDecide.js";
 
 const as = new panduan()
 
-
 let cwd = `${process.cwd()}/plugins/xianyu-plugin/resources/html/`
 cwd = cwd.replace(/\\/g,'/')
 
@@ -40,10 +39,9 @@ const board = [
   ['空', '空', '空', '空', '空', '空', '空', '空', '空'],
   ['車', '馬', '象', '士', '将', '士', '象', '馬', '車'],
 ]
+
 const rows = 9 // 棋盘宽度
 const cols = 10 // 棋盘高度 
-
-
 
 export class newcomer extends plugin {
   constructor() {
@@ -54,7 +52,7 @@ export class newcomer extends plugin {
       priority: 5000,
       rule: [
         {
-          reg: "^##(.*)",
+          reg: "^xxy(.*)",
           fnc: 'jsrun'
         },
         {
@@ -217,7 +215,7 @@ export class newcomer extends plugin {
 
   async jsrun(e) {
 		try {
-			const content = e.message[0].text.split("##")[1]
+			const content = e.message[0].text.split("xxy")[1]
 			if (content === undefined) return
 
 			let res = await eval(content);

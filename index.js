@@ -6,9 +6,9 @@ if (!global.segment) {
 
 if (Bot?.logger?.info) {
   Bot.logger.info('-------  <・)))><<  -------')
-  Bot.logger.info(`咸鱼插件${Version.version}初始化~`)
+  Bot.logger.info(`咸鱼插件初始化~`)
 } else {
-  console.log(`咸鱼插件${Version.version}初始化~`)
+  console.log(`咸鱼插件初始化~`)
 }
 
 const files = fs
