@@ -1,6 +1,6 @@
-# Miao-Plugin 说明
+# xianyu-Plugin 说明
 
-`miao-plugin`是一个`Yunzai-Bot`的小游戏插件，目前提供一些棋类游戏，例如`象棋` `国际象棋` 以及 `扫雷`
+`xianyu-plugin`是一个`Yunzai-Bot`的小游戏插件，目前提供一些棋类游戏，例如`象棋` `国际象棋` 以及 `扫雷`
 
 具体功能可在安装插件后 ~~**自行摸索**~~
 
