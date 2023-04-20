@@ -4,6 +4,13 @@ if (!global.segment) {
   global.segment = (await import("oicq")).segment
 }
 
+if (Bot?.logger?.info) {
+  Bot.logger.info('-------  <・)))><<  -------')
+  Bot.logger.info(`咸鱼插件${Version.version}初始化~`)
+} else {
+  console.log(`咸鱼插件${Version.version}初始化~`)
+}
+
 const files = fs
   .readdirSync('./plugins/xianyu-plugin/apps')
   .filter((file) => file.endsWith('.js'))
