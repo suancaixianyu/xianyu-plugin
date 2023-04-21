@@ -16,7 +16,7 @@
     }
 
     body {
-      background: url('{{鸡鸡地址}}img/background.png') no-repeat center center fixed;
+      background: url('{{鸡鸡地址}}html/img/background.png') no-repeat center center fixed;
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center center;
@@ -42,6 +42,8 @@
       justify-content: center;
       color: #333;
       text-align: center;
+    }
+    .box{
       border: 2px solid rgba(255,239,191, 0.5);
       border-radius: 10px;
       background-color: rgba(255,239,191, 0.1);
@@ -98,91 +100,19 @@
         <h1>Yunzai-Bot 咸鱼插件</h1>
         <p>Yunzai-Bot & xianyu-plugin</p>
       </div>
-      <div class="content">
-        <div class="box content" id="help" >
-          <h3>扫雷帮助</h3>
-          <table>
-            <tbody>
-              <tr>
-                <th>指令</th>
-                <th>说明</th>
-                <th>注意</th>
-                <th>示例指令</th>
-              </tr>
-              <tr>
-                <td>扫雷<br></td>
-                <td>开始游戏</td>
-                <td></td>
-                <td>扫雷</td>
-              </tr>
-              <tr>
-                <td>结束扫雷</td>
-                <td>结束游戏</td>
-                <td></td>
-                <td><br>结束扫雷</td>
-              </tr>
-              <tr>
-                <td>扫雷加载模板</td>
-                <td>更新或下载html模板</td>
-                <td>可能会遇到更新后用不了的情况，也许这时候我正在改</td>
-                <td>扫雷加载模板</td>
-              </tr>
-              <tr>
-                <td>扫雷难度</td>
-                <td>使用指定难度开始游戏</td>
-                <td>数量多的时候字就小</td>
-                <td>扫雷难度(简单|普通|困难)</td>
-              </tr>
-              <tr>
-                <td>翻开</td>
-                <td>翻开指定的位置</td>
-                <td>可以一次输入多个坐标，不区分大小写</td>
-                <td><br>翻开a1a8h0h9</td>
-              </tr>
-              <tr>
-                <td>标记</td>
-                <td>标记指定的位置</td>
-                <td>同上</td>
-                <td><br>标记a1a8h0h9</td>
-              </tr>
-              <tr>
-                <td>取消标记</td>
-                <td>取消标记指定的位置</td>
-                <td>同上</td>
-                <td><br>取消标记a1a8h0h9</td>
-              </tr>
-              <tr>
-                <td><br>扫雷设置指令前缀</td>
-                <td>设置前缀避免指令冲突</td>
-                <td>设置了之后，原本的指令依旧有效</td>
-                <td>扫雷设置指令前缀#</td>
-              </tr>
-              <tr>
-                <td>扫雷设置地雷数量</td>
-                <td>设置当前难度的地雷数量</td>
-                <td></td>
-                <td>扫雷设置地雷数量50</td>
-              </tr>
-              <tr>
-                <td>扫雷设置布局</td>
-                <td>自定义宽高格子数量和雷数量</td>
-                <td>大小不建议超过26，分为三个参数：宽 高 雷；使用空格隔开即可，不设置雷则回到默认值：10</td>
-                <td>扫雷设置布局15 15 20</td>
-              </tr>
-              <tr>
-                <td>更新扫雷</td>
-                <td>更新或安装‘扫雷插件’</td>
-                <td>需要安装‘更新扫雷.js’插件</td>
-                <td>更新扫雷</td>
-              </tr>
-            </tbody>
-            <colgroup>
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-            </colgroup>
-          </table>
+      <div class="box content">
+        <div class="content">
+          <h3>扫雷游戏</h3>
+          <p>发送 扫雷帮助 查看详情</p>
+        </div>
+        <div class="content">
+          <h3>国际象棋游戏</h3>
+          <p>发送 国际象棋帮助 查看详情</p>
+        </div>
+        <div class="content">
+          <h3>中国象棋游戏</h3>
+          <p>暂时参考国际象棋移动方法，将 '移动' 改为 '移子' 即可</p>
+        </div>
       </div>
     </div>
   </div>

@@ -19,10 +19,10 @@ export class newcomer extends plugin {
 	async help(e) {
     let cwd = `${process.cwd()}/plugins/xianyu-plugin/resources/`
     cwd = cwd.replace(/\\/g,'/')
-    
+
     let data = {
       quality:100,
-      tplFile:`./plugins/xianyu-plugin/resources/html/xiangqi.html`,
+      tplFile:`./plugins/xianyu-plugin/resources/html/help.html`,
       鸡鸡地址:cwd
     }
     let img = await puppeteer.screenshot("xianyu", {
