@@ -281,7 +281,8 @@ export class newcomer extends plugin {
         metadata[e.group_id].archive[tp2] = team
         metadata[e.group_id].current = isAB // 设置组
       }
-      await generate(e)
+      // 传入两个tp点
+      await generate(e,tp1,tp2)
       // 胜利提示
       if(iscorrect[1] === true){
         e.reply(`恭喜${team}队获得胜利`)
@@ -351,13 +352,23 @@ async function over(e) {
 /**
  * 发送图片
  */
-async function generate(e,tp1){
+async function generate(e,tp1,tp2){
 
   let data_map = metadata[e.group_id].chessman // 拉取地图数据
   let biaoji = Object.values(metadata[e.group_id].archive) // 获取双方棋子标记
-  if(tp1){
-    data_map[tp1] = '*' // 标记移动之前的位置
+
+  let ss = metadata[e.group_id].chessman // 拉取一份用于显示移动位置的地图
+
+  if(tp1 && tp2){
+    if(metadata[e.group_id].current === '红'){
+      ss[tp1] = '黑box'
+      ss[tp2] = '黑box'
+    }else{
+      ss[tp1] = '红box'
+      ss[tp2] = '红box'
+    }
   }
+  ss = Object.values(ss)
   biaoji = Object.values(biaoji)
   data_map = Object.values(data_map)
   // 颠倒棋盘
@@ -383,7 +394,8 @@ async function generate(e,tp1){
     archive:biaoji,
     prefix:prefix,
     isrollback:isrollback,
-    鸡鸡地址:cwd
+    鸡鸡地址:cwd,
+    ss:ss
   }
   let img = await puppeteer.screenshot("xianyu", {
     ...data,

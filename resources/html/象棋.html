@@ -40,6 +40,7 @@
     map = map.split(',');
     let archive = '{{archive}}' // 双方棋子标记
     archive = archive.split(',');
+    let ss = '{{ss}}' // 移动轨迹地图
 
     let ishelp = '{{ishelp}}' // 帮助菜单
     let isrollback = '{{isrollback}}'
@@ -52,13 +53,29 @@
       
       map.forEach((e,index)=> {
       if(e !== '空' && archive[index] == '黑') { // 玩家A，黑棋
-        data_box.push(`<div class="lattice" style="background-image: url('{{鸡鸡地址}}${img.black[e]}')"></div>`)
+        if(ss[index] == '黑box'){
+          data_box.push(`<div class="lattice" style="background-image: url('{{鸡鸡地址}}${img.black[e]}')"><div class="b latticebox"></div></div>`)
+        }else{
+          data_box.push(`<div class="lattice" style="background-image: url('{{鸡鸡地址}}${img.black[e]}')"></div>`)
+        }
       }
-      if(e !== '空' && archive[index] == '红') { // 玩家A，黑棋
-        data_box.push(`<div class="lattice" style="background-image: url('{{鸡鸡地址}}${img.red[e]}')"></div>`)
+
+      if(e !== '空' && archive[index] == '红') { // 玩家B，红棋
+        if(ss[index] == '红box'){
+          data_box.push(`<div class="lattice" style="background-image: url('{{鸡鸡地址}}${img.red[e]}')"><div class="r latticebox"></div></div>`)
+        }else{
+          data_box.push(`<div class="lattice" style="background-image: url('{{鸡鸡地址}}${img.red[e]}')"></div>`)
+        }
       }
+
       if(e === '空'){
-        data_box.push(`<div class="lattice"></div>`)
+        if(ss[index] == '黑box'){
+          data_box.push(`<div class="lattice"><div class="b latticebox"></div>`)
+        }else if (ss[index] == '红box'){
+          data_box.push(`<div class="lattice"><div class="r latticebox"></div>`)
+        }else{
+          data_box.push(`<div class="lattice"></div>`)
+        }
       }
     });
 
@@ -84,6 +101,17 @@
       background-size: cover;
       padding: 47px;
       margin: 10px 0px;
+    }
+    .b {
+      background-image: url('{{鸡鸡地址}}img/b_box.png');
+    }
+    .r {
+      background-image: url('{{鸡鸡地址}}img/r_box.png');
+    }
+    .latticebox{
+      width: 100%;
+      height: 100%;
+      background-size: cover;
     }
     #box .lattice{
       width: 73px;
