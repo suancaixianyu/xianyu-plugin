@@ -12,7 +12,7 @@ var ishelp = 'off' // 帮助菜单
 var isrollback = 'off' // 颠倒棋盘
 
 // 可以修改的内容
-var prefix = '' // 设置指令前缀，可在此设置默认前缀
+var prefix = '#' // 设置指令前缀，可在此设置默认前缀
 
 
 /**
@@ -52,10 +52,6 @@ export class newcomer extends plugin {
       priority: 5000,
       rule: [
         {
-          reg: "^xxy(.*)",
-          fnc: 'jsrun'
-        },
-        {
           /** 命令正则匹配 */
           reg: `^(${prefix})?(发起|加入)中国象棋[黑红]?$`,
           /** 执行方法 */
@@ -73,8 +69,27 @@ export class newcomer extends plugin {
           /** 执行方法 */
           fnc: 'game'
         },
+        {
+          /** 命令正则匹配 */
+          reg: `^(中国)?象棋设置指令前缀.*$`,
+          /** 执行方法 */
+          fnc: 'SetupPrefix'
+        },
       ]
     })
+  }
+
+  /**
+   * 设置指令前缀
+   */
+  async SetupPrefix(e) {
+    if (!e.isMaster) {
+      e.reply("主人不允许你设置哦！")
+      return
+    }
+    newgame(e)
+    prefix = e.msg.replace(/^(中国)?象棋设置指令前缀 ?/,'')
+    e.reply(`已添加前缀"${prefix}"\n不带前缀内容可移除前缀`)
   }
   
   /**
@@ -104,7 +119,7 @@ export class newcomer extends plugin {
     }
     let emsg = e.msg.match(/[黑红]/)
     let players = Object.values(metadata[e.group_id].players).length
-    console.log(players);
+    // console.log(players);
 
     // 判断是否在游戏内
     if(metadata[e.group_id].players[e.user_id]){
@@ -151,7 +166,7 @@ export class newcomer extends plugin {
       e.reply(`你还没加入游戏，可发送”${prefix}加入国际象棋黑/白“加入队伍中`)
       return
     }
-    console.log("player：" + team)
+    // console.log("player：" + team)
 
     // 对方组
     let isAB = '黑红'
@@ -176,11 +191,11 @@ export class newcomer extends plugin {
     let letter2 = emsg[3].charCodeAt(0) - 65 // 转数字 A = 0
     let num2 = emsg[4]
     let tp2 = `${letter2}-${num2}`
-    console.log(tp1,tp2);
+    // console.log(tp1,tp2);
 
     // 判断移动是否正确
     let iscorrect = await as.Audit(e,[letter1,num1,letter2,num2],tp1,tp2,team,metadata)
-    console.log(iscorrect)
+    // console.log(iscorrect)
     if(!iscorrect || iscorrect[0] !== true){
       e.reply(`移动不正确`)
       return
@@ -212,23 +227,6 @@ export class newcomer extends plugin {
       e.reply('你不能操作对方的棋子')
     }
   }
-
-  async jsrun(e) {
-		try {
-			const content = e.message[0].text.split("xxy")[1]
-			if (content === undefined) return
-
-			let res = await eval(content);
-			const dataType = (res && res.data) || res;
-			if (typeof dataType === 'string') return e.reply(dataType);
-			if (dataType === undefined) return e.reply("程序无返回值");
-			await e.reply(JSON.stringify(dataType, null, 4));
-		} 
-		catch(error) {
-			await e.reply('错误：\n' + error.message)
-			console.log(error)
-		}
-	}
 
 }
 
@@ -293,10 +291,9 @@ async function generate(e,tp1){
   }
 
   data_map = String(data_map) // 格式化地图
-  console.log(data_map);
+  // console.log(data_map);
   biaoji = String(biaoji)
-  console.log(biaoji);
-
+  // console.log(biaoji);
 
   /**
    * map 地图

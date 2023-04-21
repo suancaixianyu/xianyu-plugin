@@ -26,7 +26,7 @@ const ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' // 显示的字母
 var ishelp = 'off' // 帮助菜单
 
 // 可以修改的内容
-var prefix = '' // 设置指令前缀，可在此设置默认前缀
+var prefix = '#' // 设置指令前缀，可在此设置默认前缀
 
 
 
@@ -43,12 +43,6 @@ export class newcomer extends plugin {
           reg: `^(${prefix})?扫雷(帮助|菜单|说明)$`,
           /** 执行方法 */
           fnc: 'help'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: `^(${prefix})?扫雷加载模板$`,
-          /** 执行方法 */
-          fnc: 'loadtemplate'
         },
         {
           /** 命令正则匹配 */
@@ -117,12 +111,15 @@ export class newcomer extends plugin {
     if (gamemap[e.group_id].game) return e.reply(`游戏已开始，不可设置`);
     if((/^扫雷设置地?雷数量?\d+/).test(e.msg)){
       let emsg = e.msg.match(/\d+/)
+      if(+emsg[0] > +gamemap[e.group_id].rows * +gamemap[e.group_id].cols) return e.reply('设置超出阈值')
       gamemap[e.group_id].z = emsg[0] ? emsg[0] : 10
+      
       e.reply('修改雷数：' + gamemap[e.group_id].z)
     }
     
     if((/^扫雷设置布局 ?\d+\s\d+(\s\d+)?/).test(e.msg)){
       let emsg = e.msg.match(/\d+/g)
+      if(+emsg[0] > 1000 || +emsg[1] > 26 || +emsg[2] > +emsg[0] * +emsg[1]) return e.reply('设置超出阈值')
       gamemap[e.group_id].z = emsg[2] ? emsg[2] : 10
       gamemap[e.group_id].rows = emsg[0] ? emsg[0] : 9
       gamemap[e.group_id].cols = emsg[1] ? emsg[1] : 9
@@ -195,7 +192,7 @@ export class newcomer extends plugin {
     }
     newgame(e)
     prefix = e.msg.replace(/^扫雷设置指令前缀 ?/,'')
-    e.reply(`已添加前缀"${prefix}"\n移除请发送“扫雷设置指令前缀”`)
+    e.reply(`已添加前缀"${prefix}"\n不带前缀内容可移除前缀`)
   }
 
   /**
@@ -227,7 +224,7 @@ export class newcomer extends plugin {
       letter = letter.charCodeAt(0) - 65 // 转数字 A = 0
 
       let axis = `${letter}-${emsg[2]}`
-      console.log('获取坐标' + axis);
+      // console.log('获取坐标' + axis);
 
       // 判断坐标是否存在
       if (gamemap[e.group_id].archive[axis]) {
@@ -290,6 +287,7 @@ export class newcomer extends plugin {
 
     let gameover = false
     let outcome =''
+    let kk = 0
 
 
     // 获取坐标
@@ -339,7 +337,7 @@ export class newcomer extends plugin {
                 if (el === '0' && gamemap[e.group_id].isopen[subIndexs.join('-')] === false) {
                   if(thisel !== true){ // 没被标记显示
                     gamemap[e.group_id].isopen[subIndexs.join('-')] = true
-                    console.log('回调' + subIndexs);
+                    ++kk
                     loop(subIndexs)
                   }
                 }else{
@@ -356,6 +354,7 @@ export class newcomer extends plugin {
         gamemap[e.group_id].isopen[axis] = true
       }
     })
+    console.log('本次循环' + kk + '次')
     if(outcome == 'fail'){
       e.reply('踩雷，游戏结束')
     }

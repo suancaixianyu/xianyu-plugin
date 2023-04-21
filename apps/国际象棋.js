@@ -4,12 +4,11 @@ import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 let cwd = `${process.cwd()}/plugins/xianyu-plugin/resources/html/`
 cwd = cwd.replace(/\\/g,'/')
 
-
 // 不建议修改
 var ishelp = 'off' // 帮助菜单
 
 // 可以修改的内容
-var prefix = '' // 设置指令前缀，可在此设置默认前缀
+var prefix = '#' // 设置指令前缀，可在此设置默认前缀
 
 /**
  * 游戏过程中所有数据
@@ -45,10 +44,6 @@ export class newcomer extends plugin {
       event: 'message',
       priority: 5000,
       rule: [
-        // {
-        //   reg: "^##(.*)",
-        //   fnc: 'jsrun'
-        // },
         {
           /** 命令正则匹配 */
           reg: `^(${prefix})?(发起|加入)国际象棋[黑白]?$`,
@@ -69,12 +64,31 @@ export class newcomer extends plugin {
         },
         {
           /** 命令正则匹配 */
-          reg: `^(${prefix})?结束游戏$`,
+          reg: `^(${prefix})?结束国际象棋$`,
           /** 执行方法 */
           fnc: 'ov'
         },
+        {
+          /** 命令正则匹配 */
+          reg: `^国际象棋设置指令前缀.*$`,
+          /** 执行方法 */
+          fnc: 'SetupPrefix'
+        },
       ]
     })
+  }
+
+  /**
+   * 设置指令前缀
+   */
+  async SetupPrefix(e) {
+    if (!e.isMaster) {
+      e.reply("主人不允许你设置哦！")
+      return
+    }
+    newgame(e)
+    prefix = e.msg.replace(/^国际象棋设置指令前缀 ?/,'')
+    e.reply(`已添加前缀"${prefix}"\n不带前缀内容可移除前缀`)
   }
   
   /**
@@ -114,7 +128,7 @@ export class newcomer extends plugin {
     }
     let emsg = e.msg.match(/[黑白]/)
     let players = Object.values(metadata[e.group_id].players).length
-    console.log(players);
+    // console.log(players);
 
     // 判断是否在游戏内
     if(metadata[e.group_id].players[e.user_id]){
@@ -186,11 +200,11 @@ export class newcomer extends plugin {
     let letter2 = emsg[3].charCodeAt(0) - 65 // 转数字 A = 0
     let num2 = emsg[4]
     let tp2 = `${letter2}-${num2}`
-    console.log(tp1,tp2);
+    // console.log(tp1,tp2);
 
     // 判断移动是否正确
     let iscorrect = await Audit(e,[letter1,num1,letter2,num2],tp1,tp2,team)
-    console.log(iscorrect)
+    // console.log(iscorrect)
     if(!iscorrect || iscorrect[0] !== true){
       e.reply(`移动不正确`)
       return
@@ -222,23 +236,6 @@ export class newcomer extends plugin {
       e.reply('你不能操作对方的棋子')
     }
   }
-
-  async jsrun(e) {
-		try {
-			const content = e.message[0].text.split("##")[1]
-			if (content === undefined) return
-
-			let res = await eval(content);
-			const dataType = (res && res.data) || res;
-			if (typeof dataType === 'string') return e.reply(dataType);
-			if (dataType === undefined) return e.reply("程序无返回值");
-			await e.reply(JSON.stringify(dataType, null, 4));
-		} 
-		catch(error) {
-			await e.reply('错误：\n' + error.message)
-			console.log(error)
-		}
-	}
 }
 
 /**
@@ -249,262 +246,265 @@ export class newcomer extends plugin {
  */
 async function Audit(e,emsg,tp1,tp2,team) {
   
+  try {
+    console.log(emsg,tp1,tp2,team);
+    // 目的地是否为自己棋子
+    if(metadata[e.group_id].archive[tp2] == team)return false;
 
-  console.log(emsg,tp1,tp2,team);
-  // 目的地是否为自己棋子
-  if(metadata[e.group_id].archive[tp2] == team)return false;
+    // 获取选择的棋子信息
+    let A = metadata[e.group_id].chessman[tp1]
 
-  // 获取选择的棋子信息
-  let A = metadata[e.group_id].chessman[tp1]
+    // 对方组
+    let isAB = '黑白'
+    isAB = isAB.replace(new RegExp(team),'')
 
-  // 对方组
-  let isAB = '黑白'
-  isAB = isAB.replace(new RegExp(team),'')
+    // 重定义坐标
+    let x1 = +emsg[1]
+    let x2 = +emsg[3]
+    let y1 = +emsg[0]
+    let y2 = +emsg[2]
 
-  // 重定义坐标
-  let x1 = +emsg[1]
-  let x2 = +emsg[3]
-  let y1 = +emsg[0]
-  let y2 = +emsg[2]
+    // 胜利判断
+    let isok = false
 
-  // 胜利判断
-  let isok = false
-
-  // 兵的移动
-  if(A == '兵'){
-    if(x1 == x2 && metadata[e.group_id].chessman[tp2] === '空'){ // 垂直移动，前方不能有棋子
-      if(team == '白'){
-        if(y1 - y2 == -1)isok = true // 等于1格
-        if(y1 - y2 == -2 && y1 == 1)isok = true // 等于2格
+    // 兵的移动
+    if(A == '兵'){
+      if(x1 == x2 && metadata[e.group_id].chessman[tp2] === '空'){ // 垂直移动，前方不能有棋子
+        if(team == '白'){
+          if(y1 - y2 == -1)isok = true // 等于1格
+          if(y1 - y2 == -2 && y1 == 1)isok = true // 等于2格
+        }
+        if(team == '黑'){
+          if(y1 - y2 == 1)isok = true // 等于1格
+          if(y1 - y2 == 2 && y1 == 6)isok = true // 等于2格
+        }
       }
-      if(team == '黑'){
-        if(y1 - y2 == 1)isok = true // 等于1格
-        if(y1 - y2 == 2 && y1 == 6)isok = true // 等于2格
+      if(x1 + 1 == x2 || x1 - 1 == x2 && metadata[e.group_id].archive[tp2] && metadata[e.group_id].archive[tp2] == isAB){ // 吃棋
+        if(team == '白' && y1 + 1 == y2)isok = true
+        if(team == '黑' && y1 - 1 == y2)isok = true
       }
     }
-    if(x1 + 1 == x2 || x1 - 1 == x2 && metadata[e.group_id].archive[tp2] && metadata[e.group_id].archive[tp2] == isAB){ // 吃棋
-      if(team == '白' && y1 + 1 == y2)isok = true
-      if(team == '黑' && y1 - 1 == y2)isok = true
-    }
-  }
 
-  
-  if(A == '马'){
-    let tps = [
-      `${+y1 + 2}-${+x1 - 1}`,
-      `${+y1 + 2}-${+x1 + 1}`,
-      `${+y1 + 1}-${+x1 - 2}`,
-      `${+y1 + 1}-${+x1 + 2}`,
-      `${+y1 - 1}-${+x1 - 2}`,
-      `${+y1 - 1}-${+x1 + 2}`,
-      `${+y1 - 2}-${+x1 - 1}`,
-      `${+y1 - 2}-${+x1 + 1}`,
-    ]
-    tps.forEach(ev => {
-      if(metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team){
-        console.log('条件符合',metadata[e.group_id].archive[ev],tp2)
-        isok = true;
-      }
-    });
-  }
-
-  if(A == '象'){
-    let tp // 坐标
-    // 判断目的地方向
-    if(y2 < y1 && x2 < x1){
-      console.log('左上角')
-      tp = 0
-    }
-    if(y2 < y1 && x2 > x1){
-      console.log('右上角')
-      tp = 1
-    }
-    if(y2 > y1 && x2 < x1){
-      console.log('左下角')
-      tp = 2
-    }
-    if(y2 > y1 && x2 > x1){
-      console.log('右下角')
-      tp = 3
-    }
-
-    for (let i = 1; i < rows+1; i++) {
+    
+    if(A == '马'){
       let tps = [
-        `${y1 - i}-${x1 - i}`,
-        `${y1 - i}-${x1 + i}`,
-        `${y1 + i}-${x1 - i}`,
-        `${y1 + i}-${x1 + i}`,
+        `${+y1 + 2}-${+x1 - 1}`,
+        `${+y1 + 2}-${+x1 + 1}`,
+        `${+y1 + 1}-${+x1 - 2}`,
+        `${+y1 + 1}-${+x1 + 2}`,
+        `${+y1 - 1}-${+x1 - 2}`,
+        `${+y1 - 1}-${+x1 + 2}`,
+        `${+y1 - 2}-${+x1 - 1}`,
+        `${+y1 - 2}-${+x1 + 1}`,
       ]
-      let ev = tps[tp]
-      console.log(tp)
-      // 此块存在
-      if(metadata[e.group_id].chessman[ev]){
-        // 目的地判断
-        if(ev == tp2){ // 是目的地
-          // 目的地不为自己
-          if(metadata[e.group_id].archive[ev] !== team){
-            isok = true
-            break
-          }else{
-            break
-          }
-        }else{// 不是目的地
-          if(metadata[e.group_id].chessman[ev] !== '空'){
-            break
+      tps.forEach(ev => {
+        if(metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team){
+          console.log('条件符合',metadata[e.group_id].archive[ev],tp2)
+          isok = true;
+        }
+      });
+    }
+
+    if(A == '象'){
+      let tp // 坐标
+      // 判断目的地方向
+      if(y2 < y1 && x2 < x1){
+        console.log('左上角')
+        tp = 0
+      }
+      if(y2 < y1 && x2 > x1){
+        console.log('右上角')
+        tp = 1
+      }
+      if(y2 > y1 && x2 < x1){
+        console.log('左下角')
+        tp = 2
+      }
+      if(y2 > y1 && x2 > x1){
+        console.log('右下角')
+        tp = 3
+      }
+
+      for (let i = 1; i < rows+1; i++) {
+        let tps = [
+          `${y1 - i}-${x1 - i}`,
+          `${y1 - i}-${x1 + i}`,
+          `${y1 + i}-${x1 - i}`,
+          `${y1 + i}-${x1 + i}`,
+        ]
+        let ev = tps[tp]
+        // console.log(tp)
+        // 此块存在
+        if(metadata[e.group_id].chessman[ev]){
+          // 目的地判断
+          if(ev == tp2){ // 是目的地
+            // 目的地不为自己
+            if(metadata[e.group_id].archive[ev] !== team){
+              isok = true
+              break
+            }else{
+              break
+            }
+          }else{// 不是目的地
+            if(metadata[e.group_id].chessman[ev] !== '空'){
+              break
+            }
           }
         }
       }
     }
-  }
 
-  if(A == '车'){
-    let tp // 坐标
-    // 判断目的地方向
-    if(y2 == y1 && x2 < x1){
-      console.log('往左')
-      tp = 0
-    }
-    if(y2 == y1 && x2 > x1){
-      console.log('往右')
-      tp = 1
-    }
-    if(y2 < y1 && x2 == x1){
-      console.log('往上')
-      tp = 2
-    }
-    if(y2 > y1 && x2 == x1){
-      console.log('往下')
-      tp = 3
-    }
+    if(A == '车'){
+      let tp // 坐标
+      // 判断目的地方向
+      if(y2 == y1 && x2 < x1){
+        console.log('往左')
+        tp = 0
+      }
+      if(y2 == y1 && x2 > x1){
+        console.log('往右')
+        tp = 1
+      }
+      if(y2 < y1 && x2 == x1){
+        console.log('往上')
+        tp = 2
+      }
+      if(y2 > y1 && x2 == x1){
+        console.log('往下')
+        tp = 3
+      }
 
-    for (let i = 1; i < rows+1; i++) {
-      let tps = [
-        `${y1}-${x1 - i}`,
-        `${y1}-${x1 + i}`,
-        `${y1 - i}-${x1}`,
-        `${y1 + i}-${x1}`,
-      ]
-      let ev = tps[tp]
-      console.log(tp)
-      // 此块存在
-      if(metadata[e.group_id].chessman[ev]){
-        // 目的地判断
-        if(ev == tp2){ // 是目的地
-          // 目的地不为自己
-          if(metadata[e.group_id].archive[ev] !== team){
-            isok = true
-            break
-          }else{
-            break
-          }
-        }else{// 不是目的地
-          if(metadata[e.group_id].chessman[ev] !== '空'){
-            break
+      for (let i = 1; i < rows+1; i++) {
+        let tps = [
+          `${y1}-${x1 - i}`,
+          `${y1}-${x1 + i}`,
+          `${y1 - i}-${x1}`,
+          `${y1 + i}-${x1}`,
+        ]
+        let ev = tps[tp]
+        // console.log(tp)
+        // 此块存在
+        if(metadata[e.group_id].chessman[ev]){
+          // 目的地判断
+          if(ev == tp2){ // 是目的地
+            // 目的地不为自己
+            if(metadata[e.group_id].archive[ev] !== team){
+              isok = true
+              break
+            }else{
+              break
+            }
+          }else{// 不是目的地
+            if(metadata[e.group_id].chessman[ev] !== '空'){
+              break
+            }
           }
         }
       }
     }
-  }
 
-  if(A == '后'){
-    let tp // 坐标
-    // 判断目的地方向
-    if(y2 < y1 && x2 < x1){
-      console.log('左上角')
-      tp = 0
-    }
-    if(y2 < y1 && x2 > x1){
-      console.log('右上角')
-      tp = 1
-    }
-    if(y2 > y1 && x2 < x1){
-      console.log('左下角')
-      tp = 2
-    }
-    if(y2 > y1 && x2 > x1){
-      console.log('右下角')
-      tp = 3
-    }
-    if(y2 == y1 && x2 < x1){
-      console.log('往左')
-      tp = 4
-    }
-    if(y2 == y1 && x2 > x1){
-      console.log('往右')
-      tp = 5
-    }
-    if(y2 < y1 && x2 == x1){
-      console.log('往上')
-      tp = 6
-    }
-    if(y2 > y1 && x2 == x1){
-      console.log('往下')
-      tp = 7
-    }
+    if(A == '后'){
+      let tp // 坐标
+      // 判断目的地方向
+      if(y2 < y1 && x2 < x1){
+        console.log('左上角')
+        tp = 0
+      }
+      if(y2 < y1 && x2 > x1){
+        console.log('右上角')
+        tp = 1
+      }
+      if(y2 > y1 && x2 < x1){
+        console.log('左下角')
+        tp = 2
+      }
+      if(y2 > y1 && x2 > x1){
+        console.log('右下角')
+        tp = 3
+      }
+      if(y2 == y1 && x2 < x1){
+        console.log('往左')
+        tp = 4
+      }
+      if(y2 == y1 && x2 > x1){
+        console.log('往右')
+        tp = 5
+      }
+      if(y2 < y1 && x2 == x1){
+        console.log('往上')
+        tp = 6
+      }
+      if(y2 > y1 && x2 == x1){
+        console.log('往下')
+        tp = 7
+      }
 
-    for (let i = 1; i < rows+1; i++) {
-      let tps = [
-        `${y1 - i}-${x1 - i}`,
-        `${y1 - i}-${x1 + i}`,
-        `${y1 + i}-${x1 - i}`,
-        `${y1 + i}-${x1 + i}`,
-        `${y1}-${x1 - i}`,
-        `${y1}-${x1 + i}`,
-        `${y1 - i}-${x1}`,
-        `${y1 + i}-${x1}`,
-      ]
-      let ev = tps[tp]
-      console.log(tp)
-      // 此块存在
-      if(metadata[e.group_id].chessman[ev]){
-        // 目的地判断
-        if(ev == tp2){ // 是目的地
-          // 目的地不为自己
-          if(metadata[e.group_id].archive[ev] !== team){
-            isok = true
-            break
-          }else{
-            break
-          }
-        }else{// 不是目的地
-          if(metadata[e.group_id].chessman[ev] !== '空'){
-            break
+      for (let i = 1; i < rows+1; i++) {
+        let tps = [
+          `${y1 - i}-${x1 - i}`,
+          `${y1 - i}-${x1 + i}`,
+          `${y1 + i}-${x1 - i}`,
+          `${y1 + i}-${x1 + i}`,
+          `${y1}-${x1 - i}`,
+          `${y1}-${x1 + i}`,
+          `${y1 - i}-${x1}`,
+          `${y1 + i}-${x1}`,
+        ]
+        let ev = tps[tp]
+        // console.log(tp)
+        // 此块存在
+        if(metadata[e.group_id].chessman[ev]){
+          // 目的地判断
+          if(ev == tp2){ // 是目的地
+            // 目的地不为自己
+            if(metadata[e.group_id].archive[ev] !== team){
+              isok = true
+              break
+            }else{
+              break
+            }
+          }else{// 不是目的地
+            if(metadata[e.group_id].chessman[ev] !== '空'){
+              break
+            }
           }
         }
       }
     }
-  }
 
-  if(A == '王'){
-    // 定义出周围8个格子
-    try {
-      [
-        `${y1 - 1}-${x1 - 1}`,
-        `${y1 - 1}-${x1}`,
-        `${y1 - 1}-${x1 + 1}`,
-        `${y1}-${x1 - 1}`,
-        `${y1}-${x1 + 1}`,
-        `${y1 + 1}-${x1 - 1}`,
-        `${y1 + 1}-${x1}`,
-        `${y1 + 1}-${x1 + 1}`,
-      ].forEach(ev => {
-        // 遍历格子是否为目的地
-        if(ev == tp2 && metadata[e.group_id].chessman[ev] && metadata[e.group_id].archive[ev] !== team){
-          throw new Error()
-        }
-      })
-    } catch (error) {
-      isok = true
+    if(A == '王'){
+      // 定义出周围8个格子
+      try {
+        [
+          `${y1 - 1}-${x1 - 1}`,
+          `${y1 - 1}-${x1}`,
+          `${y1 - 1}-${x1 + 1}`,
+          `${y1}-${x1 - 1}`,
+          `${y1}-${x1 + 1}`,
+          `${y1 + 1}-${x1 - 1}`,
+          `${y1 + 1}-${x1}`,
+          `${y1 + 1}-${x1 + 1}`,
+        ].forEach(ev => {
+          // 遍历格子是否为目的地
+          if(ev == tp2 && metadata[e.group_id].chessman[ev] && metadata[e.group_id].archive[ev] !== team){
+            throw new Error()
+          }
+        })
+      } catch (error) {
+        isok = true
+      }
+
     }
 
+    if (isok && metadata[e.group_id].chessman[tp2] === '王' && metadata[e.group_id].archive[tp2] == isAB){
+      return [true,true]
+    }else if(isok){
+      return [true,false]
+    }
+  } catch (err) {
+    return [false,false]
   }
 
-  if (isok && metadata[e.group_id].chessman[tp2] === '王' && metadata[e.group_id].archive[tp2] == isAB){
-    return [true,true]
-  }else if(isok){
-    return [true,false]
-  }
-  
 }
 
 /**
