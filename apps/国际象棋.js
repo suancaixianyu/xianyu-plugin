@@ -21,6 +21,9 @@ var prefix = '#' // 设置指令前缀，可在此设置默认前缀
  */
 var metadata = {}
 
+// 上一步的地图存档
+var repent = {}
+
 // 初始地图，不可修改
 var map = [
   '车', '马', '象', '王', '后', '象', '马', '车',
@@ -39,8 +42,8 @@ const cols = 8 // 棋盘高度
 export class newcomer extends plugin {
   constructor() {
     super({
-      name: '象棋',
-      dsc: '象棋',
+      name: '国际象棋',
+      dsc: '国际象棋',
       event: 'message',
       priority: 5000,
       rule: [
@@ -145,10 +148,15 @@ export class newcomer extends plugin {
     if(players == 1){
       metadata[e.group_id].nickname[e.user_id] = e.sender.nickname
       metadata[e.group_id].players[e.user_id] = '白'
+
       let players_nickname = Object.keys(metadata[e.group_id].players)
+
+      let A = metadata[e.group_id].players[players_nickname[0]]
+      let B = metadata[e.group_id].players[players_nickname[1]]
+
       e.reply([`本群游戏开始\n`,
-      `黑棋:${metadata[e.group_id].nickname[players_nickname[1]]}\n`,
-      `白棋:${metadata[e.group_id].nickname[players_nickname[0]]}\n`,
+      `${A}棋:${metadata[e.group_id].nickname[players_nickname[1]]}\n`,
+      `${B}棋:${metadata[e.group_id].nickname[players_nickname[0]]}\n`,
       `黑棋先手\n`,
       `其他成员发送“${prefix}加入国际象棋黑/白”加入队伍中`
       ])
@@ -173,9 +181,13 @@ export class newcomer extends plugin {
     let team = metadata[e.group_id].players[e.user_id]
     if(!team){
       e.reply(`你还没加入游戏，可发送”${prefix}加入国际象棋黑/白“加入队伍中`)
-      return
+      return false
     }
     console.log("player：" + team)
+
+    // 备份当前布局
+    repent[e.group_id] = {}
+    repent[e.group_id] = metadata[e.group_id]
 
     // 对方组
     let isAB = '黑白'
@@ -549,6 +561,7 @@ async function over(e) {
   metadata[e.group_id].players = {} // 参与游戏的玩家
   metadata[e.group_id].nickname = {} // 参与游戏的玩家
   metadata[e.group_id].current = {} // 当前可操作的玩家
+  metadata[e.group_id].repent = [] // 当前可操作的玩家
 }
 
 

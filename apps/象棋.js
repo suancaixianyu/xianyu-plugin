@@ -26,6 +26,9 @@ var prefix = '#' // 设置指令前缀，可在此设置默认前缀
  */
 var metadata = {}
 
+// 上一步的地图存档
+var repent = {}
+
 // 初始地图，不可修改
 const board = [
   ['車', '馬', '象', '士', '将', '士', '象', '馬', '車'],
@@ -46,11 +49,15 @@ const cols = 10 // 棋盘高度
 export class newcomer extends plugin {
   constructor() {
     super({
-      name: '象棋',
-      dsc: '象棋',
+      name: '中国象棋',
+      dsc: '中国象棋',
       event: 'message',
       priority: 5000,
       rule: [
+        // {
+        //   reg: "^##(.*)",
+        //   fnc: 'jsrun'
+        // },
         {
           /** 命令正则匹配 */
           reg: `^(${prefix})?(发起|加入)中国象棋[黑红]?$`,
@@ -75,9 +82,64 @@ export class newcomer extends plugin {
           /** 执行方法 */
           fnc: 'SetupPrefix'
         },
+        // {
+        //   /** 命令正则匹配 */
+        //   reg: `^(同意)?悔棋$`,
+        //   /** 执行方法 */
+        //   fnc: 'repenting'
+        // },
+
       ]
     })
   }
+
+  // async jsrun(e) {
+	// 	try {
+	// 		const content = e.message[0].text.split("##")[1]
+	// 		if (content === undefined) return
+
+	// 		let res = await eval(content);
+	// 		const dataType = (res && res.data) || res;
+	// 		if (typeof dataType === 'string') return e.reply(dataType);
+	// 		if (dataType === undefined) return e.reply("程序无返回值");
+	// 		await e.reply(JSON.stringify(dataType, null, 4));
+	// 	} 
+	// 	catch(error) {
+	// 		await e.reply('错误：\n' + error.message)
+	// 		console.log(error)
+	// 	}
+	// }
+
+  // async repenting(e) {
+    
+  //   // 判断玩家是否在游戏中
+  //   if(metadata[e.group_id] && metadata[e.group_id].nickname[e.user_id] === e.sender.nickname){
+  //     console.log(metadata[e.group_id])
+  //     // 当前可操作的一方
+  //     let team = metadata[e.group_id].current
+  //     // 对方组
+  //     let isAB = '黑红'
+  //     isAB = isAB.replace(new RegExp(team),'')
+
+  //     // 是对方悔棋，当前可操作一方不为自己
+  //     if(team != metadata[e.group_id].players[e.user_id]){
+  //       if((/^悔棋/).test(e.msg)){
+  //         metadata[e.group_id].repent = []
+  //         e.reply(`${isAB}方发起悔棋，此次悔棋需要${team}方同意，可发送“同意悔棋”`)
+  //         metadata[e.group_id].repent.push(true)
+  //       }
+  //     }else if ((/^同意悔棋/).test(e.msg)){
+  //       metadata[e.group_id].repent.push(true)
+  //       if(metadata[e.group_id].repent.length === 2){
+  //         metadata[e.group_id] = repent[e.group_id]
+  //         e.reply(`悔棋成功，${metadata[e.group_id].current}方继续下棋`)
+  //         generate(e)
+  //       }
+  //     }
+  //   }else{
+  //     return false
+  //   }
+  // }
 
   /**
    * 设置指令前缀
@@ -136,15 +198,20 @@ export class newcomer extends plugin {
     if(players == 1){
       metadata[e.group_id].nickname[e.user_id] = e.sender.nickname
       metadata[e.group_id].players[e.user_id] = '黑'
+
       let players_nickname = Object.keys(metadata[e.group_id].players)
+
+      let A = metadata[e.group_id].players[players_nickname[0]]
+      let B = metadata[e.group_id].players[players_nickname[1]]
+
       e.reply([`本群游戏开始\n`,
-      `红棋:${metadata[e.group_id].nickname[players_nickname[0]]}\n`,
-      `黑棋:${metadata[e.group_id].nickname[players_nickname[1]]}\n`,
+      `${A}棋:${metadata[e.group_id].nickname[players_nickname[0]]}\n`,
+      `${B}棋:${metadata[e.group_id].nickname[players_nickname[1]]}\n`,
       `红棋先手\n`,
       `其他成员发送“${prefix}加入中国象棋黑/红”加入队伍中`
       ])
       metadata[e.group_id].current = '红'
-      newgame(e)
+      await newgame(e)
     }
     if(players >= 2 && emsg[0]){
       metadata[e.group_id].nickname[e.user_id] = e.sender.nickname
@@ -159,7 +226,7 @@ export class newcomer extends plugin {
   async game(e) {
 
     if(!metadata[e.group_id] || !metadata[e.group_id].game){e.reply(`国际象棋未开始，发送：“${prefix}国际象棋”发起游戏`);return false};
-
+    await beifen(e)
     // 判断玩家是否在游戏中
     let team = metadata[e.group_id].players[e.user_id]
     if(!team){
@@ -167,6 +234,7 @@ export class newcomer extends plugin {
       return
     }
     // console.log("player：" + team)
+
 
     // 对方组
     let isAB = '黑红'
@@ -232,6 +300,15 @@ export class newcomer extends plugin {
 
 
 /**
+ * 备份
+ */
+async function beifen(e){
+  // 备份当前布局
+  repent[e.group_id] = {}
+  repent[e.group_id] = metadata[e.group_id]
+}
+
+/**
  * 新游戏
  */
 async function newgame(e) {
@@ -267,7 +344,7 @@ async function over(e) {
   metadata[e.group_id].archive = {} // 双方棋子位置标记
   metadata[e.group_id].game = false // 游戏是否正在运行
   metadata[e.group_id].players = {} // 参与游戏的玩家
-  metadata[e.group_id].nickname = {} // 参与游戏的玩家
+  metadata[e.group_id].nickname = {} // 参与游戏的玩家昵称
   metadata[e.group_id].current = {} // 当前可操作的玩家
 }
 
