@@ -14,7 +14,7 @@
 
 ```
 // 使用gitee
-git clone --depth=1 https://gitee.com/suancaixianyu/xianyu-plugin.git ./plugins/xianyu-Plugin/
+git clone --depth=1 https://gitee.com/suancaixianyu/xianyu-plugin.git ./plugins/xianyu-plugin/
 ```
 
 进行安装。安装完毕后，管理员只需发送 `#咸鱼更新` 即可自动更新 xianyu-plugin。
