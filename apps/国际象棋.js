@@ -1,5 +1,5 @@
-import plugin from '../../lib/plugins/plugin.js'
-import puppeteer from "../../lib/puppeteer/puppeteer.js";
+import plugin from '../../../lib/plugins/plugin.js'
+import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 
 let cwd = `${process.cwd()}/plugins/xianyu-plugin/resources/html/`
 cwd = cwd.replace(/\\/g,'/')
