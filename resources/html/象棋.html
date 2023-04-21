@@ -41,6 +41,7 @@
     let archive = '{{archive}}' // 双方棋子标记
     archive = archive.split(',');
     let ss = '{{ss}}' // 移动轨迹地图
+    ss = ss.split(',');
 
     let ishelp = '{{ishelp}}' // 帮助菜单
     let isrollback = '{{isrollback}}'
@@ -69,9 +70,9 @@
       }
       if(e === '空'){
         if(ss[index] == '黑box'){
-          data_box.push(`<div class="lattice"><div class="b latticebox"></div>`)
+          data_box.push(`<div class="lattice"><div class="b latticebox"></div></div>`)
         }else if (ss[index] == '红box'){
-          data_box.push(`<div class="lattice"><div class="r latticebox"></div>`)
+          data_box.push(`<div class="lattice"><div class="r latticebox"></div></div>`)
         }else{
           data_box.push(`<div class="lattice"></div>`)
         }

@@ -356,26 +356,34 @@ async function generate(e,tp1,tp2){
 
   let data_map = metadata[e.group_id].chessman // 拉取地图数据
   let biaoji = Object.values(metadata[e.group_id].archive) // 获取双方棋子标记
+  let ss = {} 
+  let isAB
 
-  let ss = metadata[e.group_id].chessman // 拉取一份用于显示移动位置的地图
-
+  if(metadata[e.group_id].current === '红' ){
+    isAB = '黑box'
+  }else{
+    isAB = '红box'
+  }
   if(tp1 && tp2){
-    if(metadata[e.group_id].current === '红'){
-      ss[tp1] = '黑box'
-      ss[tp2] = '黑box'
-    }else{
-      ss[tp1] = '红box'
-      ss[tp2] = '红box'
+    for(let i = 0;i < cols; i++){
+      for(let j = 0;j < rows; j++){
+        if(tp1 == `${i}-${j}` || tp2 == `${i}-${j}`){
+          ss[`${i}-${j}`] = isAB
+        }else{
+          ss[`${i}-${j}`] = '0'
+        }
+      }
     }
   }
   ss = Object.values(ss)
-  ss = String(ss)
   biaoji = Object.values(biaoji)
   data_map = Object.values(data_map)
   // 颠倒棋盘
   if(metadata[e.group_id].current === '红'){
     data_map = data_map.reverse()
     biaoji = biaoji.reverse()
+    ss = ss.reverse()
+
     isrollback = 'on'
   }
 
@@ -383,13 +391,14 @@ async function generate(e,tp1,tp2){
   // console.log(data_map);
   biaoji = String(biaoji)
   // console.log(biaoji);
+  ss = String(ss) // 格式化地图
 
   /**
    * map 地图
    */
   let data = {
     quality:100,
-    tplFile:`./plugins/xianyu-plugin/resources/html/xiangqi.html`,
+    tplFile:`./plugins/xianyu-plugin/resources/html/象棋.html`,
     map:data_map,
     ishelp:ishelp,
     archive:biaoji,
