@@ -369,6 +369,7 @@ async function generate(e,tp1,tp2){
     }
   }
   ss = Object.values(ss)
+  ss = String(ss)
   biaoji = Object.values(biaoji)
   data_map = Object.values(data_map)
   // 颠倒棋盘
@@ -397,7 +398,7 @@ async function generate(e,tp1,tp2){
     鸡鸡地址:cwd,
     ss:ss
   }
-  let img = await puppeteer.screenshot("xianyu", {
+  let img = await puppeteer.screenshot("象棋", {
     ...data,
   })
   e.reply(img)
