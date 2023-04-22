@@ -1,7 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 
-export class newcomer extends plugin {
+export class xianyuhelp extends plugin {
   constructor() {
     super({
       name: '咸鱼帮助',

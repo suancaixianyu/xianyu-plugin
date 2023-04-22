@@ -46,7 +46,7 @@ const board = [
 const rows = 9 // 棋盘宽度
 const cols = 10 // 棋盘高度 
 
-export class newcomer extends plugin {
+export class ChineseChess extends plugin {
   constructor() {
     super({
       name: '中国象棋',

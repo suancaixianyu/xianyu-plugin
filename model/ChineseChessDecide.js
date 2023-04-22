@@ -325,8 +325,14 @@ export default class panduan{
         }
         console.log(p);
         // 判断越过的棋子
-        if(p < 2){
-          isok = true
+        if(p < 2 ){
+          if(p == 1 && metadata[e.group_id].chessman[tp2] !== '空'){
+            isok = true
+          }else if(p == 0 && metadata[e.group_id].chessman[tp2] === '空'){
+            isok = true
+          }else{
+            isok = false
+          }
         }else{
           isok = false
         }
