@@ -20,7 +20,6 @@ git clone --depth=1 https://gitee.com/suancaixianyu/xianyu-plugin.git ./plugins/
 
 ---
 
-<<<<<<< HEAD
 ## 游戏
 
 1. 中国象棋
@@ -28,9 +27,6 @@ git clone --depth=1 https://gitee.com/suancaixianyu/xianyu-plugin.git ./plugins/
 3. 扫雷
 
 详情请发送 `咸鱼帮助` 查看
-=======
-发送 `咸鱼帮助` 查看详情
->>>>>>> 692afe66bb55f8ff73a2c3fabe995c047cdea355
 
 ---
 
