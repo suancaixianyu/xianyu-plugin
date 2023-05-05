@@ -1,5 +1,8 @@
 
-export default class panduan{
+const rows = 9 // 棋盘宽度
+const cols = 10 // 棋盘高度
+
+export default class panduan {
   /**
    * @param {Object} e 机器人参数
    * @param {Array} emsg 所有的坐标
@@ -12,27 +15,25 @@ export default class panduan{
   async Audit(e, emsg, tp1, tp2, team, metadata) {
 
     try {
-      const rows = 9 // 棋盘宽度
-      const cols = 10 // 棋盘高度 
-      console.log(emsg, tp1, tp2, team);
+      console.log(emsg, tp1, tp2, team)
       // 目的地是否为自己棋子
-      if (metadata[e.group_id].archive[tp2] == team) return false;
-    
+      if (metadata[e.group_id].archive[tp2] == team) return false
+
       // 获取选择的棋子信息
       let A = metadata[e.group_id].chessman[tp1]
-    
-      console.log(A);
-    
+
+      console.log(A)
+
       // 对方组
       let isAB = '黑红'
       isAB = isAB.replace(new RegExp(team), '')
-    
+
       // 重定义坐标
       let x1 = +emsg[1]
       let x2 = +emsg[3]
       let y1 = +emsg[0]
       let y2 = +emsg[2]
-    
+
       // 胜利判断
       let isok = false
 
@@ -56,7 +57,7 @@ export default class panduan{
           console.log('往下')
           tp = 3
         }
-    
+
         for (let i = 1; i < cols + 1; i++) {
           let tps = [
             `${y1}-${x1 - i}`,
@@ -86,7 +87,7 @@ export default class panduan{
         }
       }
 
-      if (A == '馬'){
+      if (A == '馬') {
         // 可移动位置
         let tps = [
           `${+y1 + 2}-${+x1 - 1}`,
@@ -109,17 +110,17 @@ export default class panduan{
           `${+y1 - 1}-${+x1}`,
           `${+y1 - 1}-${+x1}`,
         ]
-        tps.forEach((ev,index) => {
-          if(metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team){
-            if(metadata[e.group_id].chessman[p[index]] && metadata[e.group_id].chessman[p[index]] === '空'){
-              console.log('条件符合',metadata[e.group_id].archive[ev],tp2)
-              isok = true;
+        tps.forEach((ev, index) => {
+          if (metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team) {
+            if (metadata[e.group_id].chessman[p[index]] && metadata[e.group_id].chessman[p[index]] === '空') {
+              console.log('条件符合', metadata[e.group_id].archive[ev], tp2)
+              isok = true
             }
           }
-        });
+        })
       }
 
-      if (A == '象'){
+      if (A == '象') {
         let tps = [
           `${+y1 - 2}-${+x1 - 2}`,
           `${+y1 - 2}-${+x1 + 2}`,
@@ -134,17 +135,17 @@ export default class panduan{
           `${+y1 + 1}-${+x1 + 1}`,
         ]
 
-        tps.forEach((ev,index) => {
-          if(metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team){
-            if(metadata[e.group_id].chessman[p[index]] && metadata[e.group_id].chessman[p[index]] === '空'){
-              console.log('条件符合',metadata[e.group_id].archive[ev],tp2)
-              isok = true;
+        tps.forEach((ev, index) => {
+          if (metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team) {
+            if (metadata[e.group_id].chessman[p[index]] && metadata[e.group_id].chessman[p[index]] === '空') {
+              console.log('条件符合', metadata[e.group_id].archive[ev], tp2)
+              isok = true
             }
           }
-        });
+        })
       }
 
-      if (A == '士'){
+      if (A == '士') {
         let tps = [
           `${+y1 - 1}-${+x1 - 1}`,
           `${+y1 - 1}-${+x1 + 1}`,
@@ -152,9 +153,9 @@ export default class panduan{
           `${+y1 + 1}-${+x1 + 1}`,
         ]
         tps.forEach(ev => {
-          if(metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team){
-            let p;
-            if(team === '红'){
+          if (metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team) {
+            let p
+            if (team === '红') {
               p = [
                 '0-3',
                 '0-5',
@@ -162,7 +163,7 @@ export default class panduan{
                 '2-3',
                 '2-5',
               ]
-            }else{
+            } else {
               p = [
                 '7-3',
                 '7-5',
@@ -172,18 +173,18 @@ export default class panduan{
               ]
             }
             p.forEach(ev1 => {
-              if(tp2 === ev1){
-                console.log('条件符合',metadata[e.group_id].archive[ev],tp2)
-                isok = true;
+              if (tp2 === ev1) {
+                console.log('条件符合', metadata[e.group_id].archive[ev], tp2)
+                isok = true
               }
             })
           }
-        });
+        })
       }
 
 
-      if (A == '将'){
-        
+      if (A == '将') {
+
         let tps = [
           `${+y1 - 1}-${x1}`,
           `${+y1 + 1}-${x1}`,
@@ -191,44 +192,44 @@ export default class panduan{
           `${y1}-${+x1 + 1}`,
         ]
         // 定义活动区域
-        let p;
+        let p
 
         tps.forEach(ev => {
-          if(metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team){
-            if(team === '红'){
+          if (metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team) {
+            if (team === '红') {
               p = [
-                '0-3','0-4','0-5',
-                '1-3','1-4','1-5',
-                '2-3','2-4','2-5',
+                '0-3', '0-4', '0-5',
+                '1-3', '1-4', '1-5',
+                '2-3', '2-4', '2-5',
               ]
-            }else{
+            } else {
               p = [
-                '7-3','7-4','7-5',
-                '8-3','8-4','8-5',
-                '9-3','9-4','9-5',
+                '7-3', '7-4', '7-5',
+                '8-3', '8-4', '8-5',
+                '9-3', '9-4', '9-5',
               ]
             }
             p.forEach(ev1 => {
-              if(tp2 === ev1){
-                console.log('条件符合',metadata[e.group_id].archive[ev],tp2)
-                isok = true;
+              if (tp2 === ev1) {
+                console.log('条件符合', metadata[e.group_id].archive[ev], tp2)
+                isok = true
               }
             })
           }
-        });
+        })
 
         // 循环完之后依旧是false，可能是飞将
-        if(isok == false && metadata[e.group_id].chessman[tp2] === '将' && x1 == x2){
+        if (isok == false && metadata[e.group_id].chessman[tp2] === '将' && x1 == x2) {
           let t = 0
-          if(team === '红'){
+          if (team === '红') {
             for (let i = +y1 + 1; i < cols; i++) {
-              if(metadata[e.group_id].chessman[`${i}-${x1}`] !== '空'){
+              if (metadata[e.group_id].chessman[`${i}-${x1}`] !== '空') {
                 ++t
               }
             }
-          }else{
+          } else {
             for (let i = +y1 - 1; i < cols; i = i - 1) {
-              if(metadata[e.group_id].chessman[`${i}-${x1}`] !== '空'){
+              if (metadata[e.group_id].chessman[`${i}-${x1}`] !== '空') {
                 ++t
               }
             }
@@ -238,37 +239,37 @@ export default class panduan{
       }
 
 
-      if (A == '兵'){
+      if (A == '兵') {
         // 先判断是否过河
-        if(team === '红' && +y1 < 5 && +y1 + 1 == y2 && x1 == x2 && metadata[e.group_id].archive[tp2] != team){
+        if (team === '红' && +y1 < 5 && +y1 + 1 == y2 && x1 == x2 && metadata[e.group_id].archive[tp2] != team) {
           isok = true
         }
-        if(team === '黑' && +y1 > 4 && +y1 - 1 == y2 && x1 == x2 && metadata[e.group_id].archive[tp2] != team){
+        if (team === '黑' && +y1 > 4 && +y1 - 1 == y2 && x1 == x2 && metadata[e.group_id].archive[tp2] != team) {
           isok = true
         }
 
         let tps
         // 过河后不能倒退
-        if(team == '红' && +y1 > 4){
+        if (team == '红' && +y1 > 4) {
           tps = [
             `${+y1 + 1}-${x1}`,
             `${y1}-${+x1 - 1}`,
             `${y1}-${+x1 + 1}`,
           ]
-        }else if(team === '黑' && +y1 < 5){
+        } else if (team === '黑' && +y1 < 5) {
           tps = [
             `${+y1 - 1}-${x1}`,
             `${y1}-${+x1 - 1}`,
             `${y1}-${+x1 + 1}`,
           ]
         }
-        if(tps){
+        if (tps) {
           tps.forEach(ev => {
-            if(metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team){
-              console.log('条件符合',metadata[e.group_id].archive[ev],tp2)
-              isok = true;
+            if (metadata[e.group_id].chessman[ev] && ev == tp2 && metadata[e.group_id].archive[tp2] != team) {
+              console.log('条件符合', metadata[e.group_id].archive[ev], tp2)
+              isok = true
             }
-          });
+          })
         }
       }
 
@@ -295,7 +296,7 @@ export default class panduan{
 
         // 跨过的棋子
         let p = 0
-    
+
         for (let i = 1; i < cols + 1; i++) {
           let tps = [
             `${y1}-${x1 - i}`,
@@ -323,17 +324,17 @@ export default class panduan{
             }
           }
         }
-        console.log(p);
+        console.log(p)
         // 判断越过的棋子
-        if(p < 2 ){
-          if(p == 1 && metadata[e.group_id].chessman[tp2] !== '空'){
+        if (p < 2) {
+          if (p == 1 && metadata[e.group_id].chessman[tp2] !== '空') {
             isok = true
-          }else if(p == 0 && metadata[e.group_id].chessman[tp2] === '空'){
+          } else if (p == 0 && metadata[e.group_id].chessman[tp2] === '空') {
             isok = true
-          }else{
+          } else {
             isok = false
           }
-        }else{
+        } else {
           isok = false
         }
 
@@ -348,5 +349,158 @@ export default class panduan{
       return [false, false]
     }
   }
+
+  /**
+   * 
+   * @param {Object} e 机器人参数
+   * @param {Object} msg 消息参数
+   * @param {Object} metadata 游戏全部内容
+   * @returns 中文指令解析
+   */
+  async Chineseinstructions(e, msg, metadata) {
+    let chessman = ['車', '馬', '象', '士', '将', '炮', '兵']
+    // 替换msg中的文本，卒改兵，马改馬，相改象，帅改将，车改車
+    // let msg = "兵二进一" // msg值示例
+    msg = msg.replace(/卒/g, "兵").replace(/马/g, "馬").replace(/相/g, "象").replace(/帅/g, "将").replace(/车/g, "車")
+    let A // 棋子名称
+    let num // 行数
+    let B = msg.charAt(msg.length - 2) // 移动方向
+    let num2 // 移动位置
+    let C = msg.charAt(0) // 第一个字
+
+
+    chessman.some(piece => {
+      if (msg.startsWith(piece)) {
+        A = piece
+        return true
+      }
+    })
+
+    if (A) {
+      let chineseNumbers = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖", "拾"]
+      // 第一个数字
+      let secondChar = msg.charAt(msg.length - 3)
+      if (chineseNumbers.includes(secondChar)) {
+        num = chineseNumbers.indexOf(secondChar)
+        if (num >= 10) {
+          num -= 10
+        }
+        if (metadata[e.group_id].players[e.user_id] === '黑') {
+          num = 8 - num
+        }
+      }else{
+        num = msg.charAt(msg.length - 3)
+      }
+      // 第二个数字
+      let lastChar = msg.charAt(msg.length - 1)
+      if (chineseNumbers.includes(lastChar)) {
+        num2 = chineseNumbers.indexOf(lastChar)
+        if (num2 >= 10) {
+          num2 -= 10
+        }
+      }else{
+        num = msg.charAt(msg.length - 1)
+      }
+
+      console.log('提取中文：',A, num, B, num2, C)
+      return await parse(e, A, num, B, num2, C, metadata)
+    } else {
+      return false
+    }
+  }
 }
 
+/**
+ * @param {String} A 棋子名称
+ * @param {Number} num 列数
+ * @param {String} B 移动方向
+ * @param {Number} num2 移动位置
+ * @param {String} C 前后棋子
+ * @param {Object} metadata 游戏数据
+ */
+async function parse(e, A, num, B, num2, C, metadata) {
+
+  let tp1 // 棋子具体位置
+  let tp2 // 移动后具体位置
+  let qizi = [] // 此列所有棋子
+  // 查找棋子
+  for (let i = 0; i < cols; i++) {
+    // 遍历x=num那一行的棋子
+    if (metadata[e.group_id].chessman[`${i}-${num}`] == A && metadata[e.group_id].archive[`${i}-${num}`] === metadata[e.group_id].players[e.user_id]) {
+      // 记录自己的棋子
+      qizi.push(`${i}-${num}`)
+    }
+  }
+
+  console.log(qizi)
+
+  // 判断棋子是否超过两个
+  if (qizi.length > 1) {
+    console.log('大于1');
+    // 红棋顺序
+    if (C == '前' && metadata[e.group_id].current === '红') {
+      tp1 = qizi[0]
+    }
+    if (C == '后' && metadata[e.group_id].current === '红') {
+      tp1 = qizi[qizi.length - 1]
+    }
+    // 黑棋逆序
+    if (C == '前' && metadata[e.group_id].current === '黑') {
+      tp1 = qizi[qizi.length - 1]
+    }
+    if (C == '后' && metadata[e.group_id].current === '黑') {
+      tp1 = qizi[0]
+    }
+  } else {
+    console.log('不大于1');
+    tp1 = qizi[0]
+  }
+  console.log(tp1)
+
+  let y1 = tp1.split('-')[0]
+  let x1 = tp1.split('-')[1]
+
+  // 棋子前进方向，可移动的位置
+  if (A == '兵' || A == '炮' || A == '車' || A == '将') {
+    // 红棋顺序
+    if (metadata[e.group_id].current === '红' && tp1) {
+
+      // 进，y+num2,x不变
+      if (B == '进') {
+        tp2 = `${+y1 + num2 + 1}-${x1}`
+      }
+      // 平，y不变 ，x=num2-1
+      if (B == '平') {
+        tp2 = `${y1}-${num2}`
+      }
+      // 退，y-num2,x不变
+      if (B == '退') {
+        tp2 = `${+y1 - num2 + 1}-${x1}`
+      }
+    }
+
+    // 黑棋逆序
+    if (metadata[e.group_id].current === '黑' && tp1) {
+
+      // 进，y+num2,x不变
+      if (B == '进') {
+        tp2 = `${+y1 - +num2 - 1}-${x1}`
+      }
+      // 平，y不变 ，x=8-num2-1
+      if (B == '平') {
+        tp2 = `${y1}-${8 - num2}`
+      }
+      // 退，y-num2,x不变
+      if (B == '退') {
+        tp2 = `${+y1 + +num2 + 1}-${x1}`
+      }
+    }
+  }
+
+  
+
+  let y2 = tp2.split('-')[0]
+  let x2 = tp2.split('-')[1]
+
+  return [y1, x1, y2, x2]
+}

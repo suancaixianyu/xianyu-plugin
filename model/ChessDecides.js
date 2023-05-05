@@ -1,3 +1,5 @@
+const rows = 8 // 棋盘宽度
+const cols = 8 // 棋盘高度
 
 export default class panduan{
   /**
@@ -6,12 +8,13 @@ export default class panduan{
   * @param {String} tp1 选择坐标
   * @param {String} tp2 目的地坐标
   * @param {String} team 玩家组
+  * @param {Object} metadata 游戏所有数据
   */
-  async Audit(e,emsg,tp1,tp2,team) {
+  async Audit(e,emsg,tp1,tp2,team,metadata) {
     try {
-      console.log(emsg,tp1,tp2,team);
+      console.log( emsg,tp1,tp2,team);
       // 目的地是否为自己棋子
-      if(metadata[e.group_id].archive[tp2] == team)return false;
+      if(metadata[e.group_id].archive[tp2] === team)return false;
 
       // 获取选择的棋子信息
       let A = metadata[e.group_id].chessman[tp1]
@@ -25,6 +28,7 @@ export default class panduan{
       let x2 = +emsg[3]
       let y1 = +emsg[0]
       let y2 = +emsg[2]
+      console.log(x1,y1,x2,y2);
 
       // 胜利判断
       let isok = false
@@ -33,12 +37,18 @@ export default class panduan{
       if(A == '兵'){
         if(x1 == x2 && metadata[e.group_id].chessman[tp2] === '空'){ // 垂直移动，前方不能有棋子
           if(team == '白'){
-            if(y1 - y2 == -1)isok = true // 等于1格
-            if(y1 - y2 == -2 && y1 == 1)isok = true // 等于2格
+            if(y1 + 1 == y2){
+              isok = true
+              console.log('走1格');
+            } // 等于1格
+            if(y1 + 2 == y2 && y1 == 1)isok = true // 等于2格
           }
           if(team == '黑'){
-            if(y1 - y2 == 1)isok = true // 等于1格
-            if(y1 - y2 == 2 && y1 == 6)isok = true // 等于2格
+            if(y1 - 1 == y2){
+              isok = true
+              console.log('走1格')
+            }// 等于1格
+            if(y1 - 2 == y2 && y1 == 6)isok = true // 等于2格
           }
         }
         if(x1 + 1 == x2 || x1 - 1 == x2 && metadata[e.group_id].archive[tp2] && metadata[e.group_id].archive[tp2] == isAB){ // 吃棋
@@ -264,6 +274,7 @@ export default class panduan{
         return [true,false]
       }
     } catch (err) {
+      console.log(err)
       return [false,false]
     }
   }

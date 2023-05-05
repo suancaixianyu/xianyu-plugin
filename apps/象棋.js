@@ -10,6 +10,8 @@ cwd = cwd.replace(/\\/g,'/')
 // 不建议修改
 var ishelp = 'off' // 帮助菜单
 var isrollback = 'off' // 颠倒棋盘
+var reg = ['車', '馬', '象', '士', '将', '炮', '兵','卒','仕','相','帅','马','车',]
+let chineseNumbers = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖", "拾"]
 
 // 可以修改的内容
 var prefix = '#' // 设置指令前缀，可在此设置默认前缀
@@ -25,6 +27,7 @@ var prefix = '#' // 设置指令前缀，可在此设置默认前缀
  * @param {Object} current 当前可以操作的队伍
  */
 var metadata = {}
+
 
 // 上一步的地图存档
 var repent = {}
@@ -54,10 +57,10 @@ export class ChineseChess extends plugin {
       event: 'message',
       priority: 5000,
       rule: [
-        // {
-        //   reg: "^##(.*)",
-        //   fnc: 'jsrun'
-        // },
+        {
+          reg: "^##(.*)",
+          fnc: 'jsrun'
+        },
         {
           /** 命令正则匹配 */
           reg: `^(${prefix})?(发起|加入)中国象棋[黑红]?$`,
@@ -88,27 +91,33 @@ export class ChineseChess extends plugin {
         //   /** 执行方法 */
         //   fnc: 'repenting'
         // },
+        {
+          /** 命令正则匹配 */
+          reg: `^(${reg.join('|')}).*[一二三四五六七八九十壹贰叁肆伍陆柒捌玖拾]$`,
+          /** 执行方法 */
+          fnc: 'game'
+        },
 
       ]
     })
   }
 
-  // async jsrun(e) {
-	// 	try {
-	// 		const content = e.message[0].text.split("##")[1]
-	// 		if (content === undefined) return
+  async jsrun(e) {
+		try {
+			const content = e.message[0].text.split("##")[1]
+			if (content === undefined) return
 
-	// 		let res = await eval(content);
-	// 		const dataType = (res && res.data) || res;
-	// 		if (typeof dataType === 'string') return e.reply(dataType);
-	// 		if (dataType === undefined) return e.reply("程序无返回值");
-	// 		await e.reply(JSON.stringify(dataType, null, 4));
-	// 	} 
-	// 	catch(error) {
-	// 		await e.reply('错误：\n' + error.message)
-	// 		console.log(error)
-	// 	}
-	// }
+			let res = await eval(content);
+			const dataType = (res && res.data) || res;
+			if (typeof dataType === 'string') return e.reply(dataType);
+			if (dataType === undefined) return e.reply("程序无返回值");
+			await e.reply(JSON.stringify(dataType, null, 4));
+		} 
+		catch(error) {
+			await e.reply('错误：\n' + error.message)
+			console.log(error)
+		}
+	}
 
   // async repenting(e) {
     
@@ -225,12 +234,12 @@ export class ChineseChess extends plugin {
    */
   async game(e) {
 
-    if(!metadata[e.group_id] || !metadata[e.group_id].game){e.reply(`国际象棋未开始，发送：“${prefix}国际象棋”发起游戏`);return false};
-    await beifen(e)
+    if(!metadata[e.group_id] || !metadata[e.group_id].game){e.reply(`中国象棋未开始，发送：“${prefix}发起中国象棋”发起游戏`);return false};
+    // await beifen(e)
     // 判断玩家是否在游戏中
     let team = metadata[e.group_id].players[e.user_id]
     if(!team){
-      e.reply(`你还没加入游戏，可发送”${prefix}加入国际象棋黑/白“加入队伍中`)
+      e.reply(`你还没加入游戏，可发送”${prefix}加入中国象棋黑/白“加入队伍中`)
       return
     }
     // console.log("player：" + team)
@@ -246,20 +255,37 @@ export class ChineseChess extends plugin {
       return
     }
 
+    let tp1,tp2
+
     // 0：选择，1：目的地
     let emsg = e.msg.toUpperCase() // 大写字母
     emsg = emsg.match(/([a-zA-Z])(\d+)[\s\S]?([a-zA-Z])(\d+)/)
+    if(!emsg){
+      let iszh_cn = await as.Chineseinstructions(e,e.msg,metadata)
+      if(!iszh_cn){
+        return e.reply('指令不正确')
+      }else{
+        console.log(iszh_cn)
 
-    // 选择
-    let letter1 = emsg[1].charCodeAt(0) - 65 // 转数字 A = 0
-    let num1 = emsg[2]
-    let tp1 = `${letter1}-${num1}`
+        var [letter1, num1, letter2, num2] = iszh_cn;
+        // 选择
+        tp1 = `${letter1}-${num1}`
+        // 目的地
+        tp2 = `${letter2}-${num2}`
+      }
+    }else {
+      // 选择
+      var letter1 = emsg[1].charCodeAt(0) - 65 // 转数字 A = 0
+      var num1 = emsg[2]
+      tp1 = `${letter1}-${num1}`
 
-    // 目的地
-    let letter2 = emsg[3].charCodeAt(0) - 65 // 转数字 A = 0
-    let num2 = emsg[4]
-    let tp2 = `${letter2}-${num2}`
-    // console.log(tp1,tp2);
+      // 目的地
+      var letter2 = emsg[3].charCodeAt(0) - 65 // 转数字 A = 0
+      var num2 = emsg[4]
+      tp2 = `${letter2}-${num2}`
+    }
+
+    console.log('+++++',letter1,num1,letter2,num2,'+++++',tp1,tp2,team)
 
     // 判断移动是否正确
     let iscorrect = await as.Audit(e,[letter1,num1,letter2,num2],tp1,tp2,team,metadata)
@@ -356,7 +382,7 @@ async function generate(e,tp1,tp2){
 
   let data_map = metadata[e.group_id].chessman // 拉取地图数据
   let biaoji = Object.values(metadata[e.group_id].archive) // 获取双方棋子标记
-  let ss = {} 
+  let ss = {} // 标记框
   let isAB
 
   if(metadata[e.group_id].current === '红' ){
@@ -364,6 +390,7 @@ async function generate(e,tp1,tp2){
   }else{
     isAB = '红box'
   }
+  // 设置标记框
   if(tp1 && tp2){
     for(let i = 0;i < cols; i++){
       for(let j = 0;j < rows; j++){

@@ -158,13 +158,13 @@ export class Chess extends plugin {
       let B = metadata[e.group_id].players[players_nickname[1]]
 
       e.reply([`本群游戏开始\n`,
-      `${A}棋:${metadata[e.group_id].nickname[players_nickname[1]]}\n`,
-      `${B}棋:${metadata[e.group_id].nickname[players_nickname[0]]}\n`,
+      `${A}棋:${metadata[e.group_id].nickname[players_nickname[0]]}\n`,
+      `${B}棋:${metadata[e.group_id].nickname[players_nickname[1]]}\n`,
       `黑棋先手\n`,
       `其他成员发送“${prefix}加入国际象棋黑/白”加入队伍中`
       ])
       metadata[e.group_id].current = '黑'
-      newgame(e)
+      await newgame(e)
     }
     if(players >= 2 && emsg[0]){
       metadata[e.group_id].nickname[e.user_id] = e.sender.nickname
@@ -186,11 +186,11 @@ export class Chess extends plugin {
       e.reply(`你还没加入游戏，可发送”${prefix}加入国际象棋黑/白“加入队伍中`)
       return false
     }
-    console.log("player：" + team)
+    // console.log("player：" + team)
 
     // 备份当前布局
-    repent[e.group_id] = {}
-    repent[e.group_id] = metadata[e.group_id]
+    // repent[e.group_id] = {}
+    // repent[e.group_id] = metadata[e.group_id]
 
     // 对方组
     let isAB = '黑白'
@@ -218,7 +218,7 @@ export class Chess extends plugin {
     // console.log(tp1,tp2);
 
     // 判断移动是否正确
-    let iscorrect = await as.Audit(e,[letter1,num1,letter2,num2],tp1,tp2,team)
+    let iscorrect = await as.Audit(e,[letter1,num1,letter2,num2],tp1,tp2,team,metadata)
     // console.log(iscorrect)
     if(!iscorrect || iscorrect[0] !== true){
       e.reply(`移动不正确`)
@@ -237,7 +237,8 @@ export class Chess extends plugin {
         metadata[e.group_id].archive[tp2] = team
         metadata[e.group_id].current = isAB // 设置组
       }
-      await generate(e)
+      // 传入两个tp点
+      await generate(e,tp1,tp2)
       // 胜利提示
       if(iscorrect[1] === true){
         e.reply(`恭喜${team}队获得胜利`)
@@ -296,20 +297,38 @@ async function over(e) {
   metadata[e.group_id].players = {} // 参与游戏的玩家
   metadata[e.group_id].nickname = {} // 参与游戏的玩家
   metadata[e.group_id].current = {} // 当前可操作的玩家
-  metadata[e.group_id].repent = [] // 当前可操作的玩家
+  // metadata[e.group_id].repent = [] // 当前可操作的玩家
 }
 
 
 /**
  * 发送图片
  */
-async function generate(e){
+async function generate(e,tp1,tp2){
 
-  // 获取双方棋子标记
-  let biaoji = String(Object.values(metadata[e.group_id].archive))
-
-  // 获取地图
-  let data_map = String(Object.values(metadata[e.group_id].chessman))
+  let data_map = metadata[e.group_id].chessman // 拉取地图数据
+  let biaoji = String(Object.values(metadata[e.group_id].archive)) // 获取双方棋子标记
+  let ss = {} // 标记框
+  let isAB
+  if(metadata[e.group_id].current === '红' ){
+    isAB = '黑box'
+  }else{
+    isAB = '红box'
+  }
+  // 设置标记框
+  if(tp1 && tp2){
+    for(let i = 0;i < cols; i++){
+      for(let j = 0;j < rows; j++){
+        if(tp1 == `${i}-${j}` || tp2 == `${i}-${j}`){
+          ss[`${i}-${j}`] = isAB
+        }else{
+          ss[`${i}-${j}`] = '0'
+        }
+      }
+    }
+  }
+  data_map = String(Object.values(data_map)) // 格式化地图
+  ss = String(Object.values(ss)) // 格式化标记地图
 
   /**
    * map 地图
@@ -321,7 +340,8 @@ async function generate(e){
     archive:biaoji,
     ishelp:ishelp,
     prefix:prefix,
-    鸡鸡地址:cwd
+    鸡鸡地址:cwd,
+    ss:ss
   }
   let img = await puppeteer.screenshot("国际象棋", {
     ...data,
