@@ -310,10 +310,10 @@ async function generate(e,tp1,tp2){
   let biaoji = String(Object.values(metadata[e.group_id].archive)) // 获取双方棋子标记
   let ss = {} // 标记框
   let isAB
-  if(metadata[e.group_id].current === '红' ){
+  if(metadata[e.group_id].current === '白' ){
     isAB = '黑box'
   }else{
-    isAB = '红box'
+    isAB = '白box'
   }
   // 设置标记框
   if(tp1 && tp2){

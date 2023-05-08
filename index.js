@@ -4,13 +4,6 @@ if (!global.segment) {
   global.segment = (await import("oicq")).segment
 }
 
-if (Bot?.logger?.info) {
-  Bot.logger.info('-------  <・)))><<  -------')
-  Bot.logger.info(`咸鱼插件初始化~`)
-} else {
-  console.log(`咸鱼插件初始化~`)
-}
-
 const files = fs
   .readdirSync('./plugins/xianyu-plugin/apps')
   .filter((file) => file.endsWith('.js'))
@@ -35,3 +28,7 @@ for (let i in files) {
   apps[name] = ret[i].value[Object.keys(ret[i].value)[0]]
 }
 export { apps }
+
+logger.info(logger.green('-------  <・)))><<  -------'))
+logger.info(logger.green('咸鱼插件加载完成~~'))
+logger.info(logger.green('-------  >><(((・> -------'))

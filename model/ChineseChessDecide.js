@@ -15,14 +15,14 @@ export default class panduan {
   async Audit(e, emsg, tp1, tp2, team, metadata) {
 
     try {
-      console.log(emsg, tp1, tp2, team)
+      
       // 目的地是否为自己棋子
       if (metadata[e.group_id].archive[tp2] == team) return false
 
       // 获取选择的棋子信息
       let A = metadata[e.group_id].chessman[tp1]
-
-      console.log(A)
+      console.log(emsg, tp1, tp2, team,A)
+      // console.log(A)
 
       // 对方组
       let isAB = '黑红'
@@ -66,7 +66,7 @@ export default class panduan {
             `${y1 + i}-${x1}`,
           ]
           let ev = tps[tp]
-          console.log(tp)
+          // console.log(tp)
           // 此块存在
           if (metadata[e.group_id].chessman[ev]) {
             // 目的地判断
@@ -324,7 +324,7 @@ export default class panduan {
             }
           }
         }
-        console.log(p)
+        // console.log(p)
         // 判断越过的棋子
         if (p < 2) {
           if (p == 1 && metadata[e.group_id].chessman[tp2] !== '空') {
@@ -388,7 +388,7 @@ export default class panduan {
         if (metadata[e.group_id].players[e.user_id] === '黑') {
           num = 8 - num
         }
-      }else{
+      } else {
         num = msg.charAt(msg.length - 3)
       }
       // 第二个数字
@@ -398,11 +398,11 @@ export default class panduan {
         if (num2 >= 10) {
           num2 -= 10
         }
-      }else{
+      } else {
         num = msg.charAt(msg.length - 1)
       }
 
-      console.log('提取中文：',A, num, B, num2, C)
+      // console.log('提取中文：', A, num, B, num2, C)
       return await parse(e, A, num, B, num2, C, metadata)
     } else {
       return false
@@ -432,11 +432,11 @@ async function parse(e, A, num, B, num2, C, metadata) {
     }
   }
 
-  console.log(qizi)
+  // console.log(qizi)
 
   // 判断棋子是否超过两个
   if (qizi.length > 1) {
-    console.log('大于1');
+    // console.log('大于1');
     // 红棋顺序
     if (C == '前' && metadata[e.group_id].current === '红') {
       tp1 = qizi[0]
@@ -452,11 +452,12 @@ async function parse(e, A, num, B, num2, C, metadata) {
       tp1 = qizi[0]
     }
   } else {
-    console.log('不大于1');
+    // console.log('不大于1');
     tp1 = qizi[0]
   }
-  console.log(tp1)
+  // console.log(tp1)
 
+  // 当前棋子的具体位置
   let y1 = tp1.split('-')[0]
   let x1 = tp1.split('-')[1]
 
@@ -465,15 +466,15 @@ async function parse(e, A, num, B, num2, C, metadata) {
     // 红棋顺序
     if (metadata[e.group_id].current === '红' && tp1) {
 
-      // 进，y+num2,x不变
+      // 进
       if (B == '进') {
         tp2 = `${+y1 + num2 + 1}-${x1}`
       }
-      // 平，y不变 ，x=num2-1
+      // 平
       if (B == '平') {
         tp2 = `${y1}-${num2}`
       }
-      // 退，y-num2,x不变
+      // 退
       if (B == '退') {
         tp2 = `${+y1 - num2 + 1}-${x1}`
       }
@@ -482,22 +483,120 @@ async function parse(e, A, num, B, num2, C, metadata) {
     // 黑棋逆序
     if (metadata[e.group_id].current === '黑' && tp1) {
 
-      // 进，y+num2,x不变
+      // 进
       if (B == '进') {
         tp2 = `${+y1 - +num2 - 1}-${x1}`
       }
-      // 平，y不变 ，x=8-num2-1
+      // 平
       if (B == '平') {
         tp2 = `${y1}-${8 - num2}`
       }
-      // 退，y-num2,x不变
+      // 退
       if (B == '退') {
         tp2 = `${+y1 + +num2 + 1}-${x1}`
       }
     }
-  }
+  } else {
 
-  
+    // 其他棋子判定
+    // 将移动方向转为数字
+    // 定义出棋子可走的部分，分为进 平 退 三个部分
+    // 使用第二个数字判断是否有相符 取出这个坐标
+    // 收工
+
+    // 将移动方向转为数字
+    switch (B) {
+      case '进':
+        if (metadata[e.group_id].current === '黑') {
+          B = 2
+        } else {
+          B = 0
+        }
+        break;
+      case '平':
+        B = 1
+        break;
+      case '退':
+        if (metadata[e.group_id].current === '黑') {
+          B = 0
+        } else {
+          B = 2
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    // console.log('B的值' + B)
+
+    // 设置num2的值
+    if (metadata[e.group_id].current === '黑') {
+      num2 = 8 - num2
+    }
+
+    let tps = []
+
+    if (A == '馬') {
+      tps = [
+        [
+          `${+y1 + 2}-${+x1 - 1}`,
+          `${+y1 + 2}-${+x1 + 1}`,
+          `${+y1 + 1}-${+x1 - 2}`,
+          `${+y1 + 1}-${+x1 + 2}`,
+        ],
+        [],
+        [
+          `${+y1 - 1}-${+x1 - 2}`,
+          `${+y1 - 1}-${+x1 + 2}`,
+          `${+y1 - 2}-${+x1 - 1}`,
+          `${+y1 - 2}-${+x1 + 1}`,
+        ]
+      ]
+    }
+
+    if (A == '士') {
+      tps = [
+        [
+          
+          `${+y1 + 1}-${+x1 - 1}`,
+          `${+y1 + 1}-${+x1 + 1}`,
+        ],
+        [],
+        [
+          `${+y1 - 1}-${+x1 - 1}`,
+          `${+y1 - 1}-${+x1 + 1}`,
+        ]
+      ]
+    }
+
+    if (A == '象') {
+      tps = [
+        [
+          `${+y1 + 2}-${+x1 - 2}`,
+          `${+y1 + 2}-${+x1 + 2}`,
+        ],
+        [],
+        [
+          `${+y1 - 2}-${+x1 - 2}`,
+          `${+y1 - 2}-${+x1 + 2}`,
+        ]
+      ]
+    }
+    
+
+    for (let i = 0; i < tps[B].length; i++) {
+      let pos = tps[B][i];
+
+      let num = pos.split('-')[1]
+      // console.log('坐标' + pos, num, num2)
+      if (num == num2) {
+        // console.log('匹配')
+        tp2 = pos
+        break;
+      }
+    }
+  }
 
   let y2 = tp2.split('-')[0]
   let x2 = tp2.split('-')[1]
