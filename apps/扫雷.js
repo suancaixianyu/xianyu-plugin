@@ -4,6 +4,20 @@ import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 let cwd = `${process.cwd()}/plugins/xianyu-plugin/resources/html/`
 cwd = cwd.replace(/\\/g,'/')
 
+/**
+  * @param {*} mines 标记雷：{1-1：true}
+  * @param {*} isopen 标记翻开：{1-1：true}
+  * @param {*} archive 标记值：{1-1：1}
+  * @param {*} game 游戏是否正在运行
+  * @param {*} z 雷数量
+  * @param {*} rows 横
+  * @param {*} cols 竖
+  * @param {*} mun 左上角显示雷数量
+  * @param {*} data_map1 添加数字后的地图数据
+  * @param {*} mark 标记样式
+  * @param {*} player 游戏发起人
+  * @returns 
+ */
 var gamemap = {}
 
 /* gamemap中存储的数据

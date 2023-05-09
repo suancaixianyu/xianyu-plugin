@@ -29,10 +29,11 @@ export default class panduan {
       isAB = isAB.replace(new RegExp(team), '')
 
       // 重定义坐标
-      let x1 = +emsg[1]
-      let x2 = +emsg[3]
-      let y1 = +emsg[0]
-      let y2 = +emsg[2]
+      let x1 = parseInt(emsg[1]) || 0
+      let x2 = parseInt(emsg[3]) || 0
+      let y1 = parseInt(emsg[0]) || 0
+      let y2 = parseInt(emsg[2]) || 0
+      console.log('x:',x1,x2,y1,y2);
 
       // 胜利判断
       let isok = false
@@ -402,7 +403,7 @@ export default class panduan {
         num = msg.charAt(msg.length - 1)
       }
 
-      // console.log('提取中文：', A, num, B, num2, C)
+      console.log('提取中文：', A, num, B, num2, C)
       return await parse(e, A, num, B, num2, C, metadata)
     } else {
       return false
@@ -558,7 +559,6 @@ async function parse(e, A, num, B, num2, C, metadata) {
     if (A == '士') {
       tps = [
         [
-          
           `${+y1 + 1}-${+x1 - 1}`,
           `${+y1 + 1}-${+x1 + 1}`,
         ],
@@ -583,15 +583,13 @@ async function parse(e, A, num, B, num2, C, metadata) {
         ]
       ]
     }
-    
 
     for (let i = 0; i < tps[B].length; i++) {
       let pos = tps[B][i];
-
-      let num = pos.split('-')[1]
-      // console.log('坐标' + pos, num, num2)
-      if (num == num2) {
-        // console.log('匹配')
+      console.log(pos)
+      let num = parseInt(pos.split('-')[1])
+      if (num === num2) {
+        console.log('匹配',num,num2,B,i)
         tp2 = pos
         break;
       }
