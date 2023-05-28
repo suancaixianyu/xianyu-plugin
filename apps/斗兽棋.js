@@ -57,7 +57,7 @@ export class AnimalChess extends plugin {
           fnc: 'LaunchGame'
         },
         {
-          reg: `^(${prefix})?走.*$`,
+          reg: `^(${prefix})?移动.*$`,
           fnc: 'game'
         },
         {

@@ -167,6 +167,7 @@ export default class panduan {
 
       // 目的地为洞穴，目的地为对方棋子
       if (isok && id2 == '穴' && metadata[e.group_id].chessman[tp2].archive_home == isAB) {
+        console.log('获胜')
         return [true, true]
       } else if (isok) {
         return [true, false]
