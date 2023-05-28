@@ -178,7 +178,7 @@ export class Chess extends plugin {
    */
   async game(e) {
 
-    if(!metadata[e.group_id] || !metadata[e.group_id].game){e.reply(`国际象棋未开始，发送：“${prefix}国际象棋”发起游戏`);return false};
+    if(!metadata[e.group_id] || !metadata[e.group_id].game) return false
 
     // 判断玩家是否在游戏中
     let team = metadata[e.group_id].players[e.user_id]

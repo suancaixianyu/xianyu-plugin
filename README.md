@@ -42,6 +42,4 @@ git clone --depth=1 https://gitee.com/suancaixianyu/xianyu-plugin.git ./plugins/
 
 其他版本自行测试，如有报错可以提交一个`lssues`反馈
 
-其他js正在逐步添加至`xianyu-plugin`，有点忙，稍微等几天
-
 ~~也可以关注一下`xianyu-plugin`官网~~ [☛咸鱼插件](http://suancaixianyu.cn/xyjs/)

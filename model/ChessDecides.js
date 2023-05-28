@@ -166,7 +166,7 @@ export default class panduan{
               }else{
                 break
               }
-            }else{// 不是目的地
+            }else{// 不是目的地 并且中途出现了棋子
               if(metadata[e.group_id].chessman[ev] !== '空'){
                 break
               }

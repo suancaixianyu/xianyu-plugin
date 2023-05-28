@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>斗兽棋</title>
+</head>
+
+<body>
+  <div id="app1"></div>
+  <div id="app"></div>
+  <div id="box">
+
+    <div id="help" style="background-color: bisque;">
+      <h3 style="text-align: center; margin: auto;">斗兽棋帮助</h3>
+      <table>
+        <tbody>
+          <tr>
+            <th>指令</th>
+            <th>说明</th>
+            <th>示例</th>
+          </tr>
+          <tr>
+            <th>{{prefix}}发起/加入斗兽棋<br></td>
+            <td>发起游戏</td>
+            <td>{{prefix}}发起斗兽棋、{{prefix}}加入斗兽棋</td>
+          </tr>
+          <tr>
+            <th>{{prefix}}加入斗兽棋+黑/白<br></td>
+            <td>游戏中途加入队伍，加入队伍后可操作棋盘</td>
+            <td>{{prefix}}加入斗兽棋黑、{{prefix}}加入斗兽棋白</td>
+          </tr>
+          <tr>
+            <th>{{prefix}}移动</td>
+            <td>移动棋子，{{prefix}}移动+选择+目的地，示例中意思为将g4的棋子移动到e4的位置</td>
+            <td>{{prefix}}移动g4e4</td>
+          </tr>
+          <tr>
+            <th>{{prefix}}结束游戏</td>
+            <td>认输</td>
+            <td>{{prefix}}结束游戏</td>
+          </tr>
+        </tbody>
+        <colgroup>
+          <col>
+          <col>
+          <col>
+        </colgroup>
+      </table>
+    </div>
+
+  </div>
+  <div style="text-align: center;">Created by Yunzai-Bot & xianyu-plugin</div>
+  <style>
+    #box,
+    #app {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      background-size: cover;
+    }
+
+    #app1{
+      width: 742px;
+      height: 954px;
+      position: absolute;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      left: calc((100% - 106px * 7) / 2 + 5px);
+    }
+
+    .item {
+      width: 106px;
+      height: 106px;
+      border: none;
+      font-size: 20px;
+      color: #fff;
+    }
+
+
+    th {
+      text-align: center;
+      background-color: #fddbb3;
+    }
+
+    th,
+    td,
+    th,
+    #help {
+      border: 2px solid #B58863;
+      border-left-color: #fff;
+      border-top-color: #fff;
+      text-align: left;
+      padding: 8px;
+    }
+
+    /** 图标盒子 */
+    .lattice,
+    .map,
+    .archive {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100px;
+      height: 100px;
+      margin: 1px;
+      background-size: cover;
+      border-style: solid;
+      border-radius: 50%;
+      border-width: 5px;
+      font-size: 35px;
+    }
+
+    /** 标记 */
+    .archive {
+      margin: 0px;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      border-style: none;
+      border-radius: 0%;
+      border-width: 0px;
+    }
+
+    /** 图标 */
+    .latticebox {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 82px;
+      height: 82px;
+      border-style: solid;
+      border-width: 2px;
+      border-radius: 50%;
+    }
+
+    .latticebox p {
+      margin: 0;
+    }
+
+    /** 棋子颜色框 */
+    .latticebox.蓝 {
+      border-color: #47AAF6;
+    }
+
+    .latticebox.红 {
+      border-color: rgb(197, 1, 1);
+    }
+
+    .latticebox.空 {
+      border-color: #000;
+    }
+
+    .lattice.蓝 {
+      border: #66ccff;
+      background: -webkit-gradient(radial, 50 50, 36, 50 50, 50, from(#fff), to(#66ccff));
+    }
+
+    .lattice.红 {
+      border: #f00;
+      background: -webkit-gradient(radial, 50 50, 36, 50 50, 50, from(#fff), to(#f00));
+    }
+
+    .lattice.空 {
+      border: #000;
+      border-style: none;
+    }
+
+    /** 标记框图标 */
+    .r_box {
+      background-image: url('{{鸡鸡地址}}img/r_box.png');
+    }
+
+    .b_box {
+      background-image: url('{{鸡鸡地址}}img/b_box.png');
+    }
+
+    /** 空白背景 */
+    .map {
+      padding: 2px;
+      margin: 0px;
+      border-width: 1px;
+      border-radius: 0%;
+      background-color: #fff;
+      background-image: url('{{鸡鸡地址}}img/草地{{草地颜色}}.png');
+    }
+
+    /** 洞穴 陷阱 */
+    .穴,
+    .井 {
+      background-color: #ccc;
+    }
+
+    /** 小河背景 */
+    .河 {
+      background-image: url('{{鸡鸡地址}}img/水.gif');
+    }
+  </style>
+
+  <script>
+    let box = document.getElementById("box")
+    let app = document.getElementById("app")
+    let app1 = document.getElementById("app1")
+    let data_box = [] // 棋子数据
+    let items = []
+
+
+    let metadata = '{{metadata}}'
+    metadata = metadata.replace(/&#34;/g, '"')
+    metadata = JSON.parse(metadata)
+
+    let num = '{{num}}'
+    num = num.split(',')
+
+    let ishelp = '{{ishelp}}'
+
+    if (ishelp === 'off') {
+      document.getElementById("box").innerHTML = ""
+      for (let key in metadata) {
+        if (Object.hasOwnProperty.call(metadata, key)) {
+          let el = metadata[key]
+          // 特殊地形
+          if (['穴', '河', '井'].includes(el.id)) {
+            switch (el.id) {
+              case '穴':
+                if(el.name != '空'){
+                  data_box.push(`<div class="map"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
+
+                }else{
+                  data_box.push(`<div class="map"><div class="lattice 空"><div class="archive ${el.ss}"><div class="latticebox">洞穴</div></div></div></div>`)
+                }
+                break;
+              case '井':
+              if(el.name != '空'){
+                  data_box.push(`<div class="map"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
+                }else{
+                  data_box.push(`<div class="map"><div class="lattice 空"><div class="archive ${el.ss}"><div class="latticebox">陷阱</div></div></div></div>`)
+                }
+                break;
+              case '河':
+              if(el.name != '空'){
+                  data_box.push(`<div class="map 河"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
+                }else{
+                  data_box.push(`<div class="map 河"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"></div></div></div>`)
+                }
+                break;
+              default:
+                break;
+            }
+          } else {
+            // 普通地形
+            if (el.name == '空') {
+              data_box.push(`<div class="map"><div class="archive ${el.ss}"></div></div>`)
+            } else {
+              data_box.push(`<div class="map"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
+            }
+          }
+        }
+      }
+      for (let key in Object.keys(metadata)) {
+        items.push(`<div class="item">${num[key]}</div>`)
+      }
+      app.innerHTML = data_box.join('')
+      app1.innerHTML = items.join('')
+    } else {
+      document.getElementById("app").innerHTML = ""
+    }
+
+  </script>
+
+</body>
+
+</html>

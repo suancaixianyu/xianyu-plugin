@@ -295,7 +295,12 @@ export class ChineseChess extends plugin {
           /** 执行方法 */
           fnc: 'game'
         },
-
+        {
+          /** 命令正则匹配 */
+          reg: `^(${prefix})?象棋帮助$`,
+          /** 执行方法 */
+          fnc: 'help'
+        },
       ]
     })
   }
@@ -347,6 +352,18 @@ export class ChineseChess extends plugin {
   //     return false
   //   }
   // }
+
+  /**
+   * 帮助
+   */
+  async help(e) {
+    // 没有本群数据则创建
+    if (!metadata[e.group_id]) {
+      await over(e)
+    }
+    ishelp = 'open'
+    generate(e)
+  }
 
   /**
    * 设置指令前缀
@@ -432,7 +449,7 @@ export class ChineseChess extends plugin {
    */
   async game(e) {
 
-    if(!metadata[e.group_id] || !metadata[e.group_id].game){e.reply(`中国象棋未开始，发送：“${prefix}发起中国象棋”发起游戏`);return false};
+    if(!metadata[e.group_id] || !metadata[e.group_id].game) return false
     // await beifen(e)
     // 判断玩家是否在游戏中
     let team = metadata[e.group_id].players[e.user_id]
