@@ -12,7 +12,32 @@
   <div id="box">
 
     <div id="help" style="background-color: bisque;">
-      <h3 style="text-align: center; margin: auto;">斗兽棋帮助</h3>
+      <header>
+        <h1>斗兽棋帮助</h1>
+        <p>xianyu-plugin 斗兽棋</p>
+      </header>
+      <div class="container">
+        <section class="section">
+          <h2>游戏目标</h2>
+          <p>将己方任意棋子移至对方洞穴</p>
+        </section>
+        <section class="section">
+          <h2>走棋规则</h2>
+          <p>1. 所有动物一次走一格，前后左右都可以。</p>
+          <p>2. 鼠可以进入小河，跟在陆地行走一样</p>
+          <p>3. 狮、豹、虎 可以跳过小河，直接吃对面的棋子</p>
+        </section>
+        <section class="section">
+          <h2>吃棋规则</h2>
+          <p>1. 基本吃法：象〉狮〉虎〉豹〉狼〉狗〉猫〉鼠</p>
+          <p>2. 鼠能吃象，象不能吃鼠</p>
+          <p>3. 当一方棋子处于对方的陷阱处，任意棋子都可以吃该棋子</p>
+        </section>
+        <section class="section">
+          <h2>特殊：调试指令</h2>
+          <p>将‘移动‘替换为’瞬移‘，可将己方棋子移动至任意地方，可以跳过小河的棋子除外</p>
+        </section>
+      </div>
       <table>
         <tbody>
           <tr>
@@ -60,7 +85,7 @@
       background-size: cover;
     }
 
-    #app1{
+    #app1 {
       width: 742px;
       height: 954px;
       position: absolute;
@@ -225,24 +250,24 @@
           if (['穴', '河', '井'].includes(el.id)) {
             switch (el.id) {
               case '穴':
-                if(el.name != '空'){
+                if (el.name != '空') {
                   data_box.push(`<div class="map"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
 
-                }else{
+                } else {
                   data_box.push(`<div class="map"><div class="lattice 空"><div class="archive ${el.ss}"><div class="latticebox">洞穴</div></div></div></div>`)
                 }
                 break;
               case '井':
-              if(el.name != '空'){
+                if (el.name != '空') {
                   data_box.push(`<div class="map"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
-                }else{
+                } else {
                   data_box.push(`<div class="map"><div class="lattice 空"><div class="archive ${el.ss}"><div class="latticebox">陷阱</div></div></div></div>`)
                 }
                 break;
               case '河':
-              if(el.name != '空'){
+                if (el.name != '空') {
                   data_box.push(`<div class="map 河"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
-                }else{
+                } else {
                   data_box.push(`<div class="map 河"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"></div></div></div>`)
                 }
                 break;
