@@ -242,6 +242,10 @@ export class AnimalChess extends plugin {
 
     // 移动正确
     if (iscorrect[0]) {
+      if (metadata[e.group_id].chessman[tp1].archive != team) {
+        e.reply(`只能操作自己的棋子，你是${metadata[e.group_id].players[e.user_id].team}队`)
+        return
+      }
       // 清空原本位置，添加新的位置
       metadata[e.group_id].chessman[tp1].name = '空'
       metadata[e.group_id].chessman[tp2].name = target
@@ -256,12 +260,6 @@ export class AnimalChess extends plugin {
         e.reply(`恭喜${team}队获得胜利`)
         over(e)
       }
-    } else if (metadata[e.group_id].chessman[tp1].archive == '空') {
-      // 移动空气
-      e.reply('你不能操作棋盘中的空气：' + emsg[1] + emsg[2])
-    } else {
-      // 移动对方棋子
-      e.reply('你不能操作对方的棋子')
     }
   }
 }
@@ -287,29 +285,29 @@ async function newgame(e) {
       if (i >= 0 && i <= 2 && data_map1[i][j] != '空') {
 
         // 是陷阱和洞穴
-        if(data_map1[i][j] == '井' || data_map1[i][j] == '穴'){
+        if (data_map1[i][j] == '井' || data_map1[i][j] == '穴') {
 
           metadata[e.group_id].chessman[i + '-' + j].name = '空'
           metadata[e.group_id].chessman[i + '-' + j].id = data_map1[i][j]
           metadata[e.group_id].chessman[i + '-' + j].archive = '空'
           metadata[e.group_id].chessman[i + '-' + j].archive_home = '红'
-        }else{
+        } else {
           metadata[e.group_id].chessman[i + '-' + j].name = data_map1[i][j]
           metadata[e.group_id].chessman[i + '-' + j].id = '空'
           metadata[e.group_id].chessman[i + '-' + j].archive = '红'
           metadata[e.group_id].chessman[i + '-' + j].archive_home = '空'
         }
-        
+
       } else if (i >= 6 && i <= 8 && data_map1[i][j] != '空') {
 
         // 后排
         // 是陷阱和洞穴
-        if(data_map1[i][j] == '井' || data_map1[i][j] == '穴'){
+        if (data_map1[i][j] == '井' || data_map1[i][j] == '穴') {
           metadata[e.group_id].chessman[i + '-' + j].name = '空'
           metadata[e.group_id].chessman[i + '-' + j].id = data_map1[i][j]
           metadata[e.group_id].chessman[i + '-' + j].archive = '空'
-          metadata[e.group_id].chessman[i + '-' + j].archive_home = '蓝'
-        }else{
+          metadata[e.group_id].chessman[i + '-' + j].archive_home = '红'
+        } else {
           metadata[e.group_id].chessman[i + '-' + j].name = data_map1[i][j]
           metadata[e.group_id].chessman[i + '-' + j].id = '空'
           metadata[e.group_id].chessman[i + '-' + j].archive = '蓝'
@@ -394,7 +392,7 @@ async function generate(e, tp1, tp2) {
     草地颜色: 草地
   }
 
-  // console.log('截图：', data)
+  console.log('截图：', data)
 
   let img = await puppeteer.screenshot("斗兽棋", {
     ...data,
