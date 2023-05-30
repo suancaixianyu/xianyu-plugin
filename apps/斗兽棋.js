@@ -57,7 +57,7 @@ export class AnimalChess extends plugin {
           fnc: 'LaunchGame'
         },
         {
-          reg: `^(${prefix})?移动.*$`,
+          reg: `^(${prefix})?(移动|瞬移).*$`,
           fnc: 'game'
         },
         {
@@ -308,7 +308,7 @@ async function newgame(e) {
           metadata[e.group_id].chessman[i + '-' + j].name = '空'
           metadata[e.group_id].chessman[i + '-' + j].id = data_map1[i][j]
           metadata[e.group_id].chessman[i + '-' + j].archive = '空'
-          metadata[e.group_id].chessman[i + '-' + j].archive_home = '红'
+          metadata[e.group_id].chessman[i + '-' + j].archive_home = '蓝'
         }else{
           metadata[e.group_id].chessman[i + '-' + j].name = data_map1[i][j]
           metadata[e.group_id].chessman[i + '-' + j].id = '空'
@@ -394,7 +394,7 @@ async function generate(e, tp1, tp2) {
     草地颜色: 草地
   }
 
-  console.log('截图：', data)
+  // console.log('截图：', data)
 
   let img = await puppeteer.screenshot("斗兽棋", {
     ...data,

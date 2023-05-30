@@ -46,7 +46,7 @@ export default class panduan {
       // 目的地是否为自己棋子
       if (archive2 == team) return [false, false]
 
-      console.log(emsg, tp1, tp2, team, name1, name2)
+      // console.log(emsg, tp1, tp2, team, name1, name2)
       // console.log(A)
 
       /** 对方组 */
@@ -58,7 +58,7 @@ export default class panduan {
       let x2 = parseInt(emsg[3]) || 0
       let y1 = parseInt(emsg[0]) || 0
       let y2 = parseInt(emsg[2]) || 0
-      console.log('坐标值:', x1, x2, y1, y2);
+      // console.log('坐标值:', x1, x2, y1, y2);
 
       // 胜利判断
       let isok = false
@@ -164,7 +164,9 @@ export default class panduan {
         }
       }
 
+      if((/瞬移/).test(e.msg)) isok = true;
 
+      // console.log(isok,id2,metadata[e.group_id].chessman[tp2].archive_home,isAB)
       // 目的地为洞穴，目的地为对方棋子
       if (isok && id2 == '穴' && metadata[e.group_id].chessman[tp2].archive_home == isAB) {
         console.log('获胜')
@@ -173,7 +175,7 @@ export default class panduan {
         return [true, false]
       }
     } catch (error) {
-      console.log('报错', error)
+      console.log('遇到报错：', error)
       return [false, false]
     }
   }
