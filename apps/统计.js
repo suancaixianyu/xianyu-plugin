@@ -22,13 +22,13 @@ export class xianyu_tonji extends plugin {
           /** 执行方法 */
           fnc: "xianyu_tonji",
         },
-        // {
-        //   /** 命令正则匹配 */
-        //   reg: '^.*',
-        //   /** 执行方法 */
-        //   fnc: 'tonji',
-        //   log: false,
-        // },
+        {
+          /** 命令正则匹配 */
+          reg: '^.*',
+          /** 执行方法 */
+          fnc: 'tonji',
+          log: false,
+        },
         {
           reg: "^//(.*)",
           fnc: "jsrun",
