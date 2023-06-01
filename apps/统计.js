@@ -36,22 +36,12 @@ export class xianyu_tonji extends plugin {
   }
 
   async tonji(e) {
-    if (A || Bot[Bot.uin[0]].nickname == '标准输入') return false
-    let json = fs.readFileSync(File, 'utf8'); //打开文件
-    let data = JSON.parse(json)
-    let botname = data.name
-    console.log(Bot[Bot.uin[0]].nickname, Bot.uin)
-    let obj = await fetch(`http:suancaixianyu.cn/api/xyjs.php?uin=${Bot.uin}&nickname=${Bot[Bot.uin[0]].nickname}&bot=${botname}`)
-      .catch((err) => logger.error('咸鱼服务器连接错误', err))
-    obj = await obj.json()
-    if (obj.code == 200) {
-      logger.info('咸鱼服务器连接正常')
-    }
-    A = true
+    tj()
     return false
   }
 
   async xianyu_tonji(e) {
+    tj()
     let obj = await fetch('http:suancaixianyu.cn/api/tonji.php')
     obj = await obj.json()
 
@@ -72,4 +62,19 @@ export class xianyu_tonji extends plugin {
     }
     return false
   }
+}
+
+async function tj() {
+  if (A || Bot[Bot.uin[0]].nickname == '标准输入') return false
+  let json = fs.readFileSync(File, 'utf8'); //打开文件
+  let data = JSON.parse(json)
+  let botname = data.name
+  console.log(Bot[Bot.uin[0]].nickname, Bot.uin)
+  let obj = await fetch(`http:suancaixianyu.cn/api/xyjs.php?uin=${Bot.uin}&nickname=${Bot[Bot.uin[0]].nickname}&bot=${botname}`)
+    .catch((err) => logger.error('咸鱼服务器连接错误', err))
+  obj = await obj.json()
+  if (obj.code == 200) {
+    logger.info('咸鱼服务器连接正常')
+  }
+  A = true
 }
