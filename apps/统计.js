@@ -54,30 +54,32 @@ export class xianyu_tonji extends plugin {
   }
 
   async tonji(e) {
-    if (!e.isMaster) return false
+
     tj()
     return false
   }
 
   async xianyu_tonji(e) {
     tj()
-    let obj = await fetch("http:suancaixianyu.cn/api/tonji.php")
-    obj = await obj.json()
+    if (e.isMaster) {
+      let obj = await fetch("http:suancaixianyu.cn/api/tonji.php")
+      obj = await obj.json()
 
-    if (obj.code == 200) {
-      let result = []
+      if (obj.code == 200) {
+        let result = []
 
-      for (let key in obj.data) {
-        result.push(key + "：\n")
-        let users = obj.data[key]
-        for (let user in users) {
-          result.push(`${users[user].nickname} (${users[user].uin})\n`)
+        for (let key in obj.data) {
+          result.push(key + "：\n")
+          let users = obj.data[key]
+          for (let user in users) {
+            result.push(`${users[user].nickname} (${users[user].uin})\n`)
+          }
         }
+        console.log(result)
+        let num = result.length - Object.keys(obj.data).length
+        result.push("总用户数量：" + num)
+        e.reply(result)
       }
-      console.log(result)
-      let num = result.length - Object.keys(obj.data).length
-      result.push("总用户数量：" + num)
-      e.reply(result)
     }
     return false
   }
@@ -86,7 +88,7 @@ export class xianyu_tonji extends plugin {
 async function tj() {
 
   if (A) return false
-  let name,uin
+  let name, uin
   let json = fs.readFileSync(File, "utf8") //打开文件
   let data = JSON.parse(json)
   let botname = data.name // 机器人版本
@@ -109,7 +111,7 @@ async function tj() {
     name = Bot.nickname
     uin = Bot.uin
   }
-    
+
   console.log(name, uin)
   let obj = await fetch(
     `http:suancaixianyu.cn/api/xyjs.php?uin=${uin}&nickname=${name}&bot=${botname}`
