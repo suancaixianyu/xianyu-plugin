@@ -85,16 +85,10 @@ export class xianyu_tonji extends plugin {
 async function tj() {
 
   if (A) return false;
-  let name
+  let name,uin
   let json = fs.readFileSync(File, "utf8") //打开文件
   let data = JSON.parse(json)
   let botname = data.name // 机器人版本
-  let uin
-
-  if (botname == 'miao-yunzai') { // Miao崽
-    name = Bot.nickname
-    uin = Bot.uin
-  }
 
   if (botname == 'trss-yunzai') { // trss
     name = Bot[Bot.uin[0]].nickname
@@ -105,6 +99,14 @@ async function tj() {
       name = Bot[Bot.uin[0]].nickname
       uin = Bot.uin[0]
     }
+  }
+  // if (botname == 'miao-yunzai') { // Miao崽
+  //   name = Bot.nickname
+  //   uin = Bot.uin
+  // }
+  if (!name && !uin) {
+    name = Bot.nickname
+    uin = Bot.uin
   }
     
   console.log(name, uin);
