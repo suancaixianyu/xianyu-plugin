@@ -18,7 +18,7 @@ export class xianyu_tonji extends plugin {
       rule: [
         {
           /** 命令正则匹配 */
-          reg: "^#?(咸鱼|xianyu|xy)(插件)?(用户)?统计$",
+          reg: "^#?(咸鱼|xianyu|xy)(插件)?(用户)?统计(id)?$",
           /** 执行方法 */
           fnc: "xianyu_tonji",
         },
@@ -69,10 +69,14 @@ export class xianyu_tonji extends plugin {
         let result = []
 
         for (let key in obj.data) {
-          result.push(key + "：\n")
+          result.push('---' + key + '---：\n')
           let users = obj.data[key]
           for (let user in users) {
-            result.push(`${users[user].nickname} (${users[user].uin})\n`)
+            if ((/.*id$/).e.msg) {
+              result.push(`${users[user].nickname} (${users[user].uin})\n`)
+            } else {
+              result.push(`${users[user].nickname}\n`)
+            }
           }
         }
         console.log(result)
