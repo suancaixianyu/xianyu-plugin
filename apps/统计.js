@@ -86,7 +86,12 @@ export class xianyu_tonji extends plugin {
 }
 
 async function tj() {
-  if (A || Bot[Bot.uin[0]].nickname == '标准输入') return false
+  if (A) return false
+  let name = Bot[Bot.uin[0]].nickname
+  if (name == '标准输入') {
+    name = Bot[Bot.uin[1]].nickname
+  }
+
   let json = fs.readFileSync(File, 'utf8'); //打开文件
   let data = JSON.parse(json)
   let botname = data.name
