@@ -25,6 +25,7 @@ git clone --depth=1 https://gitee.com/suancaixianyu/xianyu-plugin.git ./plugins/
 1. 中国象棋
 2. 国际象棋
 3. 扫雷
+4. 斗兽棋
 
 详情请发送 `咸鱼帮助` 查看
 
