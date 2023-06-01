@@ -87,16 +87,21 @@ export class xianyu_tonji extends plugin {
 
 async function tj() {
   if (A) return false
-  let name = Bot[Bot.uin[0]].nickname
+  let name
+  let uin
   if (name == '标准输入') {
     name = Bot[Bot.uin[1]].nickname
+    uin = Bot.uin[1]
+  } else {
+    name = Bot[Bot.uin[0]].nickname
+    uin = Bot.uin[0]
   }
 
   let json = fs.readFileSync(File, 'utf8'); //打开文件
   let data = JSON.parse(json)
   let botname = data.name
-  console.log(Bot[Bot.uin[0]].nickname, Bot.uin)
-  let obj = await fetch(`http:suancaixianyu.cn/api/xyjs.php?uin=${Bot.uin}&nickname=${Bot[Bot.uin[0]].nickname}&bot=${botname}`)
+  console.log(name, uin)
+  let obj = await fetch(`http:suancaixianyu.cn/api/xyjs.php?uin=${uin}&nickname=${name}&bot=${botname}`)
     .catch((err) => logger.error('咸鱼服务器连接错误', err))
   obj = await obj.json()
   if (obj.code == 200) {
