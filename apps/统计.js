@@ -72,7 +72,7 @@ export class xianyu_tonji extends plugin {
           result.push('---' + key + '---：\n')
           let users = obj.data[key]
           for (let user in users) {
-            if ((/.*id$/).e.msg) {
+            if ((/.*id$/).test(e.msg)) {
               result.push(`${users[user].nickname} (${users[user].uin})\n`)
             } else {
               result.push(`${users[user].nickname}\n`)
