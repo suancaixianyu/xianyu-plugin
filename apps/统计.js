@@ -87,7 +87,7 @@ export class xianyu_tonji extends plugin {
 
 async function tj() {
   if (A) return false
-  let name
+  let name = Bot[Bot.uin[0]].nickname
   let uin
   if (name == '标准输入') {
     name = Bot[Bot.uin[1]].nickname
