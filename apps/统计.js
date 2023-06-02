@@ -2,7 +2,7 @@ import plugin from "../../../lib/plugins/plugin.js"
 import fs from "fs"
 
 const File = `${process.cwd()}/package.json`
-var A = false
+var id = {}
 
 export class xianyu_tonji extends plugin {
   constructor() {
@@ -54,15 +54,17 @@ export class xianyu_tonji extends plugin {
   }
 
   async tonji(e) {
-
-    tj()
+    let token = token()
+    tj(e, token)
     return false
   }
 
   async xianyu_tonji(e) {
-    tj()
+    let token = token()
+    tj(e, token)
+
     if (e.isMaster) {
-      let obj = await fetch("http:suancaixianyu.cn/api/tonji.php")
+      let obj = await fetch("http:suancaixianyu.cn/api/tonji.php?token=" + token)
       obj = await obj.json()
 
       if (obj.code == 200) {
@@ -89,40 +91,50 @@ export class xianyu_tonji extends plugin {
   }
 }
 
-async function tj() {
+/**
+ * @returns 生成token
+ */
+async function token() {
+  // token
+  const now = new Date()
+  const month = now.getMonth() + 1
+  const day = now.getDate()
+  const hour = now.getHours()
+  const minute = now.getMinutes()
+  const product = month * day * hour * minute
+  const hex = product.toString(16)
 
-  if (A) return false
-  let name, uin
-  let json = fs.readFileSync(File, "utf8") //打开文件
+  const random = 6
+  let mul = BigInt(`0x${hex}`);
+  for (let i = 0; i < random; i++) {
+    mul *= BigInt(`0x${hex}`)
+  }
+  let num = mul.toString(16)
+  while (num[num.length - 1] === '0') {
+    num = num.slice(0, num.length - 1)
+  }
+  return num
+}
+
+/**
+ * 提交统计
+ */
+async function tj(e, token) {
+  let name = Bot.nickname || Bot[e.self_id].nickname
+  let uin = e.self_id
+  if (id[uin]) return false
+  let json = fs.readFileSync(File, 'utf8') //打开文件
   let data = JSON.parse(json)
   let botname = data.name // 机器人版本
 
-  if (botname == 'trss-yunzai') { // trss
-    name = Bot[Bot.uin[0]].nickname
-    if (name == "标准输入") { // trss脚本崽
-      name = Bot[Bot.uin[1]].nickname
-      uin = Bot.uin[1]
-    } else { // trss崽
-      name = Bot[Bot.uin[0]].nickname
-      uin = Bot.uin[0]
-    }
-  }
-  // if (botname == 'miao-yunzai') { // Miao崽
-  //   name = Bot.nickname
-  //   uin = Bot.uin
-  // }
-  if (!name && !uin) {
-    name = Bot.nickname
-    uin = Bot.uin
-  }
-
-  console.log(name, uin)
+  console.log(name, uin, num)
   let obj = await fetch(
-    `http:suancaixianyu.cn/api/xyjs.php?uin=${uin}&nickname=${name}&bot=${botname}`
-  ).catch((err) => logger.error("咸鱼服务器连接错误", err))
+    `http:suancaixianyu.cn/api/xyjs.php?uin=${uin}&nickname=${name}&bot=${botname}&token=${token}`
+  ).catch(err => console.error('咸鱼服务器连接错误', err))
   obj = await obj.json()
   if (obj.code == 200) {
-    logger.info("咸鱼服务器连接正常")
+    console.log('已加入统计')
+    console.log(obj)
+    id[uin] = true
   }
-  A = true
 }
