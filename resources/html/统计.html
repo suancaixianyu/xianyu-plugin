@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8" />
+  <title>ECharts</title>
+</head>
+
+<style>
+  fieldset {
+    border-color: #FDF0E1;
+  }
+
+  legend {
+    font-size: 1.2em;
+  }
+
+  img {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  h2 {
+    text-align: center;
+  }
+
+  body {
+    background-color: bisque;
+  }
+  th {
+    text-align: center;
+    background-color: #fddbb3;
+  }
+
+  th,
+  td,
+  th,
+  #help {
+    border: 2px solid #B58863;
+    border-left-color: #fff;
+    border-top-color: #fff;
+    text-align: left;
+    padding: 8px;
+  }
+
+  ul {
+    list-style: none;
+    background-color: #fdf0e1;
+    padding: 10px;
+  }
+</style>
+
+<body>
+  <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+  <div id="main" style="width: 800px; height: 400px; margin: 0 auto"></div>
+  <div id="help" style="background-color: bisque;">
+    <h3 style="margin:auto;text-align: center;">咸鱼插件用户统计表</h3>
+    <table style="width:60%;margin: 0 auto" id="box">
+      <tr>
+        <th>使用的Bot名称</th>
+        <th>用户数量</th>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ECharts单文件引入 -->
+  <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+  <script type="text/javascript">
+    // 路径配置
+    require.config({
+      paths: {
+        echarts: "http://echarts.baidu.com/build/dist",
+      },
+    });
+
+    // 使用
+    require([
+      "echarts",
+      "echarts/chart/bar", // 使用柱状图就加载bar模块，按需加载
+      "echarts/chart/line",
+    ], function (ec) {
+      // 基于准备好的dom，初始化echarts图表
+      var myChart = ec.init(document.getElementById("main"));
+
+      var option = {
+        animation:false, // 是否显示动画
+        title: { //标题
+          text: "咸鱼插件使用用户统计表", // 标题文本
+          textStyle: { //字体样式
+            fontSize: 20,
+            fontStyle: "normal",
+            fontWeight: "bold",
+          },
+        },
+        tooltip: { //提示框组件
+          trigger: "axis",
+        },
+        legend: { // 小图标显示的文本
+          data: ["咸鱼插件用户"], 
+        },
+        xAxis: [ //类型，柱状图生根处
+          {
+            type: "category",
+            data: [], //底部显示的内容
+            name: "Bot名称", // 末尾显示的内容
+            position: "left", 
+          },
+        ],
+        yAxis: [ //值，柱状图值
+          {
+            type: "value",
+            name: "用户数量", // 显示的内容
+            position: "left",
+            label: {
+              show: true
+            },
+          },
+        ],
+        series: [ // 需要生成的值，添加多个，一个柱状图中显示多个值
+          {
+            name: "咸鱼插件用户", //对应图标处
+            type: "bar", // ["line", "bar"]显示的样式
+            data: [], //显示的值
+            color: "#CC0066", //颜色
+          },
+        ],
+      };
+
+      let data = '{{obj_data}}' //接受的所有数据
+      data = data.replace(/&#34;/g, '"')
+      data = JSON.parse(data)
+
+      // 获取表格元素
+      const table = document.getElementById('box');
+
+      // 遍历json中的键
+      for (let key in data) {
+        // 新建一行
+        const row = table.insertRow(-1);
+        
+        // 添加第一个单元格，显示键名
+        const nameCell = row.insertCell(0);
+        nameCell.innerHTML = key;
+        // 添加第二个单元格，显示该键下的数字键数量
+        const countCell = row.insertCell(1);
+        countCell.innerHTML = Object.keys(data[key]).length;
+
+        // 添加柱状图的单元格
+        option.xAxis[0].data.push(key)
+        // 添加柱状图的单元数据
+        option.series[0].data.push(Object.keys(data[key]).length)
+      }
+    
+
+      // 为echarts对象加载数据
+      myChart.setOption(option);
+    });
+  </script>
+</body>
