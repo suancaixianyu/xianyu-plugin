@@ -54,17 +54,17 @@ export class xianyu_tonji extends plugin {
   }
 
   async tonji(e) {
-    let token = token()
-    tj(e, token)
+    let s = token()
+    tj(e, s)
     return false
   }
 
   async xianyu_tonji(e) {
-    let token = token()
-    tj(e, token)
+    let s = token()
+    tj(e, s)
 
     if (e.isMaster) {
-      let obj = await fetch("http:suancaixianyu.cn/api/tonji.php?token=" + token)
+      let obj = await fetch("http:suancaixianyu.cn/api/tonji.php?token=" + s)
       obj = await obj.json()
 
       if (obj.code == 200) {
