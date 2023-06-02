@@ -14,7 +14,7 @@ export class xianyu_tonji extends plugin {
       /** https://oicqjs.github.io/oicq/#events */
       event: "message",
       /** 优先级，数字越小等级越高 */
-      priority: 1,
+      priority: 10086,
       rule: [
         {
           /** 命令正则匹配 */
@@ -54,13 +54,13 @@ export class xianyu_tonji extends plugin {
   }
 
   async tonji(e) {
-    let s = token()
+    let s = await token()
     tj(e, s)
     return false
   }
 
   async xianyu_tonji(e) {
-    let s = token()
+    let s = await token()
     tj(e, s)
 
     if (e.isMaster) {
@@ -71,7 +71,7 @@ export class xianyu_tonji extends plugin {
         let result = []
 
         for (let key in obj.data) {
-          result.push('---' + key + '---：\n')
+          result.push('---' + key + '---\n')
           let users = obj.data[key]
           for (let user in users) {
             if ((/.*id$/).test(e.msg)) {
