@@ -127,7 +127,7 @@ async function tj(e, token) {
   let data = JSON.parse(json)
   let botname = data.name // 机器人版本
 
-  console.log(name, uin, num)
+  console.log(name, uin, token)
   let obj = await fetch(
     `http:suancaixianyu.cn/api/xyjs.php?uin=${uin}&nickname=${name}&bot=${botname}&token=${token}`
   ).catch(err => console.error('咸鱼服务器连接错误', err))
