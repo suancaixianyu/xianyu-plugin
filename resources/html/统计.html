@@ -122,36 +122,46 @@
             color: "#CC0066", //颜色
           },
         ],
-      };
+      }
 
       let data = '{{obj_data}}' //接受的所有数据
       data = data.replace(/&#34;/g, '"')
       data = JSON.parse(data)
 
       // 获取表格元素
-      const table = document.getElementById('box');
+      let table = document.getElementById('box')
+      let A = 0
 
       // 遍历json中的键
       for (let key in data) {
         // 新建一行
-        const row = table.insertRow(-1);
-        
+        let row = table.insertRow(-1)
         // 添加第一个单元格，显示键名
-        const nameCell = row.insertCell(0);
+        let nameCell = row.insertCell(0)
         nameCell.innerHTML = key;
         // 添加第二个单元格，显示该键下的数字键数量
-        const countCell = row.insertCell(1);
-        countCell.innerHTML = Object.keys(data[key]).length;
+        let countCell = row.insertCell(1)
+        countCell.innerHTML = Object.keys(data[key]).length
 
         // 添加柱状图的单元格
         option.xAxis[0].data.push(key)
         // 添加柱状图的单元数据
         option.series[0].data.push(Object.keys(data[key]).length)
+        // 添加总用户数量
+        A = A + Object.keys(data[key]).length
       }
-    
+
+      // 新建一行
+      let row = table.insertRow(-1)
+      // 添加第一个单元格，显示键名
+      let nameCell = row.insertCell(0)
+      nameCell.innerHTML = '总用户数量'
+      // 添加第二个单元格，显示该键下的数字键数量
+      let countCell = row.insertCell(1)
+      countCell.innerHTML = A
 
       // 为echarts对象加载数据
-      myChart.setOption(option);
+      myChart.setOption(option)
     });
   </script>
 </body>
