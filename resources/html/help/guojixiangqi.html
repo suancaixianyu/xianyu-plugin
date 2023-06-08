@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>国际象棋</title>
+</head>
+
+<body>
+  <div id="box">
+
+    <div id="help" style="background-color: bisque;">
+      <h3 style="text-align: center; margin: auto;">国际象棋帮助</h3>
+      <table>
+        <tbody>
+          <tr>
+            <th>指令</th>
+            <th>说明</th>
+            <th>示例</th>
+          </tr>
+          <tr>
+            <th>发起/加入国际象棋<br></td>
+            <td>发起游戏</td>
+            <td>发起国际象棋、#加入国际象棋</td>
+          </tr>
+          <tr>
+            <th>加入国际象棋+黑/白<br></td>
+            <td>游戏中途加入队伍，加入队伍后可操作棋盘</td>
+            <td>加入国际象棋黑、#加入国际象棋白</td>
+          </tr>
+          <tr>
+            <th>移动</td>
+            <td>移动棋子，#移动+选择+目的地，示例中意思为将g4的棋子移动到e4的位置</td>
+            <td>移动g4e4</td>
+          </tr>
+          <tr>
+            <th>结束游戏</td>
+            <td>认输</td>
+            <td>结束游戏</td>
+          </tr>
+        </tbody>
+        <colgroup>
+          <col>
+          <col>
+          <col>
+        </colgroup>
+      </table>
+    </div>
+
+  </div>
+  <div style="text-align: center;">Created by Yunzai-Bot & xianyu-plugin</div>
+  <style>
+    body {
+      background-color: bisque;
+    }
+
+    #app {
+      display: flex;
+    }
+
+    #box {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      background-image: url('{{_res}}img/国际象棋背景.svg');
+      background-size: cover;
+    }
+
+    #box .lattice {
+      width: 96px;
+      height: 96px;
+      margin: 1px;
+      background-size: cover;
+    }
+
+    th {
+      text-align: center;
+      background-color: #fddbb3;
+    }
+
+    th,
+    td,
+    th,
+    #help {
+      border: 2px solid #B58863;
+      border-left-color: #fff;
+      border-top-color: #fff;
+      text-align: left;
+      padding: 8px;
+    }
+
+    .latticebox {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+    }
+
+    .b {
+      background-image: url('{{_res}}img/b_box.svg');
+    }
+
+    .w {
+      background-image: url('{{_res}}img/w_box.svg');
+    }
+  </style>
+
+</body>
+
+</html>

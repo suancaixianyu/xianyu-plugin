@@ -9,72 +9,6 @@
 <body>
   <div id="app1"></div>
   <div id="app"></div>
-  <div id="box">
-
-    <div id="help" style="background-color: bisque;">
-      <header>
-        <h1>斗兽棋帮助</h1>
-        <p>xianyu-plugin 斗兽棋</p>
-      </header>
-      <div class="container">
-        <section class="section">
-          <h2>游戏目标</h2>
-          <p>将己方任意棋子移至对方洞穴</p>
-        </section>
-        <section class="section">
-          <h2>走棋规则</h2>
-          <p>1. 所有动物一次走一格，前后左右都可以。</p>
-          <p>2. 鼠可以进入小河，跟在陆地行走一样</p>
-          <p>3. 狮、豹、虎 可以跳过小河，直接吃对面的棋子</p>
-        </section>
-        <section class="section">
-          <h2>吃棋规则</h2>
-          <p>1. 基本吃法：象〉狮〉虎〉豹〉狼〉狗〉猫〉鼠</p>
-          <p>2. 鼠能吃象，象不能吃鼠</p>
-          <p>3. 当一方棋子处于对方的陷阱处，任意棋子都可以吃该棋子</p>
-        </section>
-        <section class="section">
-          <h2>特殊：调试指令</h2>
-          <p>将‘移动‘替换为’瞬移‘，可将己方棋子移动至任意地方，可以跳过小河的棋子除外</p>
-        </section>
-      </div>
-      <table>
-        <tbody>
-          <tr>
-            <th>指令</th>
-            <th>说明</th>
-            <th>示例</th>
-          </tr>
-          <tr>
-            <th>{{prefix}}发起/加入斗兽棋<br></td>
-            <td>发起游戏</td>
-            <td>{{prefix}}发起斗兽棋、{{prefix}}加入斗兽棋</td>
-          </tr>
-          <tr>
-            <th>{{prefix}}加入斗兽棋+黑/白<br></td>
-            <td>游戏中途加入队伍，加入队伍后可操作棋盘</td>
-            <td>{{prefix}}加入斗兽棋黑、{{prefix}}加入斗兽棋白</td>
-          </tr>
-          <tr>
-            <th>{{prefix}}移动</td>
-            <td>移动棋子，{{prefix}}移动+选择+目的地，示例中意思为将g4的棋子移动到e4的位置</td>
-            <td>{{prefix}}移动g4e4</td>
-          </tr>
-          <tr>
-            <th>{{prefix}}结束游戏</td>
-            <td>认输</td>
-            <td>{{prefix}}结束游戏</td>
-          </tr>
-        </tbody>
-        <colgroup>
-          <col>
-          <col>
-          <col>
-        </colgroup>
-      </table>
-    </div>
-
-  </div>
   <div style="text-align: center;">Created by Yunzai-Bot & xianyu-plugin</div>
   <style>
     body {
@@ -234,11 +168,11 @@
 
     /** 标记框图标 */
     .r_box {
-      background-image: url('{{鸡鸡地址}}img/r_box.png');
+      background-image: url('{{_res}}img/r_box.png');
     }
 
     .b_box {
-      background-image: url('{{鸡鸡地址}}img/b_box.png');
+      background-image: url('{{_res}}img/b_box.png');
     }
 
     /** 空白背景 */
@@ -248,7 +182,7 @@
       border-width: 1px;
       border-radius: 0%;
       background-color: #fff;
-      background-image: url('{{鸡鸡地址}}img/草地{{草地颜色}}.png');
+      background-image: url('{{_res}}img/草地{{草地颜色}}.png');
     }
 
     /** 洞穴 陷阱 */
@@ -259,12 +193,11 @@
 
     /** 小河背景 */
     .河 {
-      background-image: url('{{鸡鸡地址}}img/水.gif');
+      background-image: url('{{_res}}img/水.gif');
     }
   </style>
 
   <script>
-    let box = document.getElementById("box")
     let app = document.getElementById("app")
     let app1 = document.getElementById("app1")
     let data_box = [] // 棋子数据
@@ -278,59 +211,52 @@
     let num = '{{num}}'
     num = num.split(',')
 
-    let ishelp = '{{ishelp}}'
+    for (let key in metadata) {
+      if (Object.hasOwnProperty.call(metadata, key)) {
+        let el = metadata[key]
+        // 特殊地形
+        if (['穴', '河', '井'].includes(el.id)) {
+          switch (el.id) {
+            case '穴':
+              if (el.name != '空') {
+                data_box.push(`<div class="map"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
 
-    if (ishelp === 'off') {
-      document.getElementById("box").innerHTML = ""
-      for (let key in metadata) {
-        if (Object.hasOwnProperty.call(metadata, key)) {
-          let el = metadata[key]
-          // 特殊地形
-          if (['穴', '河', '井'].includes(el.id)) {
-            switch (el.id) {
-              case '穴':
-                if (el.name != '空') {
-                  data_box.push(`<div class="map"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
-
-                } else {
-                  data_box.push(`<div class="map"><div class="lattice 空"><div class="archive ${el.ss}"><div class="latticebox">洞穴</div></div></div></div>`)
-                }
-                break;
-              case '井':
-                if (el.name != '空') {
-                  data_box.push(`<div class="map"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
-                } else {
-                  data_box.push(`<div class="map"><div class="lattice 空"><div class="archive ${el.ss}"><div class="latticebox">陷阱</div></div></div></div>`)
-                }
-                break;
-              case '河':
-                if (el.name != '空') {
-                  data_box.push(`<div class="map 河"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
-                } else {
-                  data_box.push(`<div class="map 河"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"></div></div></div>`)
-                }
-                break;
-              default:
-                break;
-            }
+              } else {
+                data_box.push(`<div class="map"><div class="lattice 空"><div class="archive ${el.ss}"><div class="latticebox">洞穴</div></div></div></div>`)
+              }
+              break;
+            case '井':
+              if (el.name != '空') {
+                data_box.push(`<div class="map"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
+              } else {
+                data_box.push(`<div class="map"><div class="lattice 空"><div class="archive ${el.ss}"><div class="latticebox">陷阱</div></div></div></div>`)
+              }
+              break;
+            case '河':
+              if (el.name != '空') {
+                data_box.push(`<div class="map 河"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
+              } else {
+                data_box.push(`<div class="map 河"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"></div></div></div>`)
+              }
+              break;
+            default:
+              break;
+          }
+        } else {
+          // 普通地形
+          if (el.name == '空') {
+            data_box.push(`<div class="map"><div class="archive ${el.ss}"></div></div>`)
           } else {
-            // 普通地形
-            if (el.name == '空') {
-              data_box.push(`<div class="map"><div class="archive ${el.ss}"></div></div>`)
-            } else {
-              data_box.push(`<div class="map"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
-            }
+            data_box.push(`<div class="map"><div class="lattice ${el.archive}"><div class="archive ${el.ss}"><div class="latticebox ${el.archive}">${el.name}</div></div></div></div>`)
           }
         }
       }
-      for (let key in Object.keys(metadata)) {
-        items.push(`<div class="item">${num[key]}</div>`)
-      }
-      app.innerHTML = data_box.join('')
-      app1.innerHTML = items.join('')
-    } else {
-      document.getElementById("app").innerHTML = ""
     }
+    for (let key in Object.keys(metadata)) {
+      items.push(`<div class="item">${num[key]}</div>`)
+    }
+    app.innerHTML = data_box.join('')
+    app1.innerHTML = items.join('')
 
   </script>
 

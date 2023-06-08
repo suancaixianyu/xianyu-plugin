@@ -25,10 +25,10 @@ for (let i in files) {
     logger.error(ret[i].reason)
     continue
   }
-  apps[name] = ret[i].value[Object.keys(ret[i].value)[0]]
+  let plugin = ret[i].value[Object.keys(ret[i].value)[0]]
+  apps[name] = plugin
 }
 export { apps }
-
 logger.info(logger.green('-------  <・)))><<  -------'))
 logger.info(logger.green('咸鱼插件加载完成~~'))
 logger.info(logger.green('-------  >><(((・> -------'))

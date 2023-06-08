@@ -1,20 +1,12 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
-import panduan from "../model/AnimalChessDecision.js";
-
+import { ABC, cwd, initialmap } from '../config/metadata.js'
+import panduan from "../lib/AnimalChessDecision.js";
 const as = new panduan()
 
-// html地址
-let cwd = `${process.cwd()}/plugins/xianyu-plugin/resources/html/`
-cwd = cwd.replace(/\\/g, '/')
-
-// 不建议修改
-var ishelp = 'off' // 帮助菜单
-const ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' // 显示的字母
-
-// 可以修改的内容
-var prefix = '#' // 设置指令前缀，可在此设置默认前缀
-var 草地 = Math.floor(Math.random() * 5) + 1 // 以随机数开头
+var meadow = Math.floor(Math.random() * 5) + 1 // 以随机数开头
+/** 初始地图布局 */
+let map = initialmap.animalchess
 
 /**
  * 游戏过程中所有数据
@@ -28,18 +20,7 @@ var metadata = {}
 // 上一步的地图存档
 var repent = {}
 
-// 初始地图，不可修改
-var map = [
-  '狮', '空', '井', '穴', '井', '空', '虎',
-  '空', '狗', '空', '井', '空', '猫', '空',
-  '鼠', '空', '豹', '空', '狼', '空', '象',
-  '空', '河', '河', '空', '河', '河', '空',
-  '空', '河', '河', '空', '河', '河', '空',
-  '空', '河', '河', '空', '河', '河', '空',
-  '象', '空', '狼', '空', '豹', '空', '鼠',
-  '空', '猫', '空', '井', '空', '狗', '空',
-  '虎', '空', '井', '穴', '井', '空', '狮',
-]
+
 const rows = 7 // 棋盘宽度
 const cols = 9 // 棋盘高度
 
@@ -53,52 +34,33 @@ export class AnimalChess extends plugin {
       priority: 5000,
       rule: [
         {
-          reg: `^(${prefix})?(发起|加入)(斗兽|动物)棋?[红蓝]?$`,
+          reg: /^(\/|#)?(发起|加入)(斗兽|动物)棋?[红蓝]?$/,
           fnc: 'LaunchGame'
         },
         {
-          reg: `^(${prefix})?(移动|瞬移).*$`,
+          reg: /^(\/|#)?(移动|瞬移).*$/,
           fnc: 'game'
         },
         {
           /** 命令正则匹配 */
-          reg: `^(${prefix})?斗兽棋帮助$`,
+          reg: /^(\/|#)?斗兽棋帮助$/,
           /** 执行方法 */
           fnc: 'help'
         },
         {
           /** 命令正则匹配 */
-          reg: `^(${prefix})?结束斗兽棋$`,
+          reg: /^(\/|#)?结束斗兽棋$/,
           /** 执行方法 */
           fnc: 'ov'
         },
         {
           /** 命令正则匹配 */
-          reg: `^(${prefix})?斗兽棋设置指令前缀.*$`,
-          /** 执行方法 */
-          fnc: 'SetupPrefix'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: `^图片$`,
+          reg: /^图片$/,
           /** 执行方法 */
           fnc: 'tupian'
         },
       ]
     })
-  }
-
-  /**
-   * 设置指令前缀
-   */
-  async SetupPrefix(e) {
-    if (!e.isMaster) {
-      e.reply("主人不允许你设置哦！")
-      return
-    }
-    newgame(e)
-    prefix = e.msg.replace(/^(${prefix})?斗兽棋设置指令前缀 ?/, '')
-    e.reply(`已添加前缀"${prefix}"\n不带前缀内容可移除前缀`)
   }
 
   /**
@@ -133,7 +95,6 @@ export class AnimalChess extends plugin {
     if (!metadata[e.group_id]) {
       await over(e)
     }
-    ishelp = 'open'
     generate(e)
   }
 
@@ -160,7 +121,7 @@ export class AnimalChess extends plugin {
       metadata[e.group_id].players[e.user_id] = {}
       metadata[e.group_id].players[e.user_id].name = e.sender.nickname
       metadata[e.group_id].players[e.user_id].team = '红'
-      e.reply(`玩家${e.sender.nickname}发起了斗兽棋，其他成员可发送“${prefix}加入斗兽棋”加入游戏`)
+      e.reply(`玩家${e.sender.nickname}发起了斗兽棋，其他成员可发送“加入斗兽棋”加入游戏`)
     }
     if (players == 1) {
       metadata[e.group_id].players[e.user_id] = {}
@@ -175,8 +136,8 @@ export class AnimalChess extends plugin {
       e.reply([`本群游戏开始\n`,
         `${A.team}棋:${A.name}\n`,
         `${B.team}棋:${B.name}\n`,
-        `黑棋先手\n`,
-        `其他成员发送“${prefix}加入斗兽棋(红/蓝)”加入队伍中`
+        `${A.team}棋先手\n`,
+        `其他成员发送“加入斗兽棋(红/蓝)”加入队伍中`
       ])
       metadata[e.group_id].current = '红'
       await newgame(e)
@@ -199,7 +160,7 @@ export class AnimalChess extends plugin {
     /** 自己组颜色 */
     let team = metadata[e.group_id].players[e.user_id].team
     if (!team) {
-      e.reply(`你还没加入游戏，可发送”${prefix}加入斗兽棋(红/蓝)”加入队伍中`)
+      e.reply(`你还没加入游戏，可发送”加入斗兽棋(红/蓝)”加入队伍中`)
       return false
     }
     // console.log("player：" + team)
@@ -384,12 +345,10 @@ async function generate(e, tp1, tp2) {
   let data = {
     quality: 100,
     tplFile: './plugins/xianyu-plugin/resources/html/斗兽棋.html',
-    ishelp: ishelp,
-    prefix: prefix,
-    鸡鸡地址: cwd,
+    _res: cwd,
     metadata: JSON.stringify(data_map),
     num: metadata[e.group_id].num,
-    草地颜色: 草地
+    草地颜色: meadow
   }
 
   console.log('截图：', data)
@@ -398,11 +357,10 @@ async function generate(e, tp1, tp2) {
     ...data,
   })
   e.reply(img)
-  ishelp = 'off'
-  // 草地颜色
-  if (草地 < 3) {
-    草地 += 1
+  // meadow颜色
+  if (meadow < 3) {
+    meadow += 1
   } else {
-    草地 = 1
+    meadow = 1
   }
 }
