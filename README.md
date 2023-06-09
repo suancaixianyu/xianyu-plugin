@@ -1,4 +1,4 @@
-# xianyu-Plugin 说明
+# xianyu-plugin 说明
 
 `xianyu-plugin`是一个`Yunzai-Bot`的小游戏插件，目前提供一些棋类游戏，例如`象棋` `国际象棋` 以及 `扫雷`
 
@@ -27,7 +27,7 @@ git clone --depth=1 https://gitee.com/suancaixianyu/xianyu-plugin.git ./plugins/
 3. 扫雷
 4. 斗兽棋
 
-详情请发送 `咸鱼帮助` 查看
+详情请发送 `#咸鱼帮助` 查看
 
 ---
 
@@ -37,10 +37,16 @@ git clone --depth=1 https://gitee.com/suancaixianyu/xianyu-plugin.git ./plugins/
 
 目前我试过的有这两个版本
 
-* [Yunzai-V3](https://gitee.com/Le-niao/Yunzai-Bot) ：Yunzai V3 - 乐神原版，使用oicq，可能会遇到登录问题
+* [Yunzai-V3](https://gitee.com/Le-niao/Yunzai-Bot) ：Yunzai V3 - 乐神原版，使用oicq
 
-* [Yunzai-V3](https://gitee.com/TimeRainStarSky/Yunzai) ：Yunzai V3 - 时雨版，使用gocq，可以直接在频道使用
+* [Yunzai-V3](https://gitee.com/TimeRainStarSky/Yunzai) ：Yunzai V3 - 时雨版，使用gocq，可以直接在频道使用，本插件同时兼容该版本下的频道
+
+* [Yunzai-V3](https://gitee.com/yoimiya-kokomi/Miao-Yunzai) ：Yunzai V3 - 喵版，使用icqq
 
 其他版本自行测试，如有报错可以提交一个`lssues`反馈
 
 ~~也可以关注一下`xianyu-plugin`官网~~ [☛咸鱼插件](http://suancaixianyu.cn/xyjs/)
+
+## Alemon版本
+
+* [Alemon-Bot](https://gitee.com/ningmengchongshui/alemon-bot) ：Alemon-Bot，基于qq频道官方SDK开发的Bot框架，本插件有对应的Alemon版本：[☛xianyu-plugin-alemon](https://gitee.com/suancaixianyu/xianyu-plugin-alemon)
