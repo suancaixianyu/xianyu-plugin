@@ -122,7 +122,6 @@ export default class xianyu_tonji extends plugin {
               frequency: JSON.stringify(frequency),
               _res: cwd
             }
-            console.log(data)
             let img = await puppeteer.screenshot("统计", {
               ...data,
             })
