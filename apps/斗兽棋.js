@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
-import { ABC, cwd, initialmap } from '../config/metadata.js'
+import { ABC, cwd, initialmap } from '../config/global/metadata.js'
+import { command } from '../config/global/command.js'
 import panduan from "../lib/AnimalChessDecision.js";
 const as = new panduan()
 
@@ -33,32 +34,7 @@ export class AnimalChess extends plugin {
       event: 'message',
       priority: 5000,
       rule: [
-        {
-          reg: /^(\/|#)?(发起|加入)(斗兽|动物)棋?[红蓝]?$/,
-          fnc: 'LaunchGame'
-        },
-        {
-          reg: /^(\/|#)?(移动|瞬移).*$/,
-          fnc: 'game'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(\/|#)?斗兽棋帮助$/,
-          /** 执行方法 */
-          fnc: 'help'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(\/|#)?结束斗兽棋$/,
-          /** 执行方法 */
-          fnc: 'ov'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^图片$/,
-          /** 执行方法 */
-          fnc: 'tupian'
-        },
+        ...command.animalchess
       ]
     })
   }

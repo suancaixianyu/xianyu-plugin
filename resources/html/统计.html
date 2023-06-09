@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <head>
   <meta charset="utf-8" />
   <title>ECharts</title>
@@ -25,6 +26,7 @@
   body {
     background-color: bisque;
   }
+
   th {
     text-align: center;
     background-color: #fddbb3;
@@ -51,6 +53,7 @@
 <body>
   <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
   <div id="main" style="width: 800px; height: 400px; margin: 0 auto"></div>
+  <div id="main1" style="width: 800px; height: 400px; margin: 0 auto"></div>
   <div id="help" style="background-color: bisque;">
     <h3 style="margin:auto;text-align: center;">咸鱼插件用户统计表</h3>
     <table style="width:60%;margin: 0 auto" id="box">
@@ -59,11 +62,72 @@
         <th>用户数量</th>
       </tr>
     </table>
+    <table style="width:60%;margin: 0 auto" id="box1">
+      <tr>
+        <th>指令名称</th>
+        <th>累计使用次数</th>
+      </tr>
+    </table>
   </div>
 
   <!-- ECharts单文件引入 -->
   <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
   <script type="text/javascript">
+
+    let tonji = {
+      "minesweeper": "扫雷",
+      "animalchess": "斗兽棋",
+      "update": "更新",
+      "chess": "国际象棋",
+      "tonji": "统计",
+      "chinesechess": "中国象棋",
+      "help": "帮助"
+    }
+    let option = {
+        animation: false, // 是否显示动画
+        xAxis: {
+          type: "category",
+          data: [], //底部显示的内容
+          name: "Bot名称", // 末尾显示的内容
+        },
+        yAxis: {
+          type: 'value',
+          name: "用户数量",
+        },
+        series: [
+          {
+            data: [],
+            type: 'bar',
+          }
+        ]
+      };
+
+      let option1 = {
+          animation: false, // 是否显示动画
+          xAxis: {
+            type: "category",
+            data: [], //底部显示的内容
+            name: "功能名称", // 末尾显示的内容
+          },
+          yAxis: {
+            type: 'value',
+            name: "累计使用次数",
+          },
+          series: [
+            {
+              data: [],
+              type: 'bar',
+            }
+          ]
+        };
+      let frequency = '{{frequency}}' //指令使用次数
+        frequency = frequency.replace(/&#34;/g, '"')
+        frequency = JSON.parse(frequency)
+
+        let usernumber = '{{usernumber}}' // 用户数量
+        usernumber = usernumber.replace(/&#34;/g, '"')
+        usernumber = JSON.parse(usernumber)
+
     // 路径配置
     require.config({
       paths: {
@@ -78,62 +142,18 @@
       "echarts/chart/line",
     ], function (ec) {
       // 基于准备好的dom，初始化echarts图表
-      var myChart = ec.init(document.getElementById("main"));
+      let myChart = ec.init(document.getElementById("main"));
+      let myChart1 = ec.init(document.getElementById("main1"));
 
-      var option = {
-        animation:false, // 是否显示动画
-        title: { //标题
-          text: "咸鱼插件使用用户统计表", // 标题文本
-          textStyle: { //字体样式
-            fontSize: 20,
-            fontStyle: "normal",
-            fontWeight: "bold",
-          },
-        },
-        tooltip: { //提示框组件
-          trigger: "axis",
-        },
-        legend: { // 小图标显示的文本
-          data: ["咸鱼插件用户"], 
-        },
-        xAxis: [ //类型，柱状图生根处
-          {
-            type: "category",
-            data: [], //底部显示的内容
-            name: "Bot名称", // 末尾显示的内容
-            position: "left", 
-          },
-        ],
-        yAxis: [ //值，柱状图值
-          {
-            type: "value",
-            name: "用户数量", // 显示的内容
-            position: "left",
-            label: {
-              show: true
-            },
-          },
-        ],
-        series: [ // 需要生成的值，添加多个，一个柱状图中显示多个值
-          {
-            name: "咸鱼插件用户", //对应图标处
-            type: "bar", // ["line", "bar"]显示的样式
-            data: [], //显示的值
-            color: "#CC0066", //颜色
-          },
-        ],
-      }
-
-      let data = '{{obj_data}}' //接受的所有数据
-      data = data.replace(/&#34;/g, '"')
-      data = JSON.parse(data)
 
       // 获取表格元素
       let table = document.getElementById('box')
+      let table1 = document.getElementById('box1')
       let A = 0
+      let A1 = 0
 
       // 遍历json中的键
-      for (let key in data) {
+      for (let key in usernumber) {
         // 新建一行
         let row = table.insertRow(-1)
         // 添加第一个单元格，显示键名
@@ -141,15 +161,41 @@
         nameCell.innerHTML = key;
         // 添加第二个单元格，显示该键下的数字键数量
         let countCell = row.insertCell(1)
-        countCell.innerHTML = Object.keys(data[key]).length
+        countCell.innerHTML = usernumber[key]
 
         // 添加柱状图的单元格
-        option.xAxis[0].data.push(key)
+        option.xAxis.data.push(key)
+
         // 添加柱状图的单元数据
-        option.series[0].data.push(Object.keys(data[key]).length)
+        option.series[0].data.push(usernumber[key])
+
+
         // 添加总用户数量
-        A = A + Object.keys(data[key]).length
+        A = A + usernumber[key]
       }
+
+      // 添加第二个表
+      for (let key in frequency) {
+        // 新建一行
+        let row1 = table1.insertRow(-1)
+        // 添加第一个单元格，显示键名
+        let nameCell1 = row1.insertCell(0)
+        nameCell1.innerHTML = tonji[key]
+        // 添加第二个单元格，显示该键下的数字键数量
+        let countCell1 = row1.insertCell(1)
+        countCell1.innerHTML = frequency[key]
+
+        // 添加总用户数量
+        A1 = A1 + frequency[key]
+      }
+
+      // 添加插件
+      let plugin = Object.keys(frequency)
+      plugin.forEach((ev,index) => {
+        plugin[index] = tonji[ev]
+      })
+      option1.xAxis.data = [...plugin]
+      option1.series[0].data = [...Object.values(frequency)]
 
       // 新建一行
       let row = table.insertRow(-1)
@@ -160,8 +206,18 @@
       let countCell = row.insertCell(1)
       countCell.innerHTML = A
 
+      // 新建一行
+      let row1 = table1.insertRow(-1)
+      // 添加第一个单元格，显示键名
+      let nameCell1 = row1.insertCell(0)
+      nameCell1.innerHTML = '总使用次数'
+      // 添加第二个单元格，显示该键下的数字键数量
+      let countCell1 = row1.insertCell(1)
+      countCell1.innerHTML = A1
+
       // 为echarts对象加载数据
       myChart.setOption(option)
+      myChart1.setOption(option1)
     });
   </script>
 </body>

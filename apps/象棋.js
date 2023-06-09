@@ -1,7 +1,8 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import puppeteer from "../../../lib/puppeteer/puppeteer.js";
-import panduan from "../lib/ChineseChessDecide.js";
-import { cwd, initialmap, chinesechessname, chineseNumbers } from '../config/metadata.js'
+import puppeteer from "../../../lib/puppeteer/puppeteer.js"
+import panduan from "../lib/ChineseChessDecide.js"
+import { command } from '../config/global/command.js'
+import { cwd, initialmap } from '../config/global/metadata.js'
 const as = new panduan()
 
 // 全局变量
@@ -34,42 +35,7 @@ export class ChineseChess extends plugin {
       event: 'message',
       priority: 5000,
       rule: [
-        {
-          /** 命令正则匹配 */
-          reg: /^(\/|#)?(发起|加入)中国象棋[黑红]?$/,
-          /** 执行方法 */
-          fnc: 'LaunchGame'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(\/|#)?结束中国象棋$/,
-          /** 执行方法 */
-          fnc: 'ov'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(\/|#)?移子.*$/,
-          /** 执行方法 */
-          fnc: 'game'
-        },
-        // {
-        //   /** 命令正则匹配 */
-        //   reg: /^(同意)?悔棋$/,
-        //   /** 执行方法 */
-        //   fnc: 'repenting'
-        // },
-        {
-          /** 单字棋子匹配 */
-          reg: `^(\/|#)?(${chinesechessname.join('|')}).*[一二三四五六七八九十壹贰叁肆伍陆柒捌玖拾]$`,
-          /** 执行方法 */
-          fnc: 'game'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(\/|#)?象棋帮助$/,
-          /** 执行方法 */
-          fnc: 'help'
-        },
+        ...command.chinesechess
       ]
     })
   }

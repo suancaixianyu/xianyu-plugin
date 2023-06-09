@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import { execSync } from 'child_process'
 import { update } from '../../other/update.js'
+import { command } from '../config/global/command.js'
 const Plugin_Name = 'xianyu-plugin'
 
 
@@ -16,13 +17,7 @@ export class xianyu_update extends plugin {
 			/** 优先级，数字越小等级越高 */
 			priority: 2000,
 			rule: [
-				{
-					/** 命令正则匹配 */
-					reg: '^#?(咸鱼|xianyu|xy)(插件)?(强制)?更新$',
-					/** 执行方法 */
-					fnc: 'update_plugin',
-					permission: 'master'
-				},
+				...command.update
 			]
 		});
 	}

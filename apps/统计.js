@@ -1,5 +1,7 @@
 import plugin from "../../../lib/plugins/plugin.js"
-import puppeteer from "../../../lib/puppeteer/puppeteer.js";
+import puppeteer from "../../../lib/puppeteer/puppeteer.js"
+import { command } from '../config/global/command.js'
+import { cwd } from '../config/global/metadata.js'
 import fs from "fs"
 
 const File = `${process.cwd()}/package.json`
@@ -15,25 +17,9 @@ export default class xianyu_tonji extends plugin {
       /** https://oicqjs.github.io/oicq/#events */
       event: "message",
       /** 优先级，数字越小等级越高 */
-      priority: 10086,
+      priority: 1000,
       rule: [
-        {
-          /** 命令正则匹配 */
-          reg: "^#?(咸鱼|xianyu|xy)(插件)?(用户)?统计(id)?$",
-          /** 执行方法 */
-          fnc: "xianyu_tonji",
-        },
-        {
-          /** 命令正则匹配 */
-          reg: '^.*',
-          /** 执行方法 */
-          fnc: 'tonji',
-          log: false,
-        },
-        {
-          reg: "^//(.*)",
-          fnc: "jsrun",
-        },
+        ...command.tonji
       ],
     })
   }
@@ -58,9 +44,12 @@ export default class xianyu_tonji extends plugin {
    * 提交统计
    */
   async tonji(e) {
-    let s = await token()
-    tj(e, s)
-    return false
+    let pluginname = await matchCommand(e.msg)
+    if (pluginname) {
+      let s = await token()
+      tj(e, s, pluginname)
+      return false
+    }
   }
 
   /**
@@ -68,41 +57,72 @@ export default class xianyu_tonji extends plugin {
    */
   async xianyu_tonji(e) {
     let s = await token()
-    tj(e, s)
+    let pluginname = await matchCommand(e.msg)
+    tj(e, s, pluginname)
 
     if (e.isMaster) {
       let obj = await fetch("http:suancaixianyu.cn/api/tonji.php?token=" + s)
       obj = await obj.json()
 
-      if (obj.code == 200) {
-        let result = []
+      let result = []
+      let frequency = {}
+      let usernumber = {}
 
+      if (obj.code == 200) {
+
+        // 遍历bot
         for (let key in obj.data) {
           result.push('---' + key + '---\n')
-          let users = obj.data[key]
+          let users = obj.data[key].uin
+          usernumber[key] = []
+
+          // 遍历用户id
           for (let user in users) {
-            if ((/.*id$/).test(e.msg)) {
-              result.push(`${users[user].nickname} (${users[user].uin})\n`)
+            result.push(`${users[user].nickname} (${users[user].uin})\n`)
+            usernumber[key].push(users[user].nickname)
+          }
+
+          // uin用完了可以删掉了
+          delete obj.data[key].uin
+        }
+
+        // 添加插件
+        for (let key in obj.data) {
+          let obj2 = obj.data[key];
+          for (let subKey in obj2) {
+            if (frequency[subKey] == undefined) {
+              frequency[subKey] = obj2[subKey];
             } else {
-              result.push(`${users[user].nickname}\n`)
+              frequency[subKey] += obj2[subKey];
             }
           }
         }
+
         let num = result.length - Object.keys(obj.data).length
         result.push("总用户数量：" + num)
 
         if ((/.*id$/).test(e.msg)) {
-          e.reply(result)
+          // 显示id需要主人权限
+          if (e.isMaster) {
+            e.reply(result)
+          }
         } else {
           if (obj.message == '获取失败') {
             e.reply(result)
           } else {
+            // 将用户转为数字 
+            for (let key in usernumber) {
+              usernumber[key] = usernumber[key].length
+            }
             // 发送图片
             let data = {
               quality: 100,
               tplFile: `./plugins/xianyu-plugin/resources/html/统计.html`,
-              obj_data: JSON.stringify(obj.data),
+              usernumber: JSON.stringify(usernumber),
+              frequency: JSON.stringify(frequency),
+              _res: cwd
             }
+            console.log(data)
             let img = await puppeteer.screenshot("统计", {
               ...data,
             })
@@ -113,6 +133,28 @@ export default class xianyu_tonji extends plugin {
     }
     return false
   }
+}
+
+/**
+ * 
+ * @param {*} msg 消息内容
+ * @returns 获取指令对应的js
+ */
+async function matchCommand(msg) {
+  if (msg) {
+    let keys = Object.keys(command)
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i]
+      let arr = command[key]
+      for (let j = 0; j < arr.length; j++) {
+        let reg = new RegExp(arr[j].reg)
+        if (msg.match(reg) && arr[j].fnc != 'tonji') {
+          return key
+        }
+      }
+    }
+  }
+  return null
 }
 
 /**
@@ -143,24 +185,23 @@ async function token() {
 /**
  * 提交统计
  */
-async function tj(e, token) {
-  let name = Bot.nickname || Bot[e.self_id].nickname
-  let uin = e.self_id
-  if (id[uin]) return false
+async function tj(e, token, pluginname = '') {
+  let uin = e.self_id // 机器人账号
+  let name = Bot.nickname || Bot[uin].nickname // 机器人昵称
+
   let json = fs.readFileSync(File, 'utf8') //打开文件
   let data = JSON.parse(json)
   let botname = data.name // 机器人版本
 
-  console.log(name, uin, token)
+
   let obj = await fetch(
-    `http:suancaixianyu.cn/api/xyjs.php?uin=${uin}&nickname=${name}&bot=${botname}&token=${token}`
+    `http:suancaixianyu.cn/api/xyjs.php?uin=${uin}&nickname=${name}&bot=${botname}&token=${token}&plugin=${pluginname}`
   ).catch(err => console.error('咸鱼服务器连接错误', err))
   obj = await obj.json()
   if (obj.code == 200) {
-    console.log('已加入统计')
-    console.log(obj)
-    id[uin] = true
-  } else {
-    console.log('验证码错误，一分钟后重试')
+    if (!id[uin]) {
+      console.log('感谢您使用本插件', name, uin, token)
+      id[uin] = true
+    }
   }
 }

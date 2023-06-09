@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from "../../../lib/puppeteer/puppeteer.js"
-import { cwd, initialmap } from '../config/metadata.js'
+import { cwd, initialmap } from '../config/global/metadata.js'
+import { command } from '../config/global/command.js'
 import panduan from "../lib/ChessDecides.js"
 const as = new panduan()
 
@@ -32,30 +33,7 @@ export class Chess extends plugin {
       event: 'message',
       priority: 5000,
       rule: [
-        {
-          /** 命令正则匹配 */
-          reg: /^(\/|#)?(发起|加入)国际象棋[黑白]?$/,
-          /** 执行方法 */
-          fnc: 'LaunchGame'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(\/|#)?移动.*$/,
-          /** 执行方法 */
-          fnc: 'game'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(\/|#)?国际象棋帮助$/,
-          /** 执行方法 */
-          fnc: 'help'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(\/|#)?结束国际象棋$/,
-          /** 执行方法 */
-          fnc: 'ov'
-        },
+        ...command.chess
       ]
     })
   }

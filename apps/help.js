@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import puppeteer from "../../../lib/puppeteer/puppeteer.js";
-import { cwd } from '../config/metadata.js'
+import puppeteer from "../../../lib/puppeteer/puppeteer.js"
+import { cwd } from '../config/global/metadata.js'
+import { command } from '../config/global/command.js'
 
 export class xianyuhelp extends plugin {
   constructor() {
@@ -10,26 +11,7 @@ export class xianyuhelp extends plugin {
       event: 'message',
       priority: 5000,
       rule: [
-        {
-          reg: /^(#|\/)?(咸鱼|xianyu|xy)(插件)?(帮助|help)/i,
-          fnc: 'help'
-        },
-        {
-          reg: /^(#|\/)?(排雷|扫雷)(帮助|help)/i,
-          fnc: 'saolei'
-        },
-        {
-          reg: /^(#|\/)?(中国)?象棋(帮助|help)/i,
-          fnc: 'xiangqi'
-        },
-        {
-          reg: /^(#|\/)?国际象棋(帮助|help)/i,
-          fnc: 'guojixiangqi'
-        },
-        {
-          reg: /^(#|\/)?斗兽棋(帮助|help)/i,
-          fnc: 'doushouqi'
-        },
+        ...command.help
       ]
     })
   }

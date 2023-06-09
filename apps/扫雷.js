@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from "../../../lib/puppeteer/puppeteer.js"
-import { gamemap, ABC, cwd } from '../config/metadata.js'
+import { gamemap, ABC, cwd } from '../config/global/metadata.js'
+import { command } from '../config/global/command.js'
 
 
 export class newcomer extends plugin {
@@ -11,48 +12,7 @@ export class newcomer extends plugin {
       event: 'message',
       priority: 5000,
       rule: [
-        {
-          /** 命令正则匹配 */
-          reg: /^(#|\/)?(扫雷|排雷)$/,
-          /** 执行方法 */
-          fnc: 'goo'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(#|\/)?(扫雷|排雷)难度(:|：)?.+$/,
-          /** 执行方法 */
-          fnc: 'goolevel'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(#|\/)?结束(扫雷|排雷)$/,
-          /** 执行方法 */
-          fnc: 'ov'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(#|\/)?翻开([a-zA-Z]{1}[0-9]+){1,}$/,
-          /** 执行方法 */
-          fnc: 'gooplye'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(#|\/)?标记([a-zA-Z]{1}[0-9]+){1,}$/,
-          /** 执行方法 */
-          fnc: 'mark'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(#|\/)?取消标记([a-zA-Z]{1}[0-9]+){1,}$/,
-          /** 执行方法 */
-          fnc: 'removemark'
-        },
-        {
-          /** 命令正则匹配 */
-          reg: /^(#|\/)?(扫雷|排雷)设置(地?雷数量?|布局|初始化).*$/,
-          /** 执行方法 */
-          fnc: 'setup'
-        },
+        ...command.minesweeper
       ]
     })
   }
