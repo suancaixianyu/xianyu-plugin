@@ -27,7 +27,7 @@ export default class xianyu_tonji extends plugin {
   async jsrun(e) {
     try {
       const content = e.message[0].text.split("//")[1]
-      if (content === undefined) return
+      if (content === undefined) return false
 
       let res = await eval(content)
       const dataType = (res && res.data) || res
@@ -50,6 +50,7 @@ export default class xianyu_tonji extends plugin {
       tj(e, s, pluginname)
       return false
     }
+    return false
   }
 
   /**
