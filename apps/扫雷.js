@@ -1,8 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import puppeteer from "../../../lib/puppeteer/puppeteer.js"
+import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { gamemap, ABC, cwd } from '../config/global/metadata.js'
 import { command } from '../config/global/command.js'
-
 
 export class newcomer extends plugin {
   constructor() {
@@ -11,9 +10,7 @@ export class newcomer extends plugin {
       dsc: '扫雷小游戏',
       event: 'message',
       priority: 5000,
-      rule: [
-        ...command.minesweeper
-      ]
+      rule: [...command.minesweeper],
     })
   }
   /**
@@ -21,8 +18,8 @@ export class newcomer extends plugin {
    */
   async setup(e) {
     newgame(e)
-    if (gamemap[e.group_id].game) return e.reply(`游戏已开始，不可设置`);
-    if ((/^(#|\/)?(扫雷|排雷)设置地?雷数量?\d+/).test(e.msg)) {
+    if (gamemap[e.group_id].game) return e.reply(`游戏已开始，不可设置`)
+    if (/^(#|\/)?(扫雷|排雷)设置地?雷数量?\d+/.test(e.msg)) {
       let emsg = e.msg.match(/\d+/)
       if (+emsg[0] > +gamemap[e.group_id].rows * +gamemap[e.group_id].cols) {
         return e.reply('设置超出阈值')
@@ -32,7 +29,7 @@ export class newcomer extends plugin {
       e.reply('修改雷数：' + gamemap[e.group_id].z)
     }
 
-    if ((/^(#|\/)?(扫雷|排雷)设置布局 ?\d+\s\d+(\s\d+)?/).test(e.msg)) {
+    if (/^(#|\/)?(扫雷|排雷)设置布局 ?\d+\s\d+(\s\d+)?/.test(e.msg)) {
       let emsg = e.msg.match(/\d+/g)
       if (+emsg[0] > 100 || +emsg[1] > 26 || +emsg[2] > +emsg[0] * +emsg[1]) return e.reply('设置超出阈值')
       gamemap[e.group_id].z = emsg[2] ? emsg[2] : 10
@@ -40,13 +37,12 @@ export class newcomer extends plugin {
       gamemap[e.group_id].cols = emsg[1] ? emsg[1] : 9
       e.reply(`修改游戏布局\n宽：${gamemap[e.group_id].rows}\n高：${gamemap[e.group_id].cols}\n雷：${gamemap[e.group_id].z}`)
     }
-    if ((/^(#|\/)?(扫雷|排雷)设置布局初始化/).test(e.msg)) {
+    if (/^(#|\/)?(扫雷|排雷)设置布局初始化/.test(e.msg)) {
       gamemap[e.group_id].z = 10
       gamemap[e.group_id].rows = 9
       gamemap[e.group_id].cols = 9
       e.reply(`初始化布局\n宽：${gamemap[e.group_id].rows}\n高：${gamemap[e.group_id].cols}\n雷：${gamemap[e.group_id].z}`)
     }
-
   }
 
   /**
@@ -63,7 +59,7 @@ export class newcomer extends plugin {
    */
   async goolevel(e) {
     newgame(e)
-    if (gamemap[e.group_id].game) return e.reply(`游戏已开始，发送“扫雷”查看当前状态`);
+    if (gamemap[e.group_id].game) return e.reply(`游戏已开始，发送“扫雷”查看当前状态`)
     let emsg = e.msg.replace(new RegExp(`^(#|\/)?(扫雷|排雷)难度(:|：)?`), '')
     switch (emsg) {
       case '简单':
@@ -71,24 +67,24 @@ export class newcomer extends plugin {
         gamemap[e.group_id].rows = 10
         gamemap[e.group_id].rows = 9
         gamemap[e.group_id].cols = 9
-        break;
+        break
       case '困难':
         gamemap[e.group_id].z = 60
         gamemap[e.group_id].rows = 26
         gamemap[e.group_id].cols = 26
-        break;
+        break
       case '中等':
         gamemap[e.group_id].z = 40
         gamemap[e.group_id].rows = 16
         gamemap[e.group_id].cols = 16
-        break;
+        break
       case '普通':
         gamemap[e.group_id].z = 40
         gamemap[e.group_id].rows = 16
         gamemap[e.group_id].cols = 16
-        break;
+        break
       default:
-        break;
+        break
     }
     gamemap[e.group_id].command = e.msg
     goo(e)
@@ -112,10 +108,10 @@ export class newcomer extends plugin {
    */
   async removemark(e) {
     newgame(e)
-    if (!gamemap[e.group_id].game) return false;
+    if (!gamemap[e.group_id].game) return false
     gamemap[e.group_id].command = e.msg
 
-    e.msg.match(/([a-zA-Z])(\d+)/g).forEach(v => {
+    e.msg.match(/([a-zA-Z])(\d+)/g).forEach((v) => {
       // 获取坐标
       // emsg[1]为字母，emsg[2]为数字
       let emsg = v.match(/([a-zA-Z])(\d+)/)
@@ -132,10 +128,8 @@ export class newcomer extends plugin {
           gamemap[e.group_id].mark[axis] = false
         }
       }
-
     })
     generate(e)
-
   }
 
   /**
@@ -143,10 +137,10 @@ export class newcomer extends plugin {
    */
   async mark(e) {
     newgame(e)
-    if (!gamemap[e.group_id].game) return false;
+    if (!gamemap[e.group_id].game) return false
     gamemap[e.group_id].command = e.msg
 
-    e.msg.match(/([a-zA-Z])(\d+)/g).forEach(v => {
+    e.msg.match(/([a-zA-Z])(\d+)/g).forEach((v) => {
       // 获取坐标
       // emsg[1]为字母，emsg[2]为数字
       let emsg = v.match(/([a-zA-Z])(\d+)/)
@@ -160,13 +154,11 @@ export class newcomer extends plugin {
         // 判断坐标是否显示
         if (!gamemap[e.group_id].isopen[axis]) {
           gamemap[e.group_id].mark[axis] = true
-          console.log('标记了：' + axis, emsg[1] + emsg[2], gamemap[e.group_id].mark[axis]);
+          console.log('标记了：' + axis, emsg[1] + emsg[2], gamemap[e.group_id].mark[axis])
         }
       }
-
     })
     generate(e)
-
   }
 
   /**
@@ -174,7 +166,7 @@ export class newcomer extends plugin {
    */
   async gooplye(e) {
     newgame(e)
-    if (!gamemap[e.group_id].game) return false;
+    if (!gamemap[e.group_id].game) return false
     gamemap[e.group_id].command = e.msg
 
     /**
@@ -188,16 +180,15 @@ export class newcomer extends plugin {
     let outcome = ''
     let kk = 0
 
-
     // 获取坐标
     // emsg[1]为字母，emsg[2]为数字
-    e.msg.match(/([a-zA-Z])(\d+)/g).forEach(v => {
+    e.msg.match(/([a-zA-Z])(\d+)/g).forEach((v) => {
       let emsg = v.match(/([a-zA-Z])(\d+)/)
       let letter = emsg[1].toUpperCase() // 大写字母
       letter = letter.charCodeAt(0) - 65 // 转数字 A = 0
 
       let axis = `${letter}-${emsg[2]}`
-      console.log('获取坐标' + axis);
+      console.log('获取坐标' + axis)
 
       // 判断坐标是否存在
       if (gamemap[e.group_id].archive[axis]) {
@@ -217,7 +208,7 @@ export class newcomer extends plugin {
         if (gamemap[e.group_id].archive[axis] === '0') {
           try {
             const loop = (indexs) => {
-              [
+              ;[
                 [+indexs[0] - 1, +indexs[1] - 1],
                 [+indexs[0] - 1, +indexs[1]],
                 [+indexs[0] - 1, +indexs[1] + 1],
@@ -225,8 +216,8 @@ export class newcomer extends plugin {
                 [+indexs[0], +indexs[1] + 1],
                 [+indexs[0] + 1, +indexs[1] - 1],
                 [+indexs[0] + 1, +indexs[1]],
-                [+indexs[0] + 1, +indexs[1] + 1]
-              ].forEach(subIndexs => {
+                [+indexs[0] + 1, +indexs[1] + 1],
+              ].forEach((subIndexs) => {
                 // console.log('subIndexs:',subIndexs);
                 let el = gamemap[e.group_id].archive[subIndexs.join('-')]
                 // console.log('el:',el);
@@ -235,13 +226,15 @@ export class newcomer extends plugin {
 
                   // 值为’-‘开始扩散
                   if (el === '0' && gamemap[e.group_id].isopen[subIndexs.join('-')] === false) {
-                    if (thisel !== true) { // 没被标记显示
+                    if (thisel !== true) {
+                      // 没被标记显示
                       gamemap[e.group_id].isopen[subIndexs.join('-')] = true
                       ++kk
                       loop(subIndexs)
                     }
                   } else {
-                    if (thisel !== true) { // 没被标记显示
+                    if (thisel !== true) {
+                      // 没被标记显示
                       gamemap[e.group_id].isopen[subIndexs.join('-')] = true
                     }
                   }
@@ -263,7 +256,7 @@ export class newcomer extends plugin {
       e.reply('踩雷，游戏结束')
     }
     // 判断胜利
-    if (+gamemap[e.group_id].rows * +gamemap[e.group_id].cols - Object.values(gamemap[e.group_id].isopen).filter(v => v).length == gamemap[e.group_id].z) {
+    if (+gamemap[e.group_id].rows * +gamemap[e.group_id].cols - Object.values(gamemap[e.group_id].isopen).filter((v) => v).length == gamemap[e.group_id].z) {
       e.reply('恭喜您成功了')
       gameover = true
     }
@@ -272,7 +265,6 @@ export class newcomer extends plugin {
       over(e)
     }
   }
-
 }
 
 // 以下为定义方法
@@ -282,7 +274,7 @@ export class newcomer extends plugin {
  */
 async function newgame(e) {
   if (!gamemap[e.group_id]) {
-    gamemap[e.group_id] = {};
+    gamemap[e.group_id] = {}
     gamemap[e.group_id].mines = {} // 标记雷：{1-1：true}
     gamemap[e.group_id].isopen = {} // 标记翻开：{1-1：true}
     gamemap[e.group_id].archive = {} // 标记值：{1-1：1}
@@ -298,19 +290,18 @@ async function newgame(e) {
   }
 }
 
-
 async function goo(e) {
   /**
    * 开始游戏
    * 生成随机地图
    * 生成各类坐标
-   * 
+   *
    * 输出
    * 标记雷：{1-1：true}
    * 标记翻开：{1-1：true}
    * 标记样式：{1-1：true}
    * 标记值：{1-1：1}
-   * 
+   *
    * 输出无误设置游戏状态
    * game = true
    */
@@ -319,18 +310,17 @@ async function goo(e) {
     e.reply('扫雷游戏已经开始')
     generate(e)
     return
-  };
+  }
 
   let data_map = [] // 雷数据
-
 
   // 生成x*y个字符，值为'-'，表示未翻开
   let numbers = Array.from({ length: +gamemap[e.group_id].rows * +gamemap[e.group_id].cols }, () => '0')
 
   // 随机替换z个数字为9，表示雷
-  let indexes = [];
+  let indexes = []
   while (indexes.length < gamemap[e.group_id].z) {
-    let index = Math.floor(Math.random() * +gamemap[e.group_id].rows * +gamemap[e.group_id].cols);
+    let index = Math.floor(Math.random() * +gamemap[e.group_id].rows * +gamemap[e.group_id].cols)
     if (!indexes.includes(index)) {
       indexes.push(index)
       numbers[index] = 9
@@ -340,7 +330,6 @@ async function goo(e) {
   for (let i = 0; i < numbers.length; i += +gamemap[e.group_id].rows) {
     data_map.push(numbers.slice(i, i + +gamemap[e.group_id].rows))
   }
-
 
   /**
    * 添加坐标，标记雷
@@ -365,11 +354,10 @@ async function goo(e) {
 
       // 设置显示的坐标
       gamemap[e.group_id].mun.push(ABC[i] + j)
-
     }
   }
   // 实际雷数量
-  console.log(Object.values(gamemap[e.group_id].mines).filter(v => v).length)
+  console.log(Object.values(gamemap[e.group_id].mines).filter((v) => v).length)
 
   for (let i = 0; i < gamemap[e.group_id].cols; i++) {
     for (let j = 0; j < gamemap[e.group_id].rows; j++) {
@@ -383,7 +371,7 @@ async function goo(e) {
         5: gamemap[e.group_id].mines[`${i + 1}-${j - 1}`],
         6: gamemap[e.group_id].mines[`${i + 1}-${j}`],
         7: gamemap[e.group_id].mines[`${i + 1}-${j + 1}`],
-      }).filter(v => v).length
+      }).filter((v) => v).length
       if (isMines) {
         gamemap[e.group_id].archive[i + '-' + j] = 9
         gamemap[e.group_id].data_map1.push(9)
@@ -412,7 +400,6 @@ async function over(e) {
   gamemap[e.group_id].data_map1 = [] // 添加数字后的地图数据
 }
 
-
 /**
  * 发送图片
  */
@@ -422,16 +409,14 @@ async function generate(e) {
   // console.log('值' , archive)
   // console.log('标记' ,isopen)
 
-
   /**
-     * 0：翻开空
-     * 1-8：雷数量
-     * 9：雷
-     * -：未翻开
-     * +：标记
-     * x：踩中的雷
-    */
-
+   * 0：翻开空
+   * 1-8：雷数量
+   * 9：雷
+   * -：未翻开
+   * +：标记
+   * x：踩中的雷
+   */
 
   let data_map = [] // 输出的地图
   let val = Object.values(gamemap[e.group_id].archive)
@@ -443,18 +428,27 @@ async function generate(e) {
   // console.log(gamemap[e.group_id].mark);
   // console.log(gamemap[e.group_id].isopen);
 
-  // 遍历翻开
-  Object.values(gamemap[e.group_id].isopen).forEach((el, index) => {
-    if (el) { // 显示翻开
+  let found = val.includes('x')
+  if (found) {
+    // 遍历翻开
+    val.forEach((el, index) => {
+      // 显示翻开
       data_map.push(val[index])
-    } else if (mark1[index]) {
-      a = a - 1
-      data_map.push('+')
-    } else {
-      data_map.push('-')
-    }
-  })
-
+    })
+  } else {
+    // 遍历翻开
+    Object.values(gamemap[e.group_id].isopen).forEach((el, index) => {
+      if (el) {
+        // 显示翻开
+        data_map.push(val[index])
+      } else if (mark1[index]) {
+        a = a - 1
+        data_map.push('+')
+      } else {
+        data_map.push('-')
+      }
+    })
+  }
   // 创建地图数组
   let map = String(data_map)
   // console.log(map);
@@ -485,10 +479,10 @@ async function generate(e) {
     c: 768,
     muns: gamemap[e.group_id].mun,
     command: gamemap[e.group_id].command,
-    _res: cwd
+    _res: cwd,
   }
 
-  let img = await puppeteer.screenshot("扫雷", {
+  let img = await puppeteer.screenshot('扫雷', {
     ...data,
   })
   e.reply(img)

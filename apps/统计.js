@@ -1,4 +1,5 @@
 import plugin from "../../../lib/plugins/plugin.js"
+import loader from "../../../lib/plugins/loader.js";
 import puppeteer from "../../../lib/puppeteer/puppeteer.js"
 import { command } from '../config/global/command.js'
 import { cwd } from '../config/global/metadata.js'
@@ -25,18 +26,30 @@ export default class xianyu_tonji extends plugin {
   }
 
   async jsrun(e) {
-    try {
-      const content = e.message[0].text.split("//")[1]
-      if (content === undefined) return false
+    if (e.is_mastrt) {
+      try {
+        const timeout = 5000 // 设置代码执行时间限制为5秒
+        let timer = setTimeout(() => {
+          throw new Error('代码执行时间超过限制')
+        }, timeout)
 
-      let res = await eval(content)
-      const dataType = (res && res.data) || res
-      if (typeof dataType === "string") return e.reply(dataType)
-      if (dataType === undefined) return e.reply("程序无返回值")
-      await e.reply(JSON.stringify(dataType, null, 4))
-    } catch (error) {
-      await e.reply("错误：\n" + error.message)
-      console.log(error)
+        const content = e.msg.split('//')[1]
+        if (content === undefined) return false
+
+        if (content.match(/(exec|exit)/g)) {
+          return e.reply('非法指令')
+        }
+
+        let res = await eval(content)
+        clearTimeout(timer)
+        const dataType = (res && res.data) || res
+        if (typeof dataType === 'string') return e.reply(dataType)
+        if (dataType === undefined) return e.reply('程序无返回值')
+        await e.reply(JSON.stringify(dataType, null, 4))
+      } catch (error) {
+        await e.reply('错误：\n' + error.message)
+        console.log(error)
+      }
     }
   }
 
