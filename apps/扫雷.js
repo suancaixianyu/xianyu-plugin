@@ -6,8 +6,8 @@ import { command } from '../config/global/command.js'
 export class newcomer extends plugin {
   constructor() {
     super({
-      name: '扫雷',
-      dsc: '扫雷小游戏',
+      name: '咸鱼_扫雷',
+      dsc: '咸鱼_扫雷',
       event: 'message',
       priority: 5000,
       rule: [...command.minesweeper],

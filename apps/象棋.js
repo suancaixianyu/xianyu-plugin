@@ -1,6 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import puppeteer from "../../../lib/puppeteer/puppeteer.js"
-import panduan from "../lib/ChineseChessDecide.js"
+import puppeteer from '../../../lib/puppeteer/puppeteer.js'
+import panduan from '../lib/ChineseChessDecide.js'
 import { command } from '../config/global/command.js'
 import { cwd, initialmap } from '../config/global/metadata.js'
 const as = new panduan()
@@ -25,21 +25,18 @@ var repent = {}
 // 初始地图，不可修改
 const map = initialmap.chinesechess
 const rows = 9 // 棋盘宽度
-const cols = 10 // 棋盘高度 
+const cols = 10 // 棋盘高度
 
 export class ChineseChess extends plugin {
   constructor() {
     super({
-      name: '中国象棋',
-      dsc: '中国象棋',
+      name: '咸鱼_中国象棋',
+      dsc: '咸鱼_中国象棋',
       event: 'message',
       priority: 5000,
-      rule: [
-        ...command.chinesechess
-      ]
+      rule: [...command.chinesechess],
     })
   }
-
 
   /**
    * 认输
@@ -48,7 +45,7 @@ export class ChineseChess extends plugin {
     if (metadata[e.group_id] && metadata[e.group_id].nickname[e.user_id] === e.sender.nickname) {
       // 判断玩家是否在游戏中
       let team = metadata[e.group_id].players[e.user_id]
-      console.log("player：" + team)
+      console.log('player：' + team)
       // 对方组
       let isAB = '黑红'
       isAB = isAB.replace(new RegExp(team), '')
@@ -91,11 +88,12 @@ export class ChineseChess extends plugin {
       let A = metadata[e.group_id].players[players_nickname[0]]
       let B = metadata[e.group_id].players[players_nickname[1]]
 
-      e.reply([`本群游戏开始\n`,
+      e.reply([
+        `本群游戏开始\n`,
         `${A}棋:${metadata[e.group_id].nickname[players_nickname[0]]}\n`,
         `${B}棋:${metadata[e.group_id].nickname[players_nickname[1]]}\n`,
         `${A}棋先手\n`,
-        `其他成员发送“加入中国象棋黑/红”加入队伍中`
+        `其他成员发送“加入中国象棋黑/红”加入队伍中`,
       ])
       metadata[e.group_id].current = '红'
       await newgame(e)
@@ -111,7 +109,6 @@ export class ChineseChess extends plugin {
    * 游戏指令
    */
   async game(e) {
-
     if (!metadata[e.group_id] || !metadata[e.group_id].game) return false
     // await beifen(e)
     // 判断玩家是否在游戏中
@@ -149,7 +146,7 @@ export class ChineseChess extends plugin {
       } else {
         // console.log(iszh_cn)
 
-        [letter1, num1, letter2, num2] = iszh_cn;
+        ;[letter1, num1, letter2, num2] = iszh_cn
         // 选择
         tp1 = `${letter1}-${num1}`
         // 目的地
@@ -204,9 +201,7 @@ export class ChineseChess extends plugin {
       e.reply('你不能操作对方的棋子')
     }
   }
-
 }
-
 
 /**
  * 新游戏
@@ -234,7 +229,6 @@ async function newgame(e) {
   generate(e)
 }
 
-
 /**
  * 初始化游戏
  */
@@ -252,7 +246,6 @@ async function over(e) {
  * 发送图片
  */
 async function generate(e, tp1, tp2) {
-
   let data_map = metadata[e.group_id].chessman // 拉取地图数据
   let biaoji = Object.values(metadata[e.group_id].archive) // 获取双方棋子标记
   let ss = {} // 标记框
@@ -303,9 +296,9 @@ async function generate(e, tp1, tp2) {
     archive: biaoji,
     isrollback: isrollback,
     _res: cwd,
-    ss: ss
+    ss: ss,
   }
-  let img = await puppeteer.screenshot("象棋", {
+  let img = await puppeteer.screenshot('象棋', {
     ...data,
   })
   e.reply(img)

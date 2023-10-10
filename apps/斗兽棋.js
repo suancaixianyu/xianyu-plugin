@@ -1,8 +1,8 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import puppeteer from "../../../lib/puppeteer/puppeteer.js";
+import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { ABC, cwd, initialmap } from '../config/global/metadata.js'
 import { command } from '../config/global/command.js'
-import panduan from "../lib/AnimalChessDecision.js";
+import panduan from '../lib/AnimalChessDecision.js'
 const as = new panduan()
 
 var meadow = Math.floor(Math.random() * 5) + 1 // 以随机数开头
@@ -21,21 +21,17 @@ var metadata = {}
 // 上一步的地图存档
 var repent = {}
 
-
 const rows = 7 // 棋盘宽度
 const cols = 9 // 棋盘高度
-
 
 export class AnimalChess extends plugin {
   constructor() {
     super({
-      name: '斗兽棋',
-      dsc: '斗兽棋',
+      name: '咸鱼_斗兽棋',
+      dsc: '咸鱼_斗兽棋',
       event: 'message',
       priority: 5000,
-      rule: [
-        ...command.animalchess
-      ]
+      rule: [...command.animalchess],
     })
   }
 
@@ -53,7 +49,7 @@ export class AnimalChess extends plugin {
     // 判断玩家是否在游戏中
     if (metadata[e.group_id] && metadata[e.group_id].players[e.user_id]) {
       let team = metadata[e.group_id].players[e.user_id].team
-      console.log("player：" + team)
+      console.log('player：' + team)
       // 对方组
       let isAB = '红蓝'
       isAB = isAB.replace(new RegExp(team), '')
@@ -109,12 +105,7 @@ export class AnimalChess extends plugin {
       let A = metadata[e.group_id].players[players_nickname[0]]
       let B = metadata[e.group_id].players[players_nickname[1]]
 
-      e.reply([`本群游戏开始\n`,
-        `${A.team}棋:${A.name}\n`,
-        `${B.team}棋:${B.name}\n`,
-        `${A.team}棋先手\n`,
-        `其他成员发送“加入斗兽棋(红/蓝)”加入队伍中`
-      ])
+      e.reply([`本群游戏开始\n`, `${A.team}棋:${A.name}\n`, `${B.team}棋:${B.name}\n`, `${A.team}棋先手\n`, `其他成员发送“加入斗兽棋(红/蓝)”加入队伍中`])
       metadata[e.group_id].current = '红'
       await newgame(e)
     }
@@ -129,7 +120,6 @@ export class AnimalChess extends plugin {
    * 游戏指令
    */
   async game(e) {
-
     if (!metadata[e.group_id] || !metadata[e.group_id].game) return false
 
     // 判断玩家是否在游戏中
@@ -166,7 +156,7 @@ export class AnimalChess extends plugin {
     let tp2 = `${letter2}-${num2}`
     // console.log(tp1,tp2);
 
-    // 判断移动是否正确 
+    // 判断移动是否正确
     let iscorrect = await as.Audit(e, [letter1, num1, letter2, num2], tp1, tp2, team, metadata)
     // console.log(iscorrect)
     if (!iscorrect || iscorrect[0] !== true) {
@@ -201,12 +191,10 @@ export class AnimalChess extends plugin {
   }
 }
 
-
 /**
  * 新游戏
  */
 async function newgame(e) {
-
   let data_map1 = []
   // 遍历numbers，每rows个数换一行
   for (var i = 0; i < map.length; i += rows) {
@@ -220,10 +208,8 @@ async function newgame(e) {
       metadata[e.group_id].chessman[i + '-' + j] = {}
       // 前排名称不为空
       if (i >= 0 && i <= 2 && data_map1[i][j] != '空') {
-
         // 是陷阱和洞穴
         if (data_map1[i][j] == '井' || data_map1[i][j] == '穴') {
-
           metadata[e.group_id].chessman[i + '-' + j].name = '空'
           metadata[e.group_id].chessman[i + '-' + j].id = data_map1[i][j]
           metadata[e.group_id].chessman[i + '-' + j].archive = '空'
@@ -234,9 +220,7 @@ async function newgame(e) {
           metadata[e.group_id].chessman[i + '-' + j].archive = '红'
           metadata[e.group_id].chessman[i + '-' + j].archive_home = '空'
         }
-
       } else if (i >= 6 && i <= 8 && data_map1[i][j] != '空') {
-
         // 后排
         // 是陷阱和洞穴
         if (data_map1[i][j] == '井' || data_map1[i][j] == '穴') {
@@ -250,9 +234,7 @@ async function newgame(e) {
           metadata[e.group_id].chessman[i + '-' + j].archive = '蓝'
           metadata[e.group_id].chessman[i + '-' + j].archive_home = '空'
         }
-
       } else {
-
         // 空位
         metadata[e.group_id].chessman[i + '-' + j].name = '空'
         metadata[e.group_id].chessman[i + '-' + j].id = '空'
@@ -262,7 +244,6 @@ async function newgame(e) {
         if (data_map1[i][j] == '河') {
           metadata[e.group_id].chessman[i + '-' + j].id = data_map1[i][j]
         }
-
       }
 
       // 设置显示的坐标
@@ -285,7 +266,6 @@ async function over(e) {
   metadata[e.group_id].game = false // 游戏是否正在运行
   metadata[e.group_id].num = [] // 显示的坐标
 }
-
 
 /**
  * 发送图片
@@ -324,12 +304,12 @@ async function generate(e, tp1, tp2) {
     _res: cwd,
     metadata: JSON.stringify(data_map),
     num: metadata[e.group_id].num,
-    草地颜色: meadow
+    草地颜色: meadow,
   }
 
   console.log('截图：', data)
 
-  let img = await puppeteer.screenshot("斗兽棋", {
+  let img = await puppeteer.screenshot('斗兽棋', {
     ...data,
   })
   e.reply(img)

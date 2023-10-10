@@ -1,8 +1,8 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import puppeteer from "../../../lib/puppeteer/puppeteer.js"
+import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { cwd, initialmap } from '../config/global/metadata.js'
 import { command } from '../config/global/command.js'
-import panduan from "../lib/ChessDecides.js"
+import panduan from '../lib/ChessDecides.js'
 const as = new panduan()
 
 /**
@@ -16,25 +16,19 @@ const as = new panduan()
  */
 let metadata = {}
 
-// 上一步的地图存档
-let repent = {}
-
 // 初始地图，不可修改
 let map = initialmap.chess
 const rows = 8 // 棋盘宽度
 const cols = 8 // 棋盘高度
 
-
 export class Chess extends plugin {
   constructor() {
     super({
-      name: '国际象棋',
-      dsc: '国际象棋',
+      name: '咸鱼_国际象棋',
+      dsc: '咸鱼_国际象棋',
       event: 'message',
       priority: 5000,
-      rule: [
-        ...command.chess
-      ]
+      rule: [...command.chess],
     })
   }
 
@@ -45,7 +39,7 @@ export class Chess extends plugin {
     if (metadata[e.group_id] && metadata[e.group_id].nickname[e.user_id] === e.sender.nickname) {
       // 判断玩家是否在游戏中
       let team = metadata[e.group_id].players[e.user_id]
-      console.log("player：" + team)
+      console.log('player：' + team)
       // 对方组
       let isAB = '黑白'
       isAB = isAB.replace(new RegExp(team), '')
@@ -88,11 +82,12 @@ export class Chess extends plugin {
       let A = metadata[e.group_id].players[players_nickname[0]]
       let B = metadata[e.group_id].players[players_nickname[1]]
 
-      e.reply([`本群游戏开始\n`,
+      e.reply([
+        `本群游戏开始\n`,
         `${A}棋:${metadata[e.group_id].nickname[players_nickname[0]]}\n`,
         `${B}棋:${metadata[e.group_id].nickname[players_nickname[1]]}\n`,
         `${A}棋先手\n`,
-        `其他成员发送“加入国际象棋黑或白”加入队伍中`
+        `其他成员发送“加入国际象棋黑或白”加入队伍中`,
       ])
       metadata[e.group_id].current = '黑'
       await newgame(e)
@@ -108,7 +103,6 @@ export class Chess extends plugin {
    * 游戏指令
    */
   async game(e) {
-
     if (!metadata[e.group_id] || !metadata[e.group_id].game) return false
 
     // 判断玩家是否在游戏中
@@ -181,12 +175,10 @@ export class Chess extends plugin {
   }
 }
 
-
 /**
  * 新游戏
  */
 async function newgame(e) {
-
   let data_map1 = []
   // 遍历numbers，每x个数换一行
   for (let i = 0; i < map.length; i += rows) {
@@ -226,12 +218,10 @@ async function over(e) {
   metadata[e.group_id].current = {} // 当前可操作的玩家
 }
 
-
 /**
  * 发送图片
  */
 async function generate(e, tp1, tp2) {
-
   let data_map = metadata[e.group_id].chessman // 拉取地图数据
   let biaoji = String(Object.values(metadata[e.group_id].archive)) // 获取双方棋子标记
   let ss = {} // 标记框
@@ -265,9 +255,9 @@ async function generate(e, tp1, tp2) {
     map: data_map,
     archive: biaoji,
     _res: cwd,
-    ss: ss
+    ss: ss,
   }
-  let img = await puppeteer.screenshot("国际象棋", {
+  let img = await puppeteer.screenshot('国际象棋', {
     ...data,
   })
   e.reply(img)

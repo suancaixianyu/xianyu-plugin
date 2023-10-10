@@ -1,18 +1,16 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import puppeteer from "../../../lib/puppeteer/puppeteer.js"
+import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { cwd } from '../config/global/metadata.js'
 import { command } from '../config/global/command.js'
 
 export class xianyuhelp extends plugin {
   constructor() {
     super({
-      name: '咸鱼帮助',
-      dsc: '咸鱼插件帮助',
+      name: '咸鱼_帮助',
+      dsc: '咸鱼_插件帮助',
       event: 'message',
       priority: 5000,
-      rule: [
-        ...command.help
-      ]
+      rule: [...command.help],
     })
   }
 
@@ -31,13 +29,15 @@ export class xianyuhelp extends plugin {
   async saolei(e) {
     image(e, 'saolei', '扫雷帮助')
   }
+  async wuziqi(e) {
+    image(e, 'wuziqi', '五子棋帮助')
+  }
 
   async help(e) {
     let _res = `${process.cwd()}/plugins/xianyu-plugin/resources/`
     _res = _res.replace(/\\/g, '/')
     image(e, 'help', '咸鱼帮助', { _res: _res })
   }
-
 }
 
 /**
@@ -51,7 +51,7 @@ async function image(e, flie, name, obj) {
   let data = {
     quality: 100,
     tplFile: `./plugins/xianyu-plugin/resources/html/help/${flie}.html`,
-    ...obj
+    ...obj,
   }
   let img = await puppeteer.screenshot(name, {
     ...data,
