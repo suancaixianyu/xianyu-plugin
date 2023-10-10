@@ -32,10 +32,6 @@ export class xianyu_gobang extends plugin {
     })
   }
 
-  async img(e) {
-    image(e)
-  }
-
   /** 结束游戏 */
   async ov(e) {
     if (games[e.group_id]) {

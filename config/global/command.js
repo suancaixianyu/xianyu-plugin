@@ -18,10 +18,6 @@ let command = {
       reg: /^(\/|#)?\d+[\S\s]\d+/,
       fnc: 'game',
     },
-    {
-      reg: /^(\/|#)?图片/,
-      fnc: 'img',
-    },
   ],
   /** 扫雷 */
   minesweeper: [
