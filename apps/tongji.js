@@ -1,12 +1,11 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import { command } from '../config/command'
 import fs from 'fs'
 import axios from 'axios'
 import plugin from '../../../lib/plugins/plugin.js'
 import { AppName, DirPath } from '../config/global/metadata.js'
 import { command } from '../config/global/command.js'
 
-export class xianyuhelp extends plugin {
+export class xianyu_tongji extends plugin {
   constructor() {
     super({
       name: '咸鱼_统计',
