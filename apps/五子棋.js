@@ -96,6 +96,7 @@ export class xianyu_gobang extends plugin {
     if (checkWin(userRow, userCol, board[e.group_id][userRow][userCol], e)) {
       e.reply(`${e.nickname}获胜！`)
       players.forEach((e) => players.splice(e.user_id, 1))
+      player[e.group_id] = {}
       image(e)
       ov(e)
       return true
@@ -130,7 +131,6 @@ export class xianyu_gobang extends plugin {
 function ov(e) {
   board[e.group_id] = []
   games[e.group_id] = false
-  player[e.group_id] = {}
   user[e.group_id] = ''
 }
 
@@ -261,7 +261,10 @@ function makeAIMove(e) {
   availableMovesUser.sort((a, b) => b.score - a.score)
 
   // 执行AI的移动
-  const bestMove = availableMovesAI[0].score > availableMovesUser[0].score && availableMovesAI[0].score - 100 > availableMovesUser[0].score ? availableMovesAI[0] : availableMovesUser[0]
+  const bestMove =
+    availableMovesAI[0].score > availableMovesUser[0].score && availableMovesAI[0].score - 100 > availableMovesUser[0].score
+      ? availableMovesAI[0]
+      : availableMovesUser[0]
   board[e.group_id][bestMove.row][bestMove.col] = 'O'
 }
 
