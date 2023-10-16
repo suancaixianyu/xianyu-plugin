@@ -24,7 +24,7 @@ let AppName = 'xianyu-plugin'
 /** html路径 */
 let cwd = `${process.cwd()}/plugins/${AppName}/resources/html/`
 cwd = cwd.replace(/\\/g, '/')
-let DirPath = `${process.cwd()}/plugins/${AppName}/resources/html/`
+let DirPath = `${process.cwd()}/plugins/${AppName}/`
 /** 识别棋子名称 */
 let chinesechessname = ['車', '馬', '象', '士', '将', '炮', '兵', '卒', '仕', '相', '帅', '马', '车']
 /** 识别中文数字 */
