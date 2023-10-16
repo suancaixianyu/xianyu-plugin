@@ -4,6 +4,19 @@ import { chinesechessname } from './metadata.js'
  * 指令集
  */
 let command = {
+  /** 统计 */
+  tongji: [
+    {
+      reg: /.*/gi,
+      fnc: 'adduser',
+      doc: '咸鱼统计',
+    },
+    {
+      reg: /^(\/|#)?(xianyu|xy|咸鱼)统计$/i,
+      fnc: 'tongji',
+      doc: '查看统计',
+    },
+  ],
   /** 五子棋 */
   gobang: [
     {
@@ -92,22 +105,6 @@ let command = {
     {
       reg: /^(\/|#)?结束国际象棋$/,
       fnc: 'ov',
-    },
-  ],
-  /** 统计 */
-  tonji: [
-    {
-      reg: /^(\/|#)?(咸鱼|xianyu|xy)(插件)?(用户)?统计(id)?$/,
-      fnc: 'xianyu_tonji',
-    },
-    {
-      reg: '^//(.*)',
-      fnc: 'jsrun',
-    },
-    {
-      reg: /^.*/,
-      fnc: 'tonji',
-      log: false,
     },
   ],
   /** 中国象棋 */

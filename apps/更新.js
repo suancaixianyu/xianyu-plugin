@@ -2,7 +2,7 @@ import plugin from '../../../lib/plugins/plugin.js'
 import { execSync } from 'child_process'
 import { update } from '../../other/update.js'
 import { command } from '../config/global/command.js'
-const Plugin_Name = 'xianyu-plugin'
+import { command, AppName } from '../config/global/metadata.js'
 
 export class xianyu_update extends plugin {
   constructor() {
@@ -24,11 +24,11 @@ export class xianyu_update extends plugin {
     Update_Plugin.e = this.e
     Update_Plugin.reply = this.reply
 
-    if (Update_Plugin.getPlugin(Plugin_Name)) {
+    if (Update_Plugin.getPlugin(AppName)) {
       if (this.e.msg.includes('强制')) {
-        await execSync('git reset --hard', { cwd: `${process.cwd()}/plugins/${Plugin_Name}/` })
+        await execSync('git reset --hard', { cwd: `${process.cwd()}/plugins/${AppName}/` })
       }
-      await Update_Plugin.runUpdate(Plugin_Name)
+      await Update_Plugin.runUpdate(AppName)
       if (Update_Plugin.isUp) {
         setTimeout(() => Update_Plugin.restart(), 2000)
       }
