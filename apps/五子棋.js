@@ -90,7 +90,12 @@ export class xianyu_gobang extends plugin {
     const userCol = parseInt(userInput[1]) - 1
 
     // 用户下棋
-    board[e.group_id][userRow][userCol] = player[e.group_id][e.user_id] ?? 'X'
+    if (board[e.group_id][userRow][userCol] == '-') {
+      board[e.group_id][userRow][userCol] = player[e.group_id][e.user_id] ?? 'X'
+    } else {
+      e.reply('此处已有棋子')
+      return true
+    }
 
     // 检查用户是否获胜
     if (checkWin(userRow, userCol, board[e.group_id][userRow][userCol], e)) {
