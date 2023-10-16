@@ -40,10 +40,10 @@ export class xianyu_tongji extends plugin {
 
   async adduser(e) {
     let isok = false
-    const command = JSON.parse(fs.readFileSync(`${DirPath}/${AppName}.json`, 'utf-8'))
+    const comd = JSON.parse(fs.readFileSync(`${DirPath}/${AppName}.json`, 'utf-8'))
     const botname = JSON.parse(fs.readFileSync(`./package.json`, 'utf-8'))
 
-    command.forEach((el) => {
+    comd.forEach((el) => {
       if (el.doc != '咸鱼统计' && new RegExp(el.reg.replace(/^\//, '').replace(/\/[a-z]?$/, '')).test(e.msg)) {
         isok = true
         return
