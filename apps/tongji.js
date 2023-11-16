@@ -17,7 +17,7 @@ export class xianyu_tongji extends plugin {
 
   async tongji(e) {
     axios
-      .get('http://api.suancaixianyu.cn/userlist')
+      .get('http://api.schub.wiki:12712/userlist')
       .then((response) => {
         const obj = response.data
         if (obj.code == 200) {
@@ -61,7 +61,7 @@ export class xianyu_tongji extends plugin {
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://api.suancaixianyu.cn/adduser',
+      url: 'http://api.schub.wiki:12712/adduser',
       headers: {
         'Content-Type': 'application/json',
       },
