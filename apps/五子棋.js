@@ -18,7 +18,7 @@ let taunts = [
   '你像黎明前的黑暗，再来一次，只会增添我的光芒',
   '你的执着是一首悲壮的诗，但结局依然是悲剧的终章',
   '你的勇气如同夜空中的微弱星光，最终也会在我的胜利之前渐渐消失',
-  '哟，又是你，小样',
+  '哟，又是你，小样'
 ]
 
 export class xianyu_gobang extends plugin {
@@ -28,7 +28,7 @@ export class xianyu_gobang extends plugin {
       dsc: '咸鱼_五子棋',
       event: 'message',
       priority: 5000,
-      rule: [...command.gobang],
+      rule: [...command.gobang]
     })
   }
 
@@ -53,7 +53,8 @@ export class xianyu_gobang extends plugin {
 
     // 玩家对战
     if (/发起|加入/.test(e.msg)) {
-      player[e.group_id][e.user_id] = Object.keys(player[e.group_id]).length > 0 ? 'X' : 'O'
+      player[e.group_id][e.user_id] =
+        Object.keys(player[e.group_id]).length > 0 ? 'X' : 'O'
       if (Object.keys(player[e.group_id]).length == 2) {
         e.reply(`游戏开始，发起人先手`)
         user[e.group_id] = e.user_id
@@ -61,7 +62,9 @@ export class xianyu_gobang extends plugin {
         image(e)
         games[e.group_id] = true
       } else {
-        e.reply(`玩家${e.nickname}发起了 五子棋，其他玩家发送"加入五子棋"进行游戏`)
+        e.reply(
+          `玩家${e.nickname}发起了 五子棋，其他玩家发送"加入五子棋"进行游戏`
+        )
       }
     } else {
       player[e.group_id] = {}
@@ -77,7 +80,7 @@ export class xianyu_gobang extends plugin {
   }
 
   async game(e) {
-    if (!games[e.group_id]) return false
+    if (!games[e.group_id]) return e.reply('本群未开启游戏')
     if (user[e.group_id] && user[e.group_id] == e.user_id) {
       e.reply('不是你的回合')
       return true
@@ -100,7 +103,7 @@ export class xianyu_gobang extends plugin {
     // 检查用户是否获胜
     if (checkWin(userRow, userCol, board[e.group_id][userRow][userCol], e)) {
       e.reply(`${e.nickname}获胜！`)
-      players.forEach((e) => players.splice(e.user_id, 1))
+      players.forEach(e => players.splice(e.user_id, 1))
       player[e.group_id] = {}
       image(e)
       ov(e)
@@ -148,10 +151,10 @@ async function image(e) {
     quality: 100,
     tplFile: `./plugins/xianyu-plugin/resources/html/五子棋.html`,
     _data: board[e.group_id],
-    _res: `${process.cwd().replace(/\\/g, '/')}/plugins/xianyu-plugin/resources`,
+    _res: `${process.cwd().replace(/\\/g, '/')}/plugins/xianyu-plugin/resources`
   }
   let img = await puppeteer.screenshot('五子棋', {
-    ...data,
+    ...data
   })
   e.reply(img)
 }
@@ -205,7 +208,13 @@ function checkWin(row, col, player, e) {
   for (let i = -4; i <= 4; i++) {
     const r = row + i
     const c = col + i
-    if (r >= 0 && r < 17 && c >= 0 && c < 17 && board[e.group_id][r][c] == player) {
+    if (
+      r >= 0 &&
+      r < 17 &&
+      c >= 0 &&
+      c < 17 &&
+      board[e.group_id][r][c] == player
+    ) {
       count++
       if (count === 5) {
         return true
@@ -220,7 +229,13 @@ function checkWin(row, col, player, e) {
   for (let i = -4; i <= 4; i++) {
     const r = row + i
     const c = col - i
-    if (r >= 0 && r < 17 && c >= 0 && c < 17 && board[e.group_id][r][c] == player) {
+    if (
+      r >= 0 &&
+      r < 17 &&
+      c >= 0 &&
+      c < 17 &&
+      board[e.group_id][r][c] == player
+    ) {
       count++
       if (count === 5) {
         return true
@@ -267,7 +282,8 @@ function makeAIMove(e) {
 
   // 执行AI的移动
   const bestMove =
-    availableMovesAI[0].score > availableMovesUser[0].score && availableMovesAI[0].score - 100 > availableMovesUser[0].score
+    availableMovesAI[0].score > availableMovesUser[0].score &&
+    availableMovesAI[0].score - 100 > availableMovesUser[0].score
       ? availableMovesAI[0]
       : availableMovesUser[0]
   board[e.group_id][bestMove.row][bestMove.col] = 'O'
