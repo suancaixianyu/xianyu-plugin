@@ -42,6 +42,7 @@ export class xianyu_tongji extends plugin {
     let isok = false
     const comd = JSON.parse(fs.readFileSync(`${DirPath}/${AppName}.json`, 'utf-8'))
     const botname = JSON.parse(fs.readFileSync(`./package.json`, 'utf-8'))
+    const nickname = e.nackname ?? e.author.username
 
     comd.forEach((el) => {
       if (el.doc != '咸鱼统计' && new RegExp(el.reg.replace(/^\//, '').replace(/\/[a-z]?$/, '')).test(e.msg)) {
@@ -53,7 +54,7 @@ export class xianyu_tongji extends plugin {
 
     const data = JSON.stringify({
       userid: e.user_id,
-      nickname: e.nickname,
+      nickname: nickname,
       plugin: AppName,
       bot: botname.name,
     })
@@ -68,8 +69,8 @@ export class xianyu_tongji extends plugin {
       data: data,
     }
 
-    axios.request(config).catch((error) => {
-      console.log(error)
+    axios.request(config).catch(() => {
+      return false
     })
     return false
   }
