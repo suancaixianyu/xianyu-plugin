@@ -42,7 +42,7 @@ export class xianyu_tongji extends plugin {
     let isok = false
     const comd = JSON.parse(fs.readFileSync(`${DirPath}/${AppName}.json`, 'utf-8'))
     const botname = JSON.parse(fs.readFileSync(`./package.json`, 'utf-8'))
-    const nickname = e.nackname ?? e.author.username
+    const nickname = e.nickname ?? e.sender.nickname
 
     comd.forEach((el) => {
       if (el.doc != '咸鱼统计' && new RegExp(el.reg.replace(/^\//, '').replace(/\/[a-z]?$/, '')).test(e.msg)) {
