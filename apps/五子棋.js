@@ -18,8 +18,39 @@ let taunts = [
   '你像黎明前的黑暗，再来一次，只会增添我的光芒',
   '你的执着是一首悲壮的诗，但结局依然是悲剧的终章',
   '你的勇气如同夜空中的微弱星光，最终也会在我的胜利之前渐渐消失',
-  '哟，又是你，小样'
+  '哟，又是你，小样',
 ]
+let btns = {
+  开始: {
+    text: '开始游戏',
+    clicked_text: '/五子棋',
+    callback: '/五子棋',
+    send: true,
+  },
+  结束: {
+    text: '结束游戏',
+    clicked_text: '/结束五子棋',
+    callback: '/结束五子棋',
+    send: true,
+  },
+  发起: {
+    text: '发起五子棋',
+    clicked_text: '/发起五子棋',
+    callback: '/发起五子棋',
+    send: true,
+  },
+  加入: {
+    text: '加入五子棋',
+    clicked_text: '/加入五子棋',
+    callback: '/加入五子棋',
+    send: true,
+  },
+  落子: {
+    text: '落子',
+    input: '/落子',
+    send: false,
+  },
+}
 
 export class xianyu_gobang extends plugin {
   constructor() {
@@ -28,7 +59,7 @@ export class xianyu_gobang extends plugin {
       dsc: '咸鱼_五子棋',
       event: 'message',
       priority: 5000,
-      rule: [...command.gobang]
+      rule: [...command.gobang],
     })
   }
 
@@ -38,7 +69,7 @@ export class xianyu_gobang extends plugin {
       board[e.group_id] = []
       games[e.group_id] = false
       player[e.group_id] = {}
-      e.reply('游戏结束')
+      e.reply(['游戏结束', segment.button([btns.开始, btns.发起])])
     }
   }
 
@@ -53,8 +84,7 @@ export class xianyu_gobang extends plugin {
 
     // 玩家对战
     if (/发起|加入/.test(e.msg)) {
-      player[e.group_id][e.user_id] =
-        Object.keys(player[e.group_id]).length > 0 ? 'X' : 'O'
+      player[e.group_id][e.user_id] = Object.keys(player[e.group_id]).length > 0 ? 'X' : 'O'
       if (Object.keys(player[e.group_id]).length == 2) {
         e.reply(`游戏开始，发起人先手`)
         user[e.group_id] = e.user_id
@@ -62,9 +92,7 @@ export class xianyu_gobang extends plugin {
         image(e)
         games[e.group_id] = true
       } else {
-        e.reply(
-          `玩家${e.nickname}发起了 五子棋，其他玩家发送"加入五子棋"进行游戏`
-        )
+        e.reply([`玩家${e.nickname}发起了 五子棋，其他玩家发送"加入五子棋"进行游戏`, segment.button([btns.加入])])
       }
     } else {
       player[e.group_id] = {}
@@ -80,7 +108,7 @@ export class xianyu_gobang extends plugin {
   }
 
   async game(e) {
-    if (!games[e.group_id]) return e.reply('本群未开启游戏')
+    if (!games[e.group_id]) return e.reply(['本群未开启游戏', segment.button([btns.开始], [btns.发起])])
     if (user[e.group_id] && user[e.group_id] == e.user_id) {
       e.reply('不是你的回合')
       return true
@@ -96,14 +124,14 @@ export class xianyu_gobang extends plugin {
     if (board[e.group_id][userRow][userCol] == '-') {
       board[e.group_id][userRow][userCol] = player[e.group_id][e.user_id] ?? 'X'
     } else {
-      e.reply('此处已有棋子')
+      e.reply(['此处已有棋子', segment.button([btns.落子])])
       return true
     }
 
     // 检查用户是否获胜
     if (checkWin(userRow, userCol, board[e.group_id][userRow][userCol], e)) {
       e.reply(`${e.nickname}获胜！`)
-      players.forEach(e => players.splice(e.user_id, 1))
+      players.forEach((e) => players.splice(e.user_id, 1))
       player[e.group_id] = {}
       image(e)
       ov(e)
@@ -122,15 +150,15 @@ export class xianyu_gobang extends plugin {
       if (checkWin(userRow, userCol, 'O', e)) {
         // 连输嘲讽
         if (players.includes(e.user_id)) {
-          e.reply('依旧没有进展🤣👉')
+          e.reply(['依旧没有进展🤣👉', segment.button([btns.开始], [btns.发起])])
         } else {
-          e.reply('你输了')
+          e.reply(['你输了', segment.button([btns.开始], [btns.发起])])
         }
         players.push(e.user_id)
         ov(e)
         return
       }
-      image(e)
+      image(e, false)
     }
     return true
   }
@@ -139,24 +167,24 @@ export class xianyu_gobang extends plugin {
 function ov(e) {
   board[e.group_id] = []
   games[e.group_id] = false
-  user[e.group_id] = ''
+  user[e.group_id] = false
 }
 
 /**
  * @param {*} e 消息对象
  * @returns 发送截图
  */
-async function image(e) {
+async function image(e, btn = true) {
   let data = {
     quality: 100,
     tplFile: `./plugins/xianyu-plugin/resources/html/五子棋.html`,
     _data: board[e.group_id],
-    _res: `${process.cwd().replace(/\\/g, '/')}/plugins/xianyu-plugin/resources`
+    _res: `${process.cwd().replace(/\\/g, '/')}/plugins/xianyu-plugin/resources`,
   }
   let img = await puppeteer.screenshot('五子棋', {
-    ...data
+    ...data,
   })
-  e.reply(img)
+  e.reply([img, btn ? segment.button([btns.落子], [btns.帮助]) : ''])
 }
 
 /**
@@ -208,13 +236,7 @@ function checkWin(row, col, player, e) {
   for (let i = -4; i <= 4; i++) {
     const r = row + i
     const c = col + i
-    if (
-      r >= 0 &&
-      r < 17 &&
-      c >= 0 &&
-      c < 17 &&
-      board[e.group_id][r][c] == player
-    ) {
+    if (r >= 0 && r < 17 && c >= 0 && c < 17 && board[e.group_id][r][c] == player) {
       count++
       if (count === 5) {
         return true
@@ -229,13 +251,7 @@ function checkWin(row, col, player, e) {
   for (let i = -4; i <= 4; i++) {
     const r = row + i
     const c = col - i
-    if (
-      r >= 0 &&
-      r < 17 &&
-      c >= 0 &&
-      c < 17 &&
-      board[e.group_id][r][c] == player
-    ) {
+    if (r >= 0 && r < 17 && c >= 0 && c < 17 && board[e.group_id][r][c] == player) {
       count++
       if (count === 5) {
         return true
@@ -282,8 +298,7 @@ function makeAIMove(e) {
 
   // 执行AI的移动
   const bestMove =
-    availableMovesAI[0].score > availableMovesUser[0].score &&
-    availableMovesAI[0].score - 100 > availableMovesUser[0].score
+    availableMovesAI[0].score > availableMovesUser[0].score && availableMovesAI[0].score - 100 > availableMovesUser[0].score
       ? availableMovesAI[0]
       : availableMovesUser[0]
   board[e.group_id][bestMove.row][bestMove.col] = 'O'

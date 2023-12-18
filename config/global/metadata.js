@@ -17,7 +17,6 @@ let gamemap = {}
 let c = 768
 
 // 公用
-
 /** 地图显示的字母 */
 let ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 let AppName = 'xianyu-plugin'
@@ -28,7 +27,28 @@ let DirPath = `${process.cwd()}/plugins/${AppName}/`
 /** 识别棋子名称 */
 let chinesechessname = ['車', '馬', '象', '士', '将', '炮', '兵', '卒', '仕', '相', '帅', '马', '车']
 /** 识别中文数字 */
-let chineseNumbers = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖', '拾']
+let chineseNumbers = [
+  '一',
+  '二',
+  '三',
+  '四',
+  '五',
+  '六',
+  '七',
+  '八',
+  '九',
+  '十',
+  '壹',
+  '贰',
+  '叁',
+  '肆',
+  '伍',
+  '陆',
+  '柒',
+  '捌',
+  '玖',
+  '拾',
+]
 
 /**
  * @param {Array} animalchess 斗兽棋初始地图
