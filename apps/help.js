@@ -159,8 +159,8 @@ export class xianyuhelp extends plugin {
         },
         {
           text: '初始化',
-          clicked_text: '/扫雷设置初始化',
-          callback: '/扫雷设置初始化',
+          clicked_text: '/扫雷设置布局初始化',
+          callback: '/扫雷设置布局初始化',
           send: true,
         },
       ],
@@ -185,6 +185,12 @@ export class xianyuhelp extends plugin {
           callback: '/五子棋',
           send: true,
         },
+        {
+          text: '帮助',
+          clicked_text: '/五子棋帮助',
+          callback: '/五子棋帮助',
+          send: true,
+        },
       ],
       [
         {
@@ -199,20 +205,10 @@ export class xianyuhelp extends plugin {
           callback: '/加入五子棋',
           send: true,
         },
-      ],
-      [
         {
           text: '结束五子棋',
           clicked_text: '/结束五子棋',
           callback: '/结束五子棋',
-          send: true,
-        },
-      ],
-      [
-        {
-          text: '帮助',
-          clicked_text: '/五子棋帮助',
-          callback: '/五子棋帮助',
           send: true,
         },
       ],

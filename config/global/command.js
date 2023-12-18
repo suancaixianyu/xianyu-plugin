@@ -110,7 +110,7 @@ let command = {
   /** 中国象棋 */
   chinesechess: [
     {
-      reg: /^(\/|#)?(发起|加入)中国象棋[黑红]?$/,
+      reg: /^(\/|#)?(发起|加入)中国象棋 ?[黑红]?$/,
       fnc: 'LaunchGame',
     },
     {
@@ -122,7 +122,7 @@ let command = {
       fnc: 'game',
     },
     {
-      reg: `^(\/|#)?(${chinesechessname.join('|')}).*[一二三四五六七八九十壹贰叁肆伍陆柒捌玖拾]$`,
+      reg: `^(\/|#)? ?(${chinesechessname.join('|')}).*[一二三四五六七八九十壹贰叁肆伍陆柒捌玖拾]$`,
       fnc: 'game',
     },
   ],

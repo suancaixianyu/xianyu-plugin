@@ -16,10 +16,12 @@ export class xianyu_tongji extends plugin {
   }
 
   async tongji(e) {
-    axios
-      .get('https://www.schub.wiki/xyapi/userlist')
-      .then((response) => {
-        const obj = response.data
+    fetch('https://www.schub.wiki/xyapi/userlist', {
+      method: 'POST',
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const obj = data
         if (obj.code == 200) {
           const list = {}
           obj.data.forEach((el) => {
@@ -69,9 +71,17 @@ export class xianyu_tongji extends plugin {
       data: data,
     }
 
-    axios.request(config).catch(() => {
-      return false
-    })
+    fetch('https://www.schub.wiki/xyapi/adduser', config)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok')
+        }
+        return response.json()
+      })
+      .catch(() => {
+        return false
+      })
+
     return false
   }
 }

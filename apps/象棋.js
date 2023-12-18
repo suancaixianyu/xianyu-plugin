@@ -8,6 +8,37 @@ const as = new panduan()
 // 全局变量
 let isrollback = 'off' // 颠倒棋盘
 
+let btns = {
+  结束: {
+    text: '结束游戏',
+    clicked_text: '/结束中国象棋',
+    callback: '/结束中国象棋',
+    send: true,
+  },
+  发起: {
+    text: '发起中国象棋',
+    clicked_text: '/发起中国象棋',
+    callback: '/发起中国象棋',
+    send: true,
+  },
+  加入: {
+    text: '加入中国象棋',
+    input: '/加入中国象棋',
+    send: false,
+  },
+  移子: {
+    text: '移子',
+    input: '/移子',
+    send: false,
+  },
+  帮助: {
+    text: '帮助',
+    clicked_text: '/中国象棋帮助',
+    callback: '/中国象棋帮助',
+    send: true,
+  },
+}
+
 /**
  * 游戏过程中所有数据
  * @param {Object} chessman 渲染后的地图
@@ -49,7 +80,7 @@ export class ChineseChess extends plugin {
       // 对方组
       let isAB = '黑红'
       isAB = isAB.replace(new RegExp(team), '')
-      e.reply(`恭喜${isAB}队获得胜利`)
+      e.reply([`恭喜${isAB}队获得胜利`, segment.button([btns.发起])])
       over(e)
     } else {
       e.reply(`你还没加入游戏，不能主动结束游戏`)
@@ -77,7 +108,7 @@ export class ChineseChess extends plugin {
     if (players == 0) {
       metadata[e.group_id].nickname[e.user_id] = e.sender.nickname
       metadata[e.group_id].players[e.user_id] = '红'
-      e.reply(`玩家${e.sender.nickname}发起了中国象棋，其他成员可发送“加入中国象棋”加入游戏`)
+      e.reply([`玩家${e.sender.nickname}发起了中国象棋，其他成员可发送“加入中国象棋”加入游戏`, segment.button([btns.加入])])
     }
     if (players == 1) {
       metadata[e.group_id].nickname[e.user_id] = e.sender.nickname
@@ -94,6 +125,7 @@ export class ChineseChess extends plugin {
         `${B}棋:${metadata[e.group_id].nickname[players_nickname[1]]}\n`,
         `${A}棋先手\n`,
         `其他成员发送“加入中国象棋黑/红”加入队伍中`,
+        segment.button([btns.移子, btns.帮助]),
       ])
       metadata[e.group_id].current = '红'
       await newgame(e)
@@ -101,7 +133,7 @@ export class ChineseChess extends plugin {
     if (players >= 2 && emsg[0]) {
       metadata[e.group_id].nickname[e.user_id] = e.sender.nickname
       metadata[e.group_id].players[e.user_id] = emsg[0]
-      e.reply(`玩家${e.sender.nickname}加入队伍“${emsg[0]}”`)
+      e.reply([`玩家${e.sender.nickname}加入队伍“${emsg[0]}”`, segment.button([btns.移子, btns.帮助])])
     }
   }
 
@@ -114,7 +146,7 @@ export class ChineseChess extends plugin {
     // 判断玩家是否在游戏中
     let team = metadata[e.group_id].players[e.user_id]
     if (!team) {
-      e.reply(`你还没加入游戏，可发送”加入中国象棋黑/白“加入队伍中`)
+      e.reply([`你还没加入游戏，可发送”加入中国象棋黑/白“加入队伍中`, segment.button([btns.加入, btns.帮助])])
       return
     }
     // console.log("player：" + team)
@@ -142,7 +174,7 @@ export class ChineseChess extends plugin {
     if (!emsg) {
       let iszh_cn = await as.Chineseinstructions(e, e.msg, metadata)
       if (!iszh_cn) {
-        return e.reply('指令不正确')
+        return e.reply(['指令不正确', segment.button([btns.帮助])])
       } else {
         // console.log(iszh_cn)
 
@@ -170,7 +202,7 @@ export class ChineseChess extends plugin {
     let iscorrect = await as.Audit(e, [letter1, num1, letter2, num2], tp1, tp2, team, metadata)
     // console.log(iscorrect)
     if (!iscorrect || iscorrect[0] !== true) {
-      e.reply(`移动不正确`)
+      e.reply([`移动不正确`, segment.button([btns.移子, btns.帮助])])
       return
     }
 
@@ -186,19 +218,14 @@ export class ChineseChess extends plugin {
         metadata[e.group_id].archive[tp2] = team
         metadata[e.group_id].current = isAB // 设置组
       }
-      // 传入两个tp点
-      await generate(e, tp1, tp2)
       // 胜利提示
       if (iscorrect[1] === true) {
-        e.reply(`恭喜${team}队获得胜利`)
+        e.reply([`恭喜${team}队获得胜利`, await generate(e, tp1, tp2), segment.button([btns.发起, btns.帮助])])
         over(e)
+      } else {
+        // 传入两个tp点
+        e.reply([await generate(e, tp1, tp2), segment.button([btns.移子, btns.帮助])])
       }
-    } else if (metadata[e.group_id].archive[tp1] == '0') {
-      // 移动空气
-      e.reply('你不能操作棋盘中的空气：' + emsg[1] + emsg[2])
-    } else {
-      // 移动对方棋子
-      e.reply('你不能操作对方的棋子')
     }
   }
 }
@@ -226,7 +253,7 @@ async function newgame(e) {
   }
   // 开始游戏
   metadata[e.group_id].game = true
-  generate(e)
+  e.reply([await generate(e), segment.button([btns.移子, btns.帮助])])
 }
 
 /**
@@ -301,6 +328,6 @@ async function generate(e, tp1, tp2) {
   let img = await puppeteer.screenshot('象棋', {
     ...data,
   })
-  e.reply(img)
   isrollback = 'off'
+  return img
 }
