@@ -1,6 +1,5 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import fs from 'fs'
-import axios from 'axios'
 import { AppName, DirPath } from '../config/global/metadata.js'
 import { command } from '../config/global/command.js'
 
