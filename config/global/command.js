@@ -9,12 +9,10 @@ let command = {
     {
       reg: /.*/gi,
       fnc: 'adduser',
-      doc: '咸鱼统计',
     },
     {
       reg: /^(\/|#)?(xianyu|xy|咸鱼)统计$/i,
       fnc: 'tongji',
-      doc: '查看统计',
     },
   ],
   /** 五子棋 */

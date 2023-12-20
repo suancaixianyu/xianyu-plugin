@@ -41,12 +41,13 @@ export class xianyu_tongji extends plugin {
 
   async adduser(e) {
     let isok = false
-    const comd = JSON.parse(fs.readFileSync(`${DirPath}/${AppName}.json`, 'utf-8'))
+    let comd = Object.values(command).flat()
     const botname = JSON.parse(fs.readFileSync(`./package.json`, 'utf-8'))
     const nickname = e.nickname ?? e.sender.nickname
 
     comd.forEach((el) => {
-      if (el.doc != '咸鱼统计' && new RegExp(el.reg.replace(/^\//, '').replace(/\/[a-z]?$/, '')).test(e.msg)) {
+      if (typeof el.reg == 'string') el.reg = new RegExp(el.reg)
+      if (`${el.reg}` != '/.*/gi' && el.reg.test(e.msg)) {
         isok = true
         return
       }
