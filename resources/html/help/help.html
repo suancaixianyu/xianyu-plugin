@@ -11,7 +11,7 @@
   <style>
     @font-face {
       font-family: 'xianyu';
-      src: url('{{_res}}fonts/原神默认字体.ttf')
+      src: url('{{_res}}/html/fonts/原神默认字体.ttf')
     }
 
     .content {
@@ -20,7 +20,7 @@
     }
 
     body {
-      background: url('{{_res}}html/img/background.png') no-repeat center center fixed;
+      background: url('{{_res}}/html/img/background.png') no-repeat center center fixed;
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center center;
@@ -104,8 +104,8 @@
   <div class="container">
     <div class="neiron">
       <div class="content">
-        <h1>Yunzai-Bot 咸鱼插件</h1>
-        <p>Yunzai-Bot & xianyu-plugin</p>
+        <h1>咸鱼插件</h1>
+        <div style="text-align: center;">xianyu-plugin / v1.1.1</div>
       </div>
       <div class="box content">
 
@@ -118,8 +118,8 @@
                 <th>说明</th>
               </tr>
               <tr>
-                <th>咸鱼统计(id)?</td>
-                <td>显示所有使用本插件的机器人，结尾加上id显示账号</td>
+                <th>咸鱼统计</td>
+                <td>显示所有机器人使用本插件的用户数量</td>
               </tr>
               <tr>
                 <th>咸鱼更新</td>
@@ -158,7 +158,7 @@
         </div>
 
         <div class="content">
-          <h3>扫雷游戏</h3>
+          <h3>排雷游戏</h3>
           <table>
             <tbody>
               <tr>
@@ -168,22 +168,22 @@
                 <th>示例指令</th>
               </tr>
               <tr>
-                <th>扫雷</td>
+                <th>排雷</td>
                 <td>开始游戏</td>
                 <td></td>
-                <td>扫雷</td>
+                <td>排雷</td>
               </tr>
               <tr>
-                <th>扫雷难度</td>
+                <th>排雷难度</td>
                 <td>使用指定难度开始游戏</td>
                 <td>数量多的时候字就小</td>
-                <td>扫雷难度(简单|普通|困难)</td>
+                <td>排雷难度(简单|普通|困难)</td>
               </tr>
               <tr>
-                <th>扫雷帮助</td>
+                <th>排雷帮助</td>
                 <td></td>
                 <td></td>
-                <td>扫雷扫雷帮助</td>
+                <td>排雷排雷帮助</td>
               </tr>
             </tbody>
           </table>
@@ -240,6 +240,34 @@
                 <th>结束中国象棋</td>
                 <td>认输</td>
                 <td>结束中国象棋</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="content">
+          <h3>五子棋游戏</h3>
+          <table>
+            <tbody>
+              <tr>
+                <th>指令</th>
+                <th>说明</th>
+                <th>示例</th>
+              </tr>
+              <tr>
+                <th>发起/加入五子棋<br></td>
+                <td>发起游戏，也可以单独发送 五子棋 进行单人游戏</td>
+                <td>发起五子棋、加入五子棋</td>
+              </tr>
+              <tr>
+                <th>落子</td>
+                <td>坐标为行+列，中间使用任意符号隔开</td>
+                <td>9 9</td>
+              </tr>
+              <tr>
+                <th>结束五子棋</td>
+                <td>结束游戏</td>
+                <td>结束五子棋</td>
               </tr>
             </tbody>
           </table>

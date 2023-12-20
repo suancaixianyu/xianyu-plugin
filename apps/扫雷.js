@@ -16,6 +16,12 @@ let btns = {
     callback: '/扫雷帮助',
     send: true,
   },
+  插件帮助: {
+    text: '其他游戏',
+    clicked_text: '/咸鱼帮助',
+    callback: '/咸鱼帮助',
+    send: true,
+  },
   简单: {
     text: '简单',
     clicked_text: '/扫雷难度简单',
@@ -181,13 +187,15 @@ export class newcomer extends plugin {
    */
   async removemark(e, isreply = true, active = true) {
     newgame(e)
-    if (!gamemap[e.group_id].game) return false
-    gamemap[e.group_id].command = e.msg
+    if (!gamemap[e.group_id].game) {
+      e.reply(['游戏未开始', segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助])])
+      return false
+    }
+    if (active) gamemap[e.group_id].command = e.msg
 
-    let msg = e.msg.match(/((\/|#)?取消标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
-    let datamsg = msg[0].match(/[a-zA-Z]{1}[0-9]+/g)
-
-    console.log('取消标记----', datamsg)
+    let msg = e.msg.match(/((\/|#)取消标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/g)
+    let datamsg = msg.join(',').match(/[a-zA-Z]{1}[0-9]+/g)
+    datamsg = Array.from(new Set(datamsg))
 
     for (const v of datamsg) {
       // 获取坐标
@@ -204,15 +212,15 @@ export class newcomer extends plugin {
         // 判断坐标是否显示
         if (gamemap[e.group_id].isopen[axis] == false) {
           gamemap[e.group_id].mark[axis] = false
-          console.log('当前标记：', gamemap[e.group_id].archive[axis], axis)
+          // console.log('当前标记：', gamemap[e.group_id].archive[axis], axis)
         }
       }
     }
 
     if (active) {
       // 处理其他指令
-      let mark = e.msg.match(/((\/|#)?标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
-      let mark2 = e.msg.match(/((\/|#)?翻开 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
+      let mark = e.msg.match(/((\/|#)标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
+      let mark2 = e.msg.match(/((\/|#)翻开 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
       if (mark) {
         await this.mark(e, false, false)
       }
@@ -230,15 +238,18 @@ export class newcomer extends plugin {
    * @param {*} isreply 是否发送消息
    * @param {*} active 是否主动触发
    */
-  async mark(e, isreply = true, passive = false) {
+  async mark(e, isreply = true, active = true) {
     newgame(e)
-    if (!gamemap[e.group_id].game) return false
-    gamemap[e.group_id].command = e.msg
+    if (!gamemap[e.group_id].game) {
+      e.reply(['游戏未开始', segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助])])
+      return false
+    }
+    if (active) gamemap[e.group_id].command = e.msg
 
-    let msg = e.msg.match(/((\/|#)?标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
-    let datamsg = msg[0].match(/[a-zA-Z]{1}[0-9]+/g)
+    let msg = e.msg.match(/((\/|#)标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/g)
+    let datamsg = msg.join(',').match(/[a-zA-Z]{1}[0-9]+/g)
+    datamsg = Array.from(new Set(datamsg))
 
-    console.log('标记----', datamsg)
     for (const v of datamsg) {
       // 获取坐标
       // emsg[1]为字母，emsg[2]为数字
@@ -254,14 +265,14 @@ export class newcomer extends plugin {
         // 判断坐标是否显示
         if (gamemap[e.group_id].isopen[axis] == false) {
           gamemap[e.group_id].mark[axis] = true
-          console.log('当前标记：', gamemap[e.group_id].archive[axis], axis)
+          // console.log('当前标记：', gamemap[e.group_id].archive[axis], axis)
         }
       }
     }
     // 处理其他指令
-    let mark = e.msg.match(/((\/|#)?取消标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
-    let mark2 = e.msg.match(/((\/|#)?翻开 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
-    if (passive) {
+    let mark = e.msg.match(/((\/|#)取消标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
+    let mark2 = e.msg.match(/((\/|#)翻开 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
+    if (active) {
       if (mark) {
         await this.removemark(e, false, false)
       }
@@ -279,10 +290,13 @@ export class newcomer extends plugin {
    * @param {*} isreply 是否发送消息
    * @param {*} active 是否主动触发
    */
-  async gooplye(e, isreply = true, passive = true) {
+  async gooplye(e, isreply = true, active = true) {
     newgame(e)
-    if (!gamemap[e.group_id].game) return false
-    gamemap[e.group_id].command = e.msg
+    if (!gamemap[e.group_id].game) {
+      e.reply(['游戏未开始', segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助])])
+      return false
+    }
+    if (active) gamemap[e.group_id].command = e.msg
 
     /**
      * 玩家点击 A1 获得坐标 01
@@ -295,12 +309,11 @@ export class newcomer extends plugin {
     let outcome = ''
     let kk = 0
 
-    let msg = e.msg.match(/((\/|#)?翻开 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
+    let msg = e.msg.match(/((\/|#)翻开 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/g)
     // 获取坐标
     // emsg[1]为字母，emsg[2]为数字
-    let datamsg = msg[0].match(/[a-zA-Z]{1}[0-9]+/g)
-
-    console.log('翻开----', datamsg)
+    let datamsg = msg.join(',').match(/[a-zA-Z]{1}[0-9]+/g)
+    datamsg = Array.from(new Set(datamsg))
 
     for (const v of datamsg) {
       let emsg1 = v.replace(/[0-9]+/, '')
@@ -318,7 +331,7 @@ export class newcomer extends plugin {
           gamemap[e.group_id].isopen[axis] = true
           gameover = true
           outcome = 'fail'
-          return
+          break
         }
 
         // 扩散显示
@@ -363,8 +376,9 @@ export class newcomer extends plugin {
             }
             loop(indexs)
           } catch (error) {
+            gameover = true
             e.reply(['调用栈溢出，请缩小布局大小', segment.button([btns.设置], [btns.帮助])])
-            return
+            break
           }
         }
         // 显示指定坐标块
@@ -373,9 +387,9 @@ export class newcomer extends plugin {
     }
 
     // 处理其他指令
-    let mark = e.msg.match(/((\/|#)?标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
-    let mark2 = e.msg.match(/((\/|#)?取消标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
-    if (passive) {
+    let mark = e.msg.match(/((\/|#)标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
+    let mark2 = e.msg.match(/((\/|#)取消标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
+    if (active) {
       if (mark) {
         await this.mark(e, false, false)
       }
@@ -385,13 +399,18 @@ export class newcomer extends plugin {
     }
 
     if (outcome == 'fail') {
-      e.reply(['踩雷，游戏结束', await image(e), segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助])])
-      return
+      gameover = true
+      e.reply([
+        '踩雷，游戏结束',
+        await image(e),
+        segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助, btns.插件帮助]),
+      ])
     }
     // 判断胜利
     if (
       +gamemap[e.group_id].rows * +gamemap[e.group_id].cols - Object.values(gamemap[e.group_id].isopen).filter((v) => v).length ==
-      gamemap[e.group_id].z
+        gamemap[e.group_id].z &&
+      !gameover
     ) {
       e.reply(['恭喜您成功了', await image(e), segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助])])
       gameover = true
