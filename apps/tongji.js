@@ -15,28 +15,11 @@ export class xianyu_tongji extends plugin {
   }
 
   async tongji(e) {
-    fetch('https://www.schub.wiki/xyapi/userlist', {
-      method: 'POST',
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const obj = data
-        if (obj.code == 200) {
-          const list = {}
-          obj.data.forEach((el) => {
-            list[el.bot] = list[el.bot] ? list[el.bot] + 1 : 1
-          })
-          const botsname = Object.keys(list)
-          let a = ''
-          botsname.forEach((el) => {
-            a += `\n${el}：${list[el]}人`
-          })
-          e.reply(`用户列表(机器人：数量)：${a}`)
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    let res = await fetch('https://www.schub.wiki/xyapi/userlist')
+    let obj = await res.json()
+    if (obj.code == 200) {
+      e.reply(`用户列表(机器人：数量)：${obj.data}`)
+    }
   }
 
   async adduser(e) {
@@ -44,7 +27,6 @@ export class xianyu_tongji extends plugin {
     let comd = Object.values(command).flat()
     const botname = JSON.parse(fs.readFileSync(`./package.json`, 'utf-8'))
     const nickname = e.nickname ?? e.sender.nickname
-
     comd.forEach((el) => {
       if (typeof el.reg == 'string') el.reg = new RegExp(el.reg)
       if (`${el.reg}` != '/.*/gi' && el.reg.test(e.msg)) {
@@ -54,28 +36,29 @@ export class xianyu_tongji extends plugin {
     })
     if (!isok) return false
 
-    const data = JSON.stringify({
+    let myHeaders = new Headers()
+    myHeaders.append('Content-Type', 'application/json')
+
+    const raw = JSON.stringify({
       userid: e.user_id,
       nickname: nickname,
       plugin: AppName,
       bot: botname.name,
     })
 
-    const config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'https://www.schub.wiki/xyapi/adduser',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: data,
+    let requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
     }
 
-    fetch('https://www.schub.wiki/xyapi/adduser', config)
+    fetch('https://www.schub.wiki/xyapi/adduser', requestOptions)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok')
         }
+        console.log('请求成功')
         return response.json()
       })
       .catch(() => {
