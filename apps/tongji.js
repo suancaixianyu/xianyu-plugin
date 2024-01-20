@@ -1,7 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import fs from 'fs'
-import { AppName, DirPath } from '../config/global/metadata.js'
-import { command } from '../config/global/command.js'
+import { command, AppName } from '../config.js'
 
 export class xianyu_tongji extends plugin {
   constructor() {

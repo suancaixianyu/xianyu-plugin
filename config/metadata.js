@@ -1,13 +1,11 @@
 /**
- * @param {Object} mines 标记雷：{1-1：true}
- * @param {Object} isopen 标记翻开：{1-1：true}
- * @param {Object} archive 标记值：{1-1：1}
+ * @param {Object} mines 游戏中标记：{1-1：true}
+ * @param {Object} isopen 标记是否被翻开：{1-1：true}
+ * @param {Object} archive 实际地图标记数字：{1-1：1}，当踩雷时9会变为x
  * @param {Boolean} game 游戏是否正在运行
  * @param {Number} z 雷数量
  * @param {Number} rows 横
  * @param {Number} cols 竖
- * @param {Number} mun 左上角显示雷数量
- * @param {Array} data_map1 添加数字后的地图数据
  * @param {Array} mark 标记样式
  * @param {String} player 游戏发起人
  * @returns 扫雷地图

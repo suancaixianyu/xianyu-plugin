@@ -1,6 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import { command } from '../config/global/command.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
+import { command, Btns } from '../config.js'
 
 /** 游戏地图 */
 let board = {}
@@ -20,37 +20,7 @@ let taunts = [
   '你的勇气如同夜空中的微弱星光，最终也会在我的胜利之前渐渐消失',
   '哟，又是你，小样',
 ]
-let btns = {
-  开始: {
-    text: '开始游戏',
-    clicked_text: '/五子棋',
-    callback: '/五子棋',
-    send: true,
-  },
-  结束: {
-    text: '结束游戏',
-    clicked_text: '/结束五子棋',
-    callback: '/结束五子棋',
-    send: true,
-  },
-  发起: {
-    text: '发起五子棋',
-    clicked_text: '/发起五子棋',
-    callback: '/发起五子棋',
-    send: true,
-  },
-  加入: {
-    text: '加入五子棋',
-    clicked_text: '/加入五子棋',
-    callback: '/加入五子棋',
-    send: true,
-  },
-  落子: {
-    text: '落子',
-    input: '/落子',
-    send: false,
-  },
-}
+let btn = Btns.五子棋
 
 export class xianyu_gobang extends plugin {
   constructor() {
@@ -69,7 +39,7 @@ export class xianyu_gobang extends plugin {
       board[e.group_id] = []
       games[e.group_id] = false
       player[e.group_id] = {}
-      e.reply(['游戏结束', segment.button([btns.开始, btns.发起])])
+      e.reply(['游戏结束', segment.button([btn.开始, btn.发起])])
     }
   }
 
@@ -92,7 +62,7 @@ export class xianyu_gobang extends plugin {
         image(e)
         games[e.group_id] = true
       } else {
-        e.reply([`玩家${e.nickname}发起了 五子棋，其他玩家发送"加入五子棋"进行游戏`, segment.button([btns.加入])])
+        e.reply([`玩家${e.nickname}发起了 五子棋，其他玩家发送"加入五子棋"进行游戏`, segment.button([btn.加入])])
       }
     } else {
       player[e.group_id] = {}
@@ -108,7 +78,7 @@ export class xianyu_gobang extends plugin {
   }
 
   async game(e) {
-    if (!games[e.group_id]) return e.reply(['本群未开启游戏', segment.button([btns.开始], [btns.发起])])
+    if (!games[e.group_id]) return e.reply(['本群未开启游戏', segment.button([btn.开始], [btn.发起])])
     if (user[e.group_id] && user[e.group_id] == e.user_id) {
       e.reply('不是你的回合')
       return true
@@ -124,7 +94,7 @@ export class xianyu_gobang extends plugin {
     if (board[e.group_id][userRow][userCol] == '-') {
       board[e.group_id][userRow][userCol] = player[e.group_id][e.user_id] ?? 'X'
     } else {
-      e.reply(['此处已有棋子', segment.button([btns.落子])])
+      e.reply(['此处已有棋子', segment.button([btn.落子])])
       return true
     }
 
@@ -150,9 +120,9 @@ export class xianyu_gobang extends plugin {
       if (checkWin(userRow, userCol, 'O', e)) {
         // 连输嘲讽
         if (players.includes(e.user_id)) {
-          e.reply(['依旧没有进展🤣👉', segment.button([btns.开始], [btns.发起])])
+          e.reply(['依旧没有进展🤣👉', segment.button([btn.开始], [btn.发起])])
         } else {
-          e.reply(['你输了', segment.button([btns.开始], [btns.发起])])
+          e.reply(['你输了', segment.button([btn.开始], [btn.发起])])
         }
         players.push(e.user_id)
         ov(e)
@@ -184,7 +154,7 @@ async function image(e, btn = true) {
   let img = await puppeteer.screenshot('五子棋', {
     ...data,
   })
-  e.reply([img, btn ? segment.button([btns.落子], [btns.帮助]) : ''])
+  e.reply([img, btn ? segment.button([btn.落子], [btn.帮助]) : ''])
 }
 
 /**

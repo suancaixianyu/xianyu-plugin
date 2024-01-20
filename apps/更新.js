@@ -1,8 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import { execSync } from 'child_process'
 import { update } from '../../other/update.js'
-import { command } from '../config/global/command.js'
-import { AppName } from '../config/global/metadata.js'
+import { command, AppName } from '../config.js'
 
 export class xianyu_update extends plugin {
   constructor() {

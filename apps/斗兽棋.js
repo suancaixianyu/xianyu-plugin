@@ -1,8 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
-import { ABC, cwd, initialmap } from '../config/global/metadata.js'
-import { command } from '../config/global/command.js'
 import panduan from '../lib/AnimalChessDecision.js'
+import { command, ABC, cwd, initialmap, Btns } from '../config.js'
 const as = new panduan()
 
 var meadow = Math.floor(Math.random() * 5) + 1 // 以随机数开头
@@ -24,37 +23,7 @@ var repent = {}
 const rows = 7 // 棋盘宽度
 const cols = 9 // 棋盘高度
 
-let btns = {
-  结束: {
-    text: '结束游戏',
-    clicked_text: '/结束斗兽棋',
-    callback: '/结束斗兽棋',
-    send: true,
-  },
-  发起: {
-    text: '发起斗兽棋',
-    clicked_text: '/发起斗兽棋',
-    callback: '/发起斗兽棋',
-    send: true,
-  },
-  加入: {
-    text: '加入斗兽棋',
-    input: '/加入斗兽棋',
-    send: false,
-  },
-  移动: {
-    text: '移动',
-    input: '/移动',
-    send: false,
-  },
-  帮助: {
-    text: '帮助',
-    clicked_text: '/斗兽棋帮助',
-    callback: '/斗兽棋帮助',
-    send: true,
-  },
-}
-
+let btn = Btns.斗兽棋
 export class AnimalChess extends plugin {
   constructor() {
     super({
@@ -77,7 +46,7 @@ export class AnimalChess extends plugin {
       // 对方组
       let isAB = '红蓝'
       isAB = isAB.replace(new RegExp(team), '')
-      e.reply([`恭喜${isAB}队获得胜利`, segment.button([btns.发起, btns.帮助])])
+      e.reply([`恭喜${isAB}队获得胜利`, segment.button([btn.发起, btn.帮助])])
       over(e)
     } else {
       e.reply(`你还没加入游戏，不能主动结束游戏`)
@@ -107,10 +76,7 @@ export class AnimalChess extends plugin {
       metadata[e.group_id].players[e.user_id] = {}
       metadata[e.group_id].players[e.user_id].name = e.sender.nickname
       metadata[e.group_id].players[e.user_id].team = '红'
-      e.reply([
-        `玩家${e.sender.nickname}发起了斗兽棋，其他成员可发送“加入斗兽棋”加入游戏`,
-        segment.button([btns.加入, btns.帮助]),
-      ])
+      e.reply([`玩家${e.sender.nickname}发起了斗兽棋，其他成员可发送“加入斗兽棋”加入游戏`, segment.button([btn.加入, btn.帮助])])
     }
     if (players == 1) {
       metadata[e.group_id].players[e.user_id] = {}
@@ -128,7 +94,7 @@ export class AnimalChess extends plugin {
         `${B.team}棋:${B.name}\n`,
         `${A.team}棋先手\n`,
         `其他成员发送“加入斗兽棋(红/蓝)”加入队伍中`,
-        segment.button([btns.移子, btns.帮助]),
+        segment.button([btn.移子, btn.帮助]),
       ])
       metadata[e.group_id].current = '红'
       await newgame(e)
@@ -136,7 +102,7 @@ export class AnimalChess extends plugin {
     if (players >= 2 && emsg[0]) {
       metadata[e.group_id].players[e.user_id].name = e.sender.nickname
       metadata[e.group_id].players[e.user_id].team = emsg[0]
-      e.reply([`玩家${metadata[e.group_id].players[e.user_id].name}加入队伍“${emsg[0]}”`, segment.button([btns.移子, btns.帮助])])
+      e.reply([`玩家${metadata[e.group_id].players[e.user_id].name}加入队伍“${emsg[0]}”`, segment.button([btn.移子, btn.帮助])])
     }
   }
 
@@ -150,7 +116,7 @@ export class AnimalChess extends plugin {
     /** 自己组颜色 */
     let team = metadata[e.group_id].players[e.user_id].team
     if (!team) {
-      e.reply([`你还没加入游戏，可发送”加入斗兽棋(红/蓝)”加入队伍中`, segment.button([btns.加入, btns.帮助])])
+      e.reply([`你还没加入游戏，可发送”加入斗兽棋(红/蓝)”加入队伍中`, segment.button([btn.加入, btn.帮助])])
       return false
     }
     // console.log("player：" + team)
@@ -184,7 +150,7 @@ export class AnimalChess extends plugin {
     let iscorrect = await as.Audit(e, [letter1, num1, letter2, num2], tp1, tp2, team, metadata)
     // console.log(iscorrect)
     if (!iscorrect || iscorrect[0] !== true) {
-      e.reply([`移动不正确`, segment.button([btns.移子, btns.帮助])])
+      e.reply([`移动不正确`, segment.button([btn.移子, btn.帮助])])
       return
     }
 
@@ -196,7 +162,7 @@ export class AnimalChess extends plugin {
       if (metadata[e.group_id].chessman[tp1].archive != team) {
         e.reply([
           `只能操作自己的棋子，你是${metadata[e.group_id].players[e.user_id].team}队`,
-          segment.button([btns.移子, btns.帮助]),
+          segment.button([btn.移子, btn.帮助]),
         ])
         return
       }
@@ -210,10 +176,10 @@ export class AnimalChess extends plugin {
 
       // 胜利提示
       if (iscorrect[1] === true) {
-        e.reply([`恭喜${team}队获得胜利`, await generate(e, tp1, tp2), segment.button([btns.发起, btns.帮助])])
+        e.reply([`恭喜${team}队获得胜利`, await generate(e, tp1, tp2), segment.button([btn.发起, btn.帮助])])
         over(e)
       } else {
-        e.reply([await generate(e, tp1, tp2), segment.button([btns.移动, btns.帮助])])
+        e.reply([await generate(e, tp1, tp2), segment.button([btn.移动, btn.帮助])])
       }
     }
   }
@@ -280,7 +246,7 @@ async function newgame(e) {
   }
   metadata[e.group_id].num = String(metadata[e.group_id].num)
   metadata[e.group_id].game = true
-  e.reply([await generate(e, tp1, tp2), segment.button([btns.移动, btns.帮助])])
+  e.reply([await generate(e, tp1, tp2), segment.button([btn.移动, btn.帮助])])
 }
 
 /**

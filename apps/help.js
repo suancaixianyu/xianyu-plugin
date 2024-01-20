@@ -1,7 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
-import { cwd } from '../config/global/metadata.js'
-import { command } from '../config/global/command.js'
+import { cwd, command, Btns } from '../config.js'
 
 export class xianyuhelp extends plugin {
   constructor() {
@@ -15,203 +14,41 @@ export class xianyuhelp extends plugin {
   }
 
   async doushouqi(e) {
-    let btns = [
-      [
-        {
-          text: '发起斗兽棋',
-          clicked_text: '/发起斗兽棋',
-          callback: '/发起斗兽棋',
-          send: true,
-        },
-        {
-          text: '加入斗兽棋',
-          clicked_text: '/加入斗兽棋',
-          callback: '/加入斗兽棋',
-          send: true,
-        },
-      ],
-      [
-        {
-          text: '结束斗兽棋',
-          clicked_text: '/结束斗兽棋',
-          callback: '/结束斗兽棋',
-          send: true,
-        },
-        {
-          text: '帮助',
-          clicked_text: '/斗兽棋帮助',
-          callback: '/斗兽棋帮助',
-          send: true,
-        },
-      ],
-    ]
-    image(e, 'doushouqi', '斗兽棋帮助', { _res: cwd }, btns)
+    let btn = Btns.斗兽棋
+    image(e, 'doushouqi', '斗兽棋帮助', { _res: cwd }, [
+      [btn.发起, btn.加入],
+      [btn.结束, btn.帮助],
+    ])
   }
 
   async guojixiangqi(e) {
-    let btns = [
-      [
-        {
-          text: '发起国际象棋',
-          clicked_text: '/发起国际象棋',
-          callback: '/发起国际象棋',
-          send: true,
-        },
-        {
-          text: '加入国际象棋',
-          clicked_text: '/加入国际象棋',
-          callback: '/加入国际象棋',
-          send: true,
-        },
-      ],
-      [
-        {
-          text: '结束国际象棋',
-          clicked_text: '/结束国际象棋',
-          callback: '/结束国际象棋',
-          send: true,
-        },
-        {
-          text: '帮助',
-          clicked_text: '/国际象棋帮助',
-          callback: '/国际象棋帮助',
-          send: true,
-        },
-      ],
-    ]
-    image(e, 'guojixiangqi', '国际象棋帮助', { _res: cwd }, btns)
+    let btn = Btns.国际象棋
+
+    image(e, 'guojixiangqi', '国际象棋帮助', { _res: cwd }, [
+      [btn.发起, btn.加入],
+      [btn.结束, btn.帮助],
+    ])
   }
 
   async xiangqi(e) {
-    let btns = [
-      [
-        {
-          text: '发起中国象棋',
-          clicked_text: '/发起中国象棋',
-          callback: '/发起中国象棋',
-          send: true,
-        },
-        {
-          text: '加入中国象棋',
-          clicked_text: '/加入中国象棋',
-          callback: '/加入中国象棋',
-          send: true,
-        },
-      ],
-      [
-        {
-          text: '结束中国象棋',
-          clicked_text: '/结束中国象棋',
-          callback: '/结束中国象棋',
-          send: true,
-        },
-        {
-          text: '帮助',
-          clicked_text: '/中国象棋帮助',
-          callback: '/中国象棋帮助',
-          send: true,
-        },
-      ],
-    ]
-    image(e, 'xiangqi', '象棋帮助', { _res: cwd }, btns)
+    let btn = Btns.象棋
+    image(e, 'xiangqi', '象棋帮助', { _res: cwd }, [
+      [btn.发起, btn.加入],
+      [btn.结束, btn.帮助],
+    ])
   }
 
   async saolei(e) {
-    let btns = [
-      [
-        {
-          text: '开始游戏',
-          clicked_text: '/扫雷',
-          callback: '/扫雷',
-          send: true,
-        },
-      ],
-      [
-        {
-          text: '简单',
-          clicked_text: '/扫雷难度简单',
-          callback: '/扫雷难度简单',
-          send: true,
-        },
-        {
-          text: '中等',
-          clicked_text: '/扫雷难度中等',
-          callback: '/扫雷难度中等',
-          send: true,
-        },
-        {
-          text: '困难',
-          clicked_text: '/扫雷难度困难',
-          callback: '/扫雷难度困难',
-          send: true,
-        },
-      ],
-      [
-        {
-          text: '设置布局',
-          input: '/扫雷设置布局9 9 10',
-          send: false,
-        },
-        {
-          text: '设置雷数',
-          input: '/扫雷设置地雷10',
-          send: false,
-        },
-        {
-          text: '初始化',
-          clicked_text: '/扫雷设置布局初始化',
-          callback: '/扫雷设置布局初始化',
-          send: true,
-        },
-      ],
-      [
-        {
-          text: '结束扫雷',
-          clicked_text: '/结束扫雷',
-          callback: '/结束扫雷',
-          send: true,
-        },
-      ],
-    ]
+    let btn = Btns.扫雷
+    let btns = [[btn.开始], [btn.简单, btn.中等, btn.困难], [btn.设置布局, btn.设置雷数, btn.设置初始化], [btn.结束]]
     image(e, 'saolei', '扫雷帮助', {}, btns)
   }
 
   async wuziqi(e) {
+    let btn = Btns.五子棋
     let btns = [
-      [
-        {
-          text: '开始游戏',
-          clicked_text: '/五子棋',
-          callback: '/五子棋',
-          send: true,
-        },
-        {
-          text: '帮助',
-          clicked_text: '/五子棋帮助',
-          callback: '/五子棋帮助',
-          send: true,
-        },
-      ],
-      [
-        {
-          text: '发起五子棋',
-          clicked_text: '/发起五子棋',
-          callback: '/发起五子棋',
-          send: true,
-        },
-        {
-          text: '加入五子棋',
-          clicked_text: '/加入五子棋',
-          callback: '/加入五子棋',
-          send: true,
-        },
-        {
-          text: '结束五子棋',
-          clicked_text: '/结束五子棋',
-          callback: '/结束五子棋',
-          send: true,
-        },
-      ],
+      [btn.开始, btn.帮助],
+      [btn.发起, btn.加入, btn.结束],
     ]
 
     image(e, 'wuziqi', '五子棋帮助', {}, btns)
@@ -220,50 +57,12 @@ export class xianyuhelp extends plugin {
   async help(e) {
     let _res = `${process.cwd()}/plugins/xianyu-plugin/resources/`
     _res = _res.replace(/\\/g, '/')
+    let btn = Btns.帮助
 
     let btns = [
-      [
-        {
-          text: '扫雷',
-          clicked_text: '/扫雷帮助',
-          callback: '/扫雷帮助',
-          send: true, // 是否直接发送
-        },
-        {
-          text: '象棋',
-          clicked_text: '/中国象棋帮助',
-          callback: '/中国象棋帮助',
-          send: true, // 是否直接发送
-        },
-      ],
-      [
-        {
-          text: '五子棋',
-          clicked_text: '/五子棋帮助',
-          callback: '/五子棋帮助',
-          send: true, // 是否直接发送
-        },
-        {
-          text: '国际象棋',
-          clicked_text: '/国际象棋帮助',
-          callback: '/国际象棋帮助',
-          send: true, // 是否直接发送
-        },
-        {
-          text: '斗兽棋',
-          clicked_text: '/斗兽棋帮助',
-          callback: '/斗兽棋帮助',
-          send: true, // 是否直接发送
-        },
-      ],
-      [
-        {
-          text: '用户使用数',
-          clicked_text: '/咸鱼统计',
-          callback: '/咸鱼统计',
-          send: true, // 是否直接发送
-        },
-      ],
+      [btn.扫雷, btn.象棋],
+      [btn.五子棋, btn.国际象棋],
+      [btn.斗兽棋, btn.统计],
     ]
     image(e, 'help', '咸鱼帮助', { _res: _res }, btns)
   }

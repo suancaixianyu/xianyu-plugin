@@ -1,77 +1,8 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
-import { gamemap, ABC, cwd } from '../config/global/metadata.js'
-import { command } from '../config/global/command.js'
+import { command, gamemap, ABC, cwd, Btns } from '../config.js'
 
-let btns = {
-  开始: {
-    text: '开始游戏',
-    clicked_text: '/扫雷',
-    callback: '/扫雷',
-    send: true,
-  },
-  帮助: {
-    text: '帮助',
-    clicked_text: '/扫雷帮助',
-    callback: '/扫雷帮助',
-    send: true,
-  },
-  插件帮助: {
-    text: '其他游戏',
-    clicked_text: '/咸鱼帮助',
-    callback: '/咸鱼帮助',
-    send: true,
-  },
-  简单: {
-    text: '简单',
-    clicked_text: '/扫雷难度简单',
-    callback: '/扫雷难度简单',
-    send: true,
-  },
-  中等: {
-    text: '中等',
-    clicked_text: '/扫雷难度中等',
-    callback: '/扫雷难度中等',
-    send: true,
-  },
-  困难: {
-    text: '困难',
-    clicked_text: '/扫雷难度困难',
-    callback: '/扫雷难度困难',
-    send: true,
-  },
-  结束: {
-    text: '结束扫雷',
-    clicked_text: '/结束扫雷',
-    callback: '/结束扫雷',
-    send: true,
-  },
-  设置雷: {
-    text: '设置雷数',
-    input: '/扫雷设置地雷10',
-    send: false,
-  },
-  设置: {
-    text: '设置布局',
-    input: '/扫雷设置布局9 9 10',
-    send: false,
-  },
-  翻开: {
-    text: '翻开',
-    input: '/翻开',
-    send: false,
-  },
-  标记: {
-    text: '标记',
-    input: '/标记',
-    send: false,
-  },
-  取消: {
-    text: '取消标记',
-    input: '/取消标记',
-    send: false,
-  },
-}
+let btn = Btns.扫雷
 
 export class newcomer extends plugin {
   constructor() {
@@ -92,11 +23,11 @@ export class newcomer extends plugin {
     if (/^(#|\/)?(扫雷|排雷)设置地?雷数量?\d+/.test(e.msg)) {
       let emsg = e.msg.match(/\d+/)
       if (+emsg[0] > +gamemap[e.group_id].rows * +gamemap[e.group_id].cols) {
-        return e.reply(['设置超出阈值', segment.button([btns.帮助])])
+        return e.reply(['设置超出阈值', segment.button([btn.帮助])])
       }
       gamemap[e.group_id].z = emsg[0] ? emsg[0] : 10
 
-      e.reply(['修改雷数：' + gamemap[e.group_id].z, segment.button([btns.开始])])
+      e.reply(['修改雷数：' + gamemap[e.group_id].z, segment.button([btn.开始])])
     }
 
     if (/^(#|\/)?(扫雷|排雷)设置布局 ?\d+\s\d+(\s\d+)?/.test(e.msg)) {
@@ -107,7 +38,7 @@ export class newcomer extends plugin {
       gamemap[e.group_id].cols = emsg[1] ? emsg[1] : 9
       e.reply([
         `修改游戏布局\n宽：${gamemap[e.group_id].rows}\n高：${gamemap[e.group_id].cols}\n雷：${gamemap[e.group_id].z}`,
-        segment.button([btns.开始]),
+        segment.button([btn.开始]),
       ])
     }
     if (/^(#|\/)?(扫雷|排雷)设置布局初始化/.test(e.msg)) {
@@ -116,7 +47,7 @@ export class newcomer extends plugin {
       gamemap[e.group_id].cols = 9
       e.reply([
         `初始化布局\n宽：${gamemap[e.group_id].rows}\n高：${gamemap[e.group_id].cols}\n雷：${gamemap[e.group_id].z}`,
-        segment.button([btns.开始]),
+        segment.button([btn.开始]),
       ])
     }
   }
@@ -135,12 +66,11 @@ export class newcomer extends plugin {
    */
   async goolevel(e) {
     newgame(e)
-    if (gamemap[e.group_id].game) return e.reply(['游戏已经开始', segment.button([btns.翻开, btns.标记, btns.取消], [btns.结束])])
+    if (gamemap[e.group_id].game) return e.reply(['游戏已经开始', segment.button([btn.翻开, btn.标记, btn.取消], [btn.结束])])
     let emsg = e.msg.replace(new RegExp(`^(#|\/)?(扫雷|排雷)难度(:|：)?`), '')
     switch (emsg) {
       case '简单':
         gamemap[e.group_id].z = 10
-        gamemap[e.group_id].rows = 10
         gamemap[e.group_id].rows = 9
         gamemap[e.group_id].cols = 9
         break
@@ -172,7 +102,7 @@ export class newcomer extends plugin {
   async ov(e) {
     newgame(e)
     if (gamemap[e.group_id].player == e.user_id || e.isMaster) {
-      e.reply(['已结束扫雷游戏', segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助])])
+      e.reply(['已结束扫雷游戏', segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
       over(e)
     } else {
       e.reply('你不是游戏发起人，不能主动结束游戏')
@@ -188,7 +118,7 @@ export class newcomer extends plugin {
   async removemark(e, isreply = true, active = true) {
     newgame(e)
     if (!gamemap[e.group_id].game) {
-      e.reply(['游戏未开始', segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助])])
+      e.reply(['游戏未开始', segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
       return false
     }
     if (active) gamemap[e.group_id].command = e.msg
@@ -230,7 +160,7 @@ export class newcomer extends plugin {
         isreply = false
       }
     }
-    if (isreply) e.reply([await image(e), segment.button([btns.翻开, btns.标记, btns.取消])])
+    if (isreply) e.reply([await image(e), segment.button([btn.翻开, btn.标记, btn.取消])])
   }
 
   /**
@@ -242,7 +172,7 @@ export class newcomer extends plugin {
   async mark(e, isreply = true, active = true) {
     newgame(e)
     if (!gamemap[e.group_id].game) {
-      e.reply(['游戏未开始', segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助])])
+      e.reply(['游戏未开始', segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
       return false
     }
     if (active) gamemap[e.group_id].command = e.msg
@@ -283,7 +213,7 @@ export class newcomer extends plugin {
         isreply = false
       }
     }
-    if (isreply) e.reply([await image(e), segment.button([btns.翻开, btns.标记, btns.取消])])
+    if (isreply) e.reply([await image(e), segment.button([btn.翻开, btn.标记, btn.取消])])
   }
 
   /**
@@ -295,7 +225,7 @@ export class newcomer extends plugin {
   async gooplye(e, isreply = true, active = true) {
     newgame(e)
     if (!gamemap[e.group_id].game) {
-      e.reply(['游戏未开始', segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助])])
+      e.reply(['游戏未开始', segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
       return false
     }
     if (active) gamemap[e.group_id].command = e.msg
@@ -379,7 +309,7 @@ export class newcomer extends plugin {
             loop(indexs)
           } catch (error) {
             gameover = true
-            e.reply(['调用栈溢出，请缩小布局大小', segment.button([btns.设置], [btns.帮助])])
+            e.reply(['调用栈溢出，请缩小布局大小', segment.button([btn.设置], [btn.帮助])])
             break
           }
         }
@@ -405,7 +335,7 @@ export class newcomer extends plugin {
       e.reply([
         '踩雷，游戏结束',
         await image(e),
-        segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助, btns.插件帮助]),
+        segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助, btn.插件帮助]),
       ])
     }
     // 判断胜利
@@ -414,10 +344,10 @@ export class newcomer extends plugin {
         gamemap[e.group_id].z &&
       !gameover
     ) {
-      e.reply(['恭喜您成功了', await image(e), segment.button([btns.开始], [btns.简单, btns.中等, btns.困难], [btns.帮助])])
+      e.reply(['恭喜您成功了', await image(e), segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
       gameover = true
     } else {
-      if (isreply) e.reply([await image(e), segment.button([btns.翻开, btns.标记, btns.取消])])
+      if (isreply) e.reply([await image(e), segment.button([btn.翻开, btn.标记, btn.取消])])
     }
     if (gameover) {
       over(e)
@@ -465,7 +395,8 @@ async function goo(e) {
    */
 
   if (gamemap[e.group_id].game) {
-    e.reply(['扫雷游戏已经开始', await image(e), segment.button([btns.翻开], [btns.帮助], [btns.结束])])
+    // e.reply(['扫雷游戏已经开始', await image(e), segment.button([btn.翻开], [btn.帮助], [btn.结束])])
+    e.reply(['扫雷游戏已经开始', await image(e), segment.button([btn.翻开], [btn.帮助], [btn.结束])])
     return
   }
 
@@ -510,7 +441,7 @@ async function goo(e) {
       gamemap[e.group_id].mark[i + '-' + j] = false
 
       // 设置显示的坐标
-      gamemap[e.group_id].mun.push(ABC[i] + j)
+      // gamemap[e.group_id].mun.push(ABC[i] + j)
     }
   }
   // 实际雷数量
@@ -541,7 +472,8 @@ async function goo(e) {
   // 上帝地图
   // console.log(gamemap[e.group_id].archive);
   gamemap[e.group_id].mun = String(gamemap[e.group_id].mun)
-  e.reply([await image(e), segment.button([btns.翻开, btns.帮助])])
+  // e.reply([await image(e), segment.button([btn.翻开, btn.帮助])])
+  e.reply([await image(e), segment.button([btn.翻开, btn.帮助])])
 
   gamemap[e.group_id].game = true
 }
@@ -558,77 +490,56 @@ async function over(e) {
   gamemap[e.group_id].data_map1 = [] // 添加数字后的地图数据
 }
 
-/**
- * 发送图片
- */
 async function image(e) {
-  /**
-   * 0：翻开空
-   * 1-8：雷数量
-   * 9：雷
-   * -：未翻开
-   * +：标记
-   * x：踩中的雷
-   */
+  // gamemap[e.group_id].rows = 9   x
+  // gamemap[e.group_id].cols = 9   y
 
-  let data_map = [] // 输出的地图
-  let val = Object.values(gamemap[e.group_id].archive)
-  // console.log(val)
-  let a = +gamemap[e.group_id].z // 输出的地雷数量
+  let mark = gamemap[e.group_id].mark // 插旗
+  let isopen = gamemap[e.group_id].isopen // 翻开
+  let archive = gamemap[e.group_id].archive // 地图样貌
+  let gameover = Object.values(archive).includes('x') // 是否踩雷
+  let z = String(gamemap[e.group_id].z - Object.values(mark).filter(Boolean).length) // 剩余未标记数
+  z = z.length <= 2 ? '0' + z : z // 补一个0
+  z = z.split('')
 
-  let mark1 = Object.values(gamemap[e.group_id].mark) // 标记的坐标
-  let found = val.includes('x')
-  if (found) {
-    // 遍历翻开
-    val.forEach((el, index) => {
-      // 显示翻开
-      data_map.push(val[index])
-    })
-  } else {
-    // 遍历翻开
-    Object.values(gamemap[e.group_id].isopen).forEach((el, index) => {
-      if (el) {
-        // 显示翻开
-        data_map.push(val[index])
-      } else if (mark1[index]) {
-        a = a - 1
-        data_map.push('+')
+  let map = [] // 最终地图，二维数组
+  let axis = [] // 坐标显示，二维数组
+
+  // 遍历地图
+  for (let i = 0; i < gamemap[e.group_id].cols; i++) {
+    map[i] = map[i] ?? []
+    axis[i] = axis[i] ?? []
+    for (let j = 0; j < gamemap[e.group_id].rows; j++) {
+      axis[i][j] = ''
+      // 如果踩雷
+      if (gameover) {
+        map[i][j] = archive[`${i}-${j}`]
+      } else if (isopen[`${i}-${j}`]) {
+        // 被翻开，显示数字
+        map[i][j] = archive[`${i}-${j}`]
       } else {
-        data_map.push('-')
+        // 没有被翻开，有棋子显示旗子
+        map[i][j] = mark[`${i}-${j}`] ? 'on' : 'off'
+        axis[i][j] = `${ABC[i]}${j}`
       }
-    })
-  }
-  // 创建地图数组
-  let map = String(data_map)
-  let uid = e.user_id
-  // 设置右上角头像，区分群和频道
-  if (e.message_type === 'guild') {
-    uid = Bot.uin
+    }
   }
 
-  /**
-   * map 地图
-   * headurl 右上角头像
-   * l 左上角雷数量
-   * x 宽度
-   * c 画布尺寸
-   * muns 地图中显示的数字
-   * command 当前指令
-   */
+  console.log('axis', axis, 'map', map)
+
   let data = {
     quality: 100,
-    tplFile: './plugins/xianyu-plugin/resources/html/扫雷.html',
-    map: map,
-    headurl: 'http://q1.qlogo.cn/g?b=qq&s=100&nk=' + uid,
-    l: a,
-    x: gamemap[e.group_id].rows,
-    c: 768,
-    muns: gamemap[e.group_id].mun,
-    command: gamemap[e.group_id].command,
-    _res: cwd,
+    tplFile: './plugins/xianyu-plugin/resources/html/扫雷1.html',
+    _mapData: {
+      z,
+      map,
+      axis,
+      size: 768 / gamemap[e.group_id].rows, // 每一格大小
+      command: gamemap[e.group_id].command, // 当前指令
+      _res: cwd,
+    },
   }
-
-  let img = await puppeteer.screenshot('扫雷', {
+  let img = await puppeteer.screenshot('扫雷1', {
     ...data,
   })
   return img
