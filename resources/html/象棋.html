@@ -45,7 +45,23 @@
       </table>
     </div>
   </div>
-  <div style="text-align: center;">Created by Yunzai-Bot & xianyu-plugin</div>
+  <div style="display: flex;justify-content: center;align-items: center;">
+    <h1 style="margin: 16px 8px;">当前行动：</h1>
+    {{if nickname == '红'}}
+    <div class="lattice" style="width: 73px;
+      height: 75px;
+      margin: 0rem 0.15rem;
+      background-size: cover;background-image: url('F:/yunzai/Yunzai/plugins/xianyu-plugin/resources/html/img/r_j.png')"></div>
+    {{/if}}
+    {{if nickname == '黑'}}
+   <div class="lattice" style="width: 73px;
+      height: 75px;
+      margin: 0rem 0.15rem;
+      background-size: cover;background-image: url('F:/yunzai/Yunzai/plugins/xianyu-plugin/resources/html/img/b_j.png')"></div>
+    {{/if}}
+    <h4 style="margin: 16px;">Created by Yunzai-Bot & xianyu-plugin</h4>
+  </div>
+  
 
   <script>
 
@@ -129,7 +145,7 @@
 
     #box {
       display: flex;
-      height: 800px;
+      height: 830px;
 
       justify-content: center;
       flex-wrap: wrap;

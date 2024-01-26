@@ -49,10 +49,10 @@ let chineseNumbers = [
 ]
 
 /**
- * @param {Array} animalchess 斗兽棋初始地图
- * @param {Array} animalchess 斗兽棋初始地图
+ * 初始地图
  */
 let initialmap = {
+  /** 斗兽棋初始地图 */
   animalchess: [
     '狮',
     '空',
@@ -118,6 +118,7 @@ let initialmap = {
     '空',
     '狮',
   ],
+  /** 国际象棋初始地图 */
   chess: [
     '车',
     '马',
@@ -184,6 +185,7 @@ let initialmap = {
     '马',
     '车',
   ],
+  /** 象棋初始地图 */
   chinesechess: [
     ['車', '馬', '象', '士', '将', '士', '象', '馬', '車'],
     ['空', '空', '空', '空', '空', '空', '空', '空', '空'],
