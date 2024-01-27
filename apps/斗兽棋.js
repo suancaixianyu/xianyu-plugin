@@ -42,7 +42,7 @@ export class AnimalChess extends plugin {
     // 判断玩家是否在游戏中
     if (metadata[e.group_id] && metadata[e.group_id].players[e.user_id]) {
       let team = metadata[e.group_id].players[e.user_id].team
-      console.log('player：' + team)
+      // console.log('player：' + team)
       // 对方组
       let isAB = '红蓝'
       isAB = isAB.replace(new RegExp(team), '')
@@ -301,7 +301,7 @@ async function generate(e, tp1, tp2) {
     草地颜色: meadow,
   }
 
-  console.log('截图：', data)
+  // console.log('截图：', data)
 
   let img = await puppeteer.screenshot('斗兽棋', {
     ...data,

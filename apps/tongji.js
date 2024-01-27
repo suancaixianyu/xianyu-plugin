@@ -57,7 +57,7 @@ export class xianyu_tongji extends plugin {
         if (!response.ok) {
           throw new Error('Network response was not ok')
         }
-        console.log('请求成功')
+        // console.log('请求成功')
         return response.json()
       })
       .catch(() => {

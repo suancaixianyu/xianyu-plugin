@@ -136,7 +136,7 @@ export class newcomer extends plugin {
       letter = letter.charCodeAt(0) - 65 // 转数字 A = 0
 
       let axis = `${letter}-${emsg2}`
-      console.log('取消标记axis', axis)
+      // console.log('取消标记axis', axis)
 
       // 判断坐标是否存在
       if (gamemap[e.group_id].archive[axis]) {
@@ -190,7 +190,7 @@ export class newcomer extends plugin {
       letter = letter.charCodeAt(0) - 65 // 转数字 A = 0
 
       let axis = `${letter}-${emsg2}`
-      console.log('标记axis', axis)
+      // console.log('标记axis', axis)
 
       // 判断坐标是否存在
       if (gamemap[e.group_id].archive[axis]) {
@@ -525,7 +525,7 @@ async function image(e) {
     }
   }
 
-  console.log('axis', axis, 'map', map)
+  // console.log('axis', axis, 'map', map)
 
   let data = {
     quality: 100,
