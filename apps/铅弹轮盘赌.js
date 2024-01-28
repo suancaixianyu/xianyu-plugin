@@ -73,7 +73,6 @@ export class StartGame extends plugin {
   }
 
   async gameover(e) {
-    e.nickname = e.nickname ?? e.sender.nickname
     isgame(e)
     /** 当前游戏 */
     let g = game[e.group_id]
@@ -83,12 +82,11 @@ export class StartGame extends plugin {
     }
     if (!g.player[e.user_id]) return e.reply('你不在游戏中，无法操作')
 
-    sendCard(e, `${e.nickname}退出游戏，游戏结束`, [[btns.发起游戏], [btns.帮助]])
+    sendCard(e, `${e.sender.nickname}退出游戏，游戏结束`, [[btns.发起游戏], [btns.帮助]])
     delete game[e.group_id]
   }
 
   async help(e) {
-    e.nickname = e.nickname ?? e.sender.nickname
     sendCard(
       e,
       `BUCKSHOT ROULETTE游戏帮助
@@ -120,7 +118,6 @@ export class StartGame extends plugin {
    * 创建游戏
    */
   async newgame(e) {
-    e.nickname = e.nickname ?? e.sender.nickname
     isgame(e)
     /** 当前游戏 */
     let g = game[e.group_id]
@@ -128,7 +125,7 @@ export class StartGame extends plugin {
 
     // 创建角色
     g.player[e.user_id] = {
-      name: e.nickname,
+      name: e.sender.nickname,
       prop: getProp(10),
       health: 2,
       islock: false,
@@ -148,7 +145,6 @@ export class StartGame extends plugin {
    * 开始游戏
    */
   async start(e) {
-    e.nickname = e.nickname ?? e.sender.nickname
     isgame(e)
     /** 当前游戏 */
     let g = game[e.group_id]
@@ -178,21 +174,17 @@ export class StartGame extends plugin {
 
     // 设置行动人
     if (g.player['<人机>']) {
-      g.action = e.nickname
+      g.action = e.sender.nickname
     } else {
       g.action = Object.keys(g.player)[0]
     }
     let zzz = arr.map((boolValue) => (boolValue ? '真' : '假'))
 
     // 回复消息
-    sendCard(e, `游戏开始！\n当前回合: ${g.round}\n行动者: ${g.action}\n当前子弹为: ${zzz.join(',')}`, [
-      [btns.打对方, btns.打自己],
-      [btns.帮助],
-    ])
+    sendCard(e, `游戏开始！\n当前回合: ${g.round}\n行动者: ${g.action}\n当前子弹为: ${zzz.join(',')}`, [[btns.打对方, btns.打自己], [btns.帮助]])
   }
 
   async look(e) {
-    e.nickname = e.nickname ?? e.sender.nickname
     isgame(e)
     /** 当前游戏 */
     let g = game[e.group_id]
@@ -201,7 +193,7 @@ export class StartGame extends plugin {
       return
     }
     if (!g.player[e.user_id]) return e.reply('你不在游戏中，无法操作')
-    if (g.action !== e.nickname) return e.reply('当前不是你的回合')
+    if (g.action !== e.sender.nickname) return e.reply('当前不是你的回合')
 
     let opponent = Object.keys(g.player).find((el) => el !== e.user_id)
 
@@ -232,7 +224,6 @@ export class StartGame extends plugin {
    * 游戏操作-使用道具
    */
   async operate(e) {
-    e.nickname = e.nickname ?? e.sender.nickname
     isgame(e)
     /** 当前游戏 */
     let g = game[e.group_id]
@@ -241,7 +232,7 @@ export class StartGame extends plugin {
       return
     }
     if (!g.player[e.user_id]) return e.reply('你不在游戏中，无法操作')
-    if (g.action !== e.nickname) return e.reply('当前不是你的回合')
+    if (g.action !== e.sender.nickname) return e.reply('当前不是你的回合')
 
     let propid
     let id
@@ -281,26 +272,22 @@ export class StartGame extends plugin {
         if (isAI) {
           g.aimsg += `\n使用了${propName[id]}\n枪里的子弹为：${g.current ? '真弹' : '假弹'}`
         } else {
-          sendCard(
-            e,
-            `你使用了${propName[id]}\n枪里的子弹为：${g.current ? '真弹' : '假弹'}\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(
-              e
-            )}\n＿＿＿＿＿＿＿＿＿＿`,
-            [getbtnB(e), [btns.打对方], [btns.打自己]]
-          )
+          sendCard(e, `你使用了${propName[id]}\n枪里的子弹为：${g.current ? '真弹' : '假弹'}\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [
+            getbtnB(e),
+            [btns.打对方],
+            [btns.打自己],
+          ])
         }
         break
       case 2:
         if (isAI) {
           g.aimsg += `\n使用了${propName[id]}\n抛出了一枚：${g.current ? '真弹' : '假弹'}`
         } else {
-          sendCard(
-            e,
-            `你使用了${propName[id]}\n抛出了一枚：${g.current ? '真弹' : '假弹'}\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(
-              e
-            )}\n＿＿＿＿＿＿＿＿＿＿`,
-            [getbtnB(e), [btns.打对方], [btns.打自己]]
-          )
+          sendCard(e, `你使用了${propName[id]}\n抛出了一枚：${g.current ? '真弹' : '假弹'}\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [
+            getbtnB(e),
+            [btns.打对方],
+            [btns.打自己],
+          ])
         }
 
         if (g.bullet.length == 0) {
@@ -318,46 +305,30 @@ export class StartGame extends plugin {
         if (g.round == 3 && h <= 2) {
           if (isAI) g.aimsg += `\n使用了${propName[id]}，但是没有奏效`
           else {
-            sendCard(
-              e,
-              `你使用了${propName[id]}，但是没有奏效\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
-              [getbtnB(e), [btns.打对方], [btns.打自己]]
-            )
+            sendCard(e, `你使用了${propName[id]}，但是没有奏效\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [getbtnB(e), [btns.打对方], [btns.打自己]])
           }
         } else {
           g.player[e.user_id].health = Math.min(h + 1, 6)
           if (isAI) g.aimsg += `\n使用了${propName[id]}\n当前血量为：${g.player[e.user_id].health}`
           else
-            sendCard(
-              e,
-              `你使用了${propName[id]}\n当前血量为：${g.player[e.user_id].health}\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(
-                e
-              )}\n＿＿＿＿＿＿＿＿＿＿`,
-              [getbtnB(e), [btns.打对方], [btns.打自己]]
-            )
+            sendCard(e, `你使用了${propName[id]}\n当前血量为：${g.player[e.user_id].health}\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [
+              getbtnB(e),
+              [btns.打对方],
+              [btns.打自己],
+            ])
         }
 
         break
       case 4:
-        let opponent = Object.keys(g.player).find((el) => el !== e.nickname)
+        let opponent = Object.keys(g.player).find((el) => el !== e.sender.nickname)
         g.player[opponent].islock = true
         if (isAI) g.aimsg += `\n使用了${propName[id]}，你受限一回合`
-        else
-          sendCard(
-            e,
-            `你使用了${propName[id]}，对方受限一回合\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
-            [getbtnB(e), [btns.打对方], [btns.打自己]]
-          )
+        else sendCard(e, `你使用了${propName[id]}，对方受限一回合\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [getbtnB(e), [btns.打对方], [btns.打自己]])
         break
       case 5:
         g.player[e.user_id].isProp = true
         if (isAI) g.aimsg += `\n使用了${propName[id]}，当前回合伤害加一`
-        else
-          sendCard(
-            e,
-            `你使用了${propName[id]}，当前回合伤害加一\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
-            [getbtnB(e), [btns.打对方], [btns.打自己]]
-          )
+        else sendCard(e, `你使用了${propName[id]}，当前回合伤害加一\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [getbtnB(e), [btns.打对方], [btns.打自己]])
         break
     }
 
@@ -372,7 +343,6 @@ export class StartGame extends plugin {
    * 游戏操作-攻击
    */
   async attack(e) {
-    e.nickname = e.nickname ?? e.sender.nickname
     isgame(e)
     /** 当前游戏 */
     let g = game[e.group_id]
@@ -381,11 +351,11 @@ export class StartGame extends plugin {
       return
     }
     if (!g.player[e.user_id]) return e.reply('你不在游戏中，无法操作')
-    if (g.action !== e.nickname) return e.reply('当前不是你的回合')
+    if (g.action !== e.sender.nickname) return e.reply('当前不是你的回合')
 
     let target = e.msg.replace(/^(#|\/)?-/, '')
     /** 对手 */
-    let opponent = Object.keys(g.player).find((el) => el !== e.nickname)
+    let opponent = Object.keys(g.player).find((el) => el !== e.sender.nickname)
 
     /** 是否有玩家死亡 */
     let die = false
@@ -397,7 +367,7 @@ export class StartGame extends plugin {
     let damage = 1
 
     /** 本次是否为人机 */
-    let isAI = e.nickname == '<人机>'
+    let isAI = e.sender.nickname == '<人机>'
 
     // console.log(
     //   '扣血前血量',
@@ -419,11 +389,7 @@ export class StartGame extends plugin {
           die = true
         } else {
           if (isAI) g.aimsg += `\n朝自己射击，造成了${damage}点伤害，当前剩余${g.player[e.user_id].health}`
-          else
-            sendCard(e, `朝自己射击，造成了${damage}点伤害，当前剩余${g.player[e.user_id].health}`, [
-              [btns.打对方, btns.打自己],
-              [btns.查看道具],
-            ])
+          else sendCard(e, `朝自己射击，造成了${damage}点伤害，当前剩余${g.player[e.user_id].health}`, [[btns.打对方, btns.打自己], [btns.查看道具]])
         }
       } else {
         if (isAI) g.aimsg += '\n朝自己射击，没有受到伤害'
@@ -443,11 +409,7 @@ export class StartGame extends plugin {
           die = true
         } else {
           if (isAI) g.aimsg += `\n朝你射击，造成了${damage}点伤害，你血量剩余${g.player[opponent].health}`
-          else
-            sendCard(e, `朝对方射击，造成了${damage}点伤害，对方血量剩余${g.player[opponent].health}`, [
-              [btns.打对方, btns.打自己],
-              [btns.查看道具],
-            ])
+          else sendCard(e, `朝对方射击，造成了${damage}点伤害，对方血量剩余${g.player[opponent].health}`, [[btns.打对方, btns.打自己], [btns.查看道具]])
         }
       } else {
         if (isAI) g.aimsg += '\n朝你射击，没有受到伤害'
@@ -496,12 +458,7 @@ export class StartGame extends plugin {
       if (g.player[opponent].islock) {
         g.player[opponent].islock = false
         if (isAI) g.aimsg += '\n对方被锁，继续行动'
-        else
-          sendCard(e, `对方被锁，你继续行动\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [
-            getbtnB(e),
-            [btns.打对方],
-            [btns.打自己],
-          ])
+        else sendCard(e, `对方被锁，你继续行动\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [getbtnB(e), [btns.打对方], [btns.打自己]])
 
         if (isAI) {
           await 延迟()
@@ -511,7 +468,7 @@ export class StartGame extends plugin {
       } else {
         if (!iskeep) {
           g.action = opponent // 设置行动玩家
-          e.nickname = opponent
+          e.sender.nickname = opponent
         }
         if (g.action == '<人机>' && !iskeep) {
           await 延迟()
@@ -530,31 +487,17 @@ export class StartGame extends plugin {
               console.log('ai行动3')
               this.AI(e)
             } else {
-              sendCard(e, `继续行动\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [
-                getbtnB(e),
-                [btns.打对方],
-                [btns.打自己],
-              ])
+              sendCard(e, `继续行动\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [getbtnB(e), [btns.打对方], [btns.打自己]])
             }
           } else {
             if (isAI) {
               e.user_id = g.action
-              sendCard(
-                e,
-                `${g.aimsg}\n接下来是${g.action}行动\n＿＿＿＿＿＿＿＿＿＿\n${g.action}持有道具：\n${getbtn(
-                  e
-                )}\n＿＿＿＿＿＿＿＿＿＿`,
-                [getbtnB(e), [btns.打对方], [btns.打自己]]
-              )
+              sendCard(e, `${g.aimsg}\n接下来是${g.action}行动\n＿＿＿＿＿＿＿＿＿＿\n${g.action}持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [getbtnB(e), [btns.打对方], [btns.打自己]])
 
               g.aimsg = 'AI行动：'
             } else {
               e.user_id = g.action
-              sendCard(
-                e,
-                `接下来是${g.action}行动\n＿＿＿＿＿＿＿＿＿＿\n${g.action}持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
-                [getbtnB(e), [btns.打对方], [btns.打自己]]
-              )
+              sendCard(e, `接下来是${g.action}行动\n＿＿＿＿＿＿＿＿＿＿\n${g.action}持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [getbtnB(e), [btns.打对方], [btns.打自己]])
             }
           }
         }
@@ -567,7 +510,6 @@ export class StartGame extends plugin {
    * 如果有道具，随机选择使用什么道具
    */
   async AI(e) {
-    e.nickname = e.nickname ?? e.sender.nickname
     await 延迟()
     isgame(e)
 
@@ -616,7 +558,6 @@ export class StartGame extends plugin {
   }
 
   async log(e) {
-    e.nickname = e.nickname ?? e.sender.nickname
     console.log('game', JSON.stringify(game), e)
     sendCard(e, '测试按钮', [[btns.测试, btns.测试, btns.测试, btns.原神]])
     return
@@ -657,17 +598,9 @@ function nextGame(e, die = false) {
 
   let zzz = arr.map((boolValue) => (boolValue ? '真' : '假'))
   if (die) {
-    sendCard(e, `新一轮开始\n当前回合：${g.round}\n当前子弹为：${zzz.join(',')}\n${g.player[g.action].name}行动：`, [
-      [btns.查看道具],
-      [btns.打对方],
-      [btns.打自己],
-    ])
+    sendCard(e, `新一轮开始\n当前回合：${g.round}\n当前子弹为：${zzz.join(',')}\n${g.player[g.action].name}行动：`, [[btns.查看道具], [btns.打对方], [btns.打自己]])
   } else {
-    sendCard(e, `子弹重新填满\n当前子弹为：${zzz.join(',')}\n${g.player[g.action].name}行动：`, [
-      [btns.查看道具],
-      [btns.打对方],
-      [btns.打自己],
-    ])
+    sendCard(e, `子弹重新填满\n当前子弹为：${zzz.join(',')}\n${g.player[g.action].name}行动：`, [[btns.查看道具], [btns.打对方], [btns.打自己]])
   }
 }
 
@@ -799,7 +732,7 @@ function getProp(count, arr = [1, 2, 3, 4, 5]) {
 
 async function adduser(e) {
   const botname = JSON.parse(fs.readFileSync(`./package.json`, 'utf-8'))
-  const nickname = e.nickname
+  const nickname = e.sender.nickname
 
   const data = JSON.stringify({
     userid: e.user_id,
