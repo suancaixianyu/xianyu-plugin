@@ -25,7 +25,8 @@ export class xianyu_tongji extends plugin {
     let isok = false
     let comd = Object.values(command).flat()
     const botname = JSON.parse(fs.readFileSync(`./package.json`, 'utf-8'))
-    const nickname = e.nickname ?? e.sender.nickname
+    let nickname = e.nickname ?? e.sender.nickname
+    nickname = nickname ?? e.user_name
     comd.forEach((el) => {
       if (typeof el.reg == 'string') el.reg = new RegExp(el.reg)
       if (`${el.reg}` != '/.*/gi' && el.reg.test(e.msg)) {
@@ -43,6 +44,7 @@ export class xianyu_tongji extends plugin {
       nickname: nickname,
       plugin: AppName,
       bot: botname.name,
+      channel: e.bot.adapter.name,
     })
 
     let requestOptions = {
