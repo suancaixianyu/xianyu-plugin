@@ -236,4 +236,20 @@ export const Btns = {
       send: true, // 是否直接发送
     },
   },
+  铅弹轮盘: {
+    查看道具: { text: '查看道具', clicked_text: '/查看道具', callback: '/查看道具', send: true },
+    使用道具: { text: '使用道具', clicked_text: '/使用道具', callback: '/使用道具', send: false },
+    打对方: { text: '->对手', clicked_text: '/-对方', callback: '/-对方', send: true },
+    打自己: { text: '->自己', clicked_text: '/-自己', callback: '/-自己', send: true },
+    开始游戏: { text: '开始游戏', clicked_text: '/开始游戏', callback: '/开始游戏', send: true },
+    人机战: { text: '人机战', clicked_text: '/开始游戏', callback: '/开始游戏', send: true },
+    发起游戏: { text: '发起游戏', clicked_text: '/发起游戏', callback: '/发起游戏', send: true },
+    加入游戏: { text: '加入游戏', clicked_text: '/加入游戏', callback: '/加入游戏', send: true },
+    帮助: { text: '游戏帮助', clicked_text: '/铅弹游戏帮助', callback: '/铅弹游戏帮助', send: true },
+    原神: {
+      text: '没意思，原神，启动！',
+      type: 3,
+      link: 'https://ys.mihoyo.com/cloud/?utm_source=default#/',
+    },
+  },
 }
