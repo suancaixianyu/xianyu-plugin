@@ -19,11 +19,9 @@
       flex-direction: column;
     }
 
-    body {
-      background: url('{{_res}}/html/img/background.png') no-repeat center center fixed;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center center;
+    body{
+      background: url('{{_res}}/html/img/background.png') ;
+      background-size: 100%;
       margin: 0;
       padding: 0;
       font-family: 'xianyu', sans-serif;
@@ -90,12 +88,17 @@
     th,
     td,
     th,
-    #help {
+    #help,.qd {
       border: 2px solid #B58863;
       border-left-color: #fff;
       border-top-color: #fff;
       text-align: left;
       padding: 8px;
+    }
+    .section {
+      text-align: center;
+      flex-basis: 30%;
+      margin-bottom: 30px;
     }
   </style>
 </head>
@@ -268,6 +271,64 @@
                 <th>结束五子棋</td>
                 <td>结束游戏</td>
                 <td>结束五子棋</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="content ">
+
+          <h3>铅弹轮盘</h3>
+          <div class="container qd">
+            <section class="section">
+              <p>道具说明</p>
+              <p>放大镜：查看当前子弹</p>
+              <p>酒：抛出当前子弹</p>
+              <p>烟：恢复一点血</p>
+              <p>手铐：限制对方一回合</p>
+              <p>锯子：当前回合增加一点伤害</p>
+            </section>
+            <section class="section">
+              <p>行动规则</p>
+              <p>使用道具不会结束当前行动，打自己时如果没有受到伤害也不会结束当前行动，反之会。打对方则会结束当前行动</p>
+            </section>
+            <section class="section">
+              <p>其他事项</p>
+              <p>道具在第二轮发放，为性能考虑，AI的每一步操作都会有一到两秒的等待时间。机器人发送的消息前后顺序可能不一致，请仔细观察发送的内容</p>
+            </section>
+          </div>
+
+          <table>
+            <tbody>
+              <tr>
+                <th>指令</th>
+                <th>说明</th>
+                <th>示例</th>
+              </tr>
+              <tr>
+                <th>发起/加入游戏<br></td>
+                <td>发起游戏，可选单人开局</td>
+                <td>发起游戏、加入游戏、开始游戏</td>
+              </tr>
+              <tr>
+                <th>结束游戏</td>
+                <td>结束游戏</td>
+                <td>结束游戏</td>
+              </tr>
+              <tr>
+                <th>查看道具</td>
+                <td>查看双方道具</td>
+                <td>查看道具</td>
+              </tr>
+              <tr>
+                <th>使用道具</td>
+                <td>使用道具</td>
+                <td>使用放大镜</td>
+              </tr>
+              <tr>
+                <th>射击</td>
+                <td>发起攻击，可选朝向谁开枪</td>
+                <td>打对方、打自己</td>
               </tr>
             </tbody>
           </table>
