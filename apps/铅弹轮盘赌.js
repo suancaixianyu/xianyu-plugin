@@ -730,7 +730,7 @@ function getProp(count, arr = [1, 2, 3, 4, 5]) {
   return result
 }
 
-async function adduser(e) {
+function adduser(e) {
   const botname = JSON.parse(fs.readFileSync(`./package.json`, 'utf-8'))
   const nickname = e.sender.nickname
 
@@ -742,11 +742,13 @@ async function adduser(e) {
       bot: botname.name,
       channel: e.bot.adapter.name,
     })
+    let myHeaders = new Headers()
+    myHeaders.append('Content-Type', 'application/json')
 
     let requestOptions = {
       method: 'POST',
-      headers: myHeaders,
       body: raw,
+      headers: myHeaders,
       redirect: 'follow',
     }
 
@@ -756,12 +758,13 @@ async function adduser(e) {
           throw new Error('Network response was not ok')
         }
         // console.log('请求成功')
-        return response.json()
       })
       .catch(() => {
         return false
       })
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
 
   return false
 }
