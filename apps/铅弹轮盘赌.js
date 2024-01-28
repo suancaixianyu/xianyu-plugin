@@ -734,25 +734,33 @@ async function adduser(e) {
   const botname = JSON.parse(fs.readFileSync(`./package.json`, 'utf-8'))
   const nickname = e.sender.nickname
 
-  const data = JSON.stringify({
-    userid: e.user_id,
-    nickname: nickname,
-    plugin: 'Buckshot-Roulette',
-    bot: botname.name,
-  })
-
-  const config = {
-    method: 'post',
-    maxBodyLength: Infinity,
-    url: 'https://www.schub.wiki/xyapi/adduser',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: data,
-  }
-
   try {
-    axios.request(config)
+    const raw = JSON.stringify({
+      userid: e.user_id,
+      nickname: nickname,
+      plugin: 'Buckshot-Roulette',
+      bot: botname.name,
+      channel: e.bot.adapter.name,
+    })
+
+    let requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    }
+
+    fetch('https://www.schub.wiki/xyapi/adduser', requestOptions)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok')
+        }
+        // console.log('请求成功')
+        return response.json()
+      })
+      .catch(() => {
+        return false
+      })
   } catch (error) {}
 
   return false
