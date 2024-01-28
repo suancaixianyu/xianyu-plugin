@@ -229,6 +229,12 @@ export const Btns = {
       callback: '/斗兽棋帮助',
       send: true, // 是否直接发送
     },
+    铅弹轮盘: {
+      text: '铅弹轮盘',
+      clicked_text: '/铅弹帮助',
+      callback: '/铅弹帮助',
+      send: true, // 是否直接发送
+    },
     统计: {
       text: '用户使用数',
       clicked_text: '/咸鱼统计',
