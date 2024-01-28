@@ -60,7 +60,7 @@ export class xianyuhelp extends plugin {
     let btn = Btns.帮助
 
     let btns = [
-      [btn.扫雷, btn.象棋],
+      [btn.扫雷, btn.象棋, btn.铅弹轮盘],
       [btn.五子棋, btn.国际象棋],
       [btn.斗兽棋, btn.统计],
     ]
