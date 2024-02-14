@@ -332,11 +332,7 @@ export class newcomer extends plugin {
 
     if (outcome == 'fail') {
       gameover = true
-      e.reply([
-        '踩雷，游戏结束',
-        await image(e),
-        segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助, btn.插件帮助]),
-      ])
+      e.reply(['踩雷，游戏结束', await image(e), segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
     }
     // 判断胜利
     if (
