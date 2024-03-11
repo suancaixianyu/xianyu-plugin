@@ -14,7 +14,7 @@ export class xianyu_tongji extends plugin {
   }
 
   async tongji(e) {
-    let res = await fetch('https://www.schub.wiki/xyapi/userlist')
+    let res = await fetch('https://suancaixianyu.cn/xyapi/userlist')
     let obj = await res.json()
     if (obj.code == 200) {
       e.reply(`用户列表(机器人：数量)：${obj.data}`)
@@ -54,7 +54,7 @@ export class xianyu_tongji extends plugin {
       redirect: 'follow',
     }
 
-    fetch('https://www.schub.wiki/xyapi/adduser', requestOptions)
+    fetch('https://suancaixianyu.cn/xyapi/adduser', requestOptions)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok')
