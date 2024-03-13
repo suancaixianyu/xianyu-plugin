@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { propName } from '../config.js'
+import fs from 'node:fs'
 
 /** 游戏数据 */
 const game = {}
