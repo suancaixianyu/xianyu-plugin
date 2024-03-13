@@ -1,5 +1,5 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import fs from 'fs'
+import fs from 'node:fs'
 import { command, AppName } from '../config.js'
 
 export class xianyu_tongji extends plugin {
