@@ -10,22 +10,21 @@
  * @param {String} player 游戏发起人
  * @returns 扫雷地图
  */
-let gamemap = {}
+export let gamemap = {}
 /** 扫雷画布宽度 */
-let c = 768
+export let c = 768
 
 // 公用
 /** 地图显示的字母 */
-let ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-let AppName = 'xianyu-plugin'
+export let ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+export let AppName = 'xianyu-plugin'
 /** html路径 */
-let cwd = `${process.cwd()}/plugins/${AppName}/resources/html/`
-cwd = cwd.replace(/\\/g, '/')
-let DirPath = `${process.cwd()}/plugins/${AppName}/`
+export let cwd = `${process.cwd()}/plugins/${AppName}/resources/html/`.replace(/\\/g, '/')
+export let DirPath = `${process.cwd()}/plugins/${AppName}/`
 /** 识别棋子名称 */
-let chinesechessname = ['車', '馬', '象', '士', '将', '炮', '兵', '卒', '仕', '相', '帅', '马', '车']
+export let chinesechessname = ['車', '馬', '象', '士', '将', '炮', '兵', '卒', '仕', '相', '帅', '马', '车']
 /** 识别中文数字 */
-let chineseNumbers = [
+export let chineseNumbers = [
   '一',
   '二',
   '三',
@@ -59,7 +58,7 @@ export const propName = {
 /**
  * 初始地图
  */
-let initialmap = {
+export let initialmap = {
   /** 斗兽棋初始地图 */
   animalchess: [
     '狮',
@@ -207,5 +206,3 @@ let initialmap = {
     ['車', '馬', '象', '士', '将', '士', '象', '馬', '車'],
   ],
 }
-
-export { gamemap, c, ABC, cwd, DirPath, AppName, initialmap, chinesechessname, chineseNumbers }

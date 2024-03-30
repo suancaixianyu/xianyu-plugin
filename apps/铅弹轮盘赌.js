@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { propName } from '../config.js'
+import { getBtn } from '../res/api.js'
 import fs from 'node:fs'
 
 /** 游戏数据 */
@@ -664,7 +665,7 @@ function nextGame(e, die = false) {
 }
 
 function sendCard(e, msg, arr) {
-  e.reply([msg, segment.button(arr)])
+  e.reply([msg, getBtn() ? segment.button(arr) : ''])
 }
 /**
  * 获取道具文本
@@ -811,7 +812,7 @@ function adduser(e) {
       redirect: 'follow',
     }
 
-    fetch('https://www.schub.wiki/xyapi/adduser', requestOptions)
+    fetch('https://suancaixianyu.cn/xyapi/adduser', requestOptions)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok')

@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { command, Btns } from '../config.js'
+import { getBtn } from '../res/api.js'
 
 /** 游戏地图 */
 let board = {}
@@ -39,7 +40,7 @@ export class xianyu_gobang extends plugin {
       board[e.group_id] = []
       games[e.group_id] = false
       player[e.group_id] = {}
-      e.reply(['游戏结束', segment.button([btn.开始, btn.发起])])
+      e.reply(['游戏结束', getBtn() ? segment.button([btn.开始, btn.发起]) : ''])
     }
   }
 
@@ -62,7 +63,7 @@ export class xianyu_gobang extends plugin {
         image(e)
         games[e.group_id] = true
       } else {
-        e.reply([`玩家${e.nickname}发起了 五子棋，其他玩家发送"加入五子棋"进行游戏`, segment.button([btn.加入])])
+        e.reply([`玩家${e.nickname}发起了 五子棋，其他玩家发送"加入五子棋"进行游戏`, getBtn() ? segment.button([btn.加入]) : ''])
       }
     } else {
       player[e.group_id] = {}
@@ -78,7 +79,7 @@ export class xianyu_gobang extends plugin {
   }
 
   async game(e) {
-    if (!games[e.group_id]) return e.reply(['本群未开启游戏', segment.button([btn.开始], [btn.发起])])
+    if (!games[e.group_id]) return e.reply(['本群未开启游戏', getBtn() ? segment.button([btn.开始], [btn.发起]) : ''])
     if (user[e.group_id] && user[e.group_id] == e.user_id) {
       e.reply('不是你的回合')
       return true
@@ -94,7 +95,7 @@ export class xianyu_gobang extends plugin {
     if (board[e.group_id][userRow][userCol] == '-') {
       board[e.group_id][userRow][userCol] = player[e.group_id][e.user_id] ?? 'X'
     } else {
-      e.reply(['此处已有棋子', segment.button([btn.落子])])
+      e.reply(['此处已有棋子', getBtn() ? segment.button([btn.落子]) : ''])
       return true
     }
 
@@ -120,9 +121,9 @@ export class xianyu_gobang extends plugin {
       if (checkWin(userRow, userCol, 'O', e)) {
         // 连输嘲讽
         if (players.includes(e.user_id)) {
-          e.reply(['依旧没有进展🤣👉', segment.button([btn.开始], [btn.发起])])
+          e.reply(['依旧没有进展🤣👉', getBtn() ? segment.button([btn.开始], [btn.发起]) : ''])
         } else {
-          e.reply(['你输了', segment.button([btn.开始], [btn.发起])])
+          e.reply(['你输了', getBtn() ? segment.button([btn.开始], [btn.发起]) : ''])
         }
         players.push(e.user_id)
         ov(e)
@@ -154,7 +155,7 @@ async function image(e, btn = true) {
   let img = await puppeteer.screenshot('五子棋', {
     ...data,
   })
-  e.reply([img, btn ? segment.button([btn.落子], [btn.帮助]) : ''])
+  e.reply([img, btn && getBtn() ? segment.button([btn.落子], [btn.帮助]) : ''])
 }
 
 /**

@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import panduan from '../lib/ChineseChessDecide.js'
+import { getBtn } from '../res/api.js'
 import { cwd, command, initialmap, Btns } from '../config.js'
 const as = new panduan()
 
@@ -48,7 +49,7 @@ export class ChineseChess extends plugin {
       // 对方组
       let isAB = '黑红'
       isAB = isAB.replace(new RegExp(team), '')
-      e.reply([`恭喜${isAB}队获得胜利`, segment.button([btn.发起])])
+      e.reply([`恭喜${isAB}队获得胜利`, getBtn() ? segment.button([btn.发起]) : ''])
       over(e)
     } else {
       e.reply(`你还没加入游戏，不能主动结束游戏`)
@@ -78,7 +79,10 @@ export class ChineseChess extends plugin {
     if (players == 0) {
       game.nickname[e.user_id] = e.sender.nickname
       game.players[e.user_id] = '红'
-      e.reply([`玩家${e.sender.nickname}发起了中国象棋，其他成员可发送“加入中国象棋”加入游戏`, segment.button([btn.加入])])
+      e.reply([
+        `玩家${e.sender.nickname}发起了中国象棋，其他成员可发送“加入中国象棋”加入游戏`,
+        getBtn() ? segment.button([btn.加入]) : '',
+      ])
     }
     if (players == 1) {
       game.nickname[e.user_id] = e.sender.nickname
@@ -95,7 +99,7 @@ export class ChineseChess extends plugin {
         `${B}棋:${game.nickname[players_nickname[1]]}\n`,
         `${A}棋先手\n`,
         `其他成员发送“加入中国象棋黑/红”加入队伍中`,
-        segment.button([btn.移子, btn.帮助]),
+        getBtn() ? segment.button([btn.移子, btn.帮助]) : '',
       ])
       game.current = '红'
       await newgame(e)
@@ -103,7 +107,7 @@ export class ChineseChess extends plugin {
     if (players >= 2 && emsg[0]) {
       game.nickname[e.user_id] = e.sender.nickname
       game.players[e.user_id] = emsg[0]
-      e.reply([`玩家${e.sender.nickname}加入队伍“${emsg[0]}”`, segment.button([btn.移子, btn.帮助])])
+      e.reply([`玩家${e.sender.nickname}加入队伍“${emsg[0]}”`, getBtn() ? segment.button([btn.移子, btn.帮助]) : ''])
     }
   }
 
@@ -117,7 +121,7 @@ export class ChineseChess extends plugin {
     // 判断玩家是否在游戏中
     let team = game.players[e.user_id]
     if (!team) {
-      e.reply([`你还没加入游戏，可发送”加入中国象棋黑/白“加入队伍中`, segment.button([btn.加入, btn.帮助])])
+      e.reply([`你还没加入游戏，可发送”加入中国象棋黑/白“加入队伍中`, getBtn() ? segment.button([btn.加入, btn.帮助]) : ''])
       return
     }
     // console.log("player：" + team)
@@ -145,7 +149,7 @@ export class ChineseChess extends plugin {
     if (!emsg) {
       let iszh_cn = await as.Chineseinstructions(e, e.msg, metadata)
       if (!iszh_cn) {
-        return e.reply(['指令不正确', segment.button([btn.帮助])])
+        return e.reply(['指令不正确', getBtn() ? segment.button([btn.帮助]) : ''])
       } else {
         // console.log(iszh_cn)
 
@@ -173,7 +177,7 @@ export class ChineseChess extends plugin {
     let iscorrect = await as.Audit(e, [letter1, num1, letter2, num2], tp1, tp2, team, metadata)
     // console.log(iscorrect)
     if (!iscorrect || iscorrect[0] !== true) {
-      e.reply([`移动不正确`, segment.button([btn.移子, btn.帮助])])
+      e.reply([`移动不正确`, getBtn() ? segment.button([btn.移子, btn.帮助]) : ''])
       return
     }
 
@@ -191,11 +195,11 @@ export class ChineseChess extends plugin {
       }
       // 胜利提示
       if (iscorrect[1] === true) {
-        e.reply([`恭喜${team}队获得胜利`, await generate(e, tp1, tp2), segment.button([btn.发起, btn.帮助])])
+        e.reply([`恭喜${team}队获得胜利`, await generate(e, tp1, tp2), getBtn() ? segment.button([btn.发起, btn.帮助]) : ''])
         over(e)
       } else {
         // 传入两个tp点
-        e.reply([await generate(e, tp1, tp2), segment.button([btn.移子, btn.帮助])])
+        e.reply([await generate(e, tp1, tp2), getBtn() ? segment.button([btn.移子, btn.帮助]) : ''])
       }
     }
   }
@@ -225,7 +229,7 @@ async function newgame(e) {
   }
   // 开始游戏
   game.game = true
-  e.reply([await generate(e), segment.button([btn.移子, btn.帮助])])
+  e.reply([await generate(e), getBtn() ? segment.button([btn.移子, btn.帮助]) : ''])
 }
 
 /**

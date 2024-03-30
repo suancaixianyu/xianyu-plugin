@@ -1,7 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { command, gamemap, ABC, cwd, Btns } from '../config.js'
-
+import { getBtn } from '../res/api.js'
 let btn = Btns.扫雷
 
 export class newcomer extends plugin {
@@ -23,11 +23,11 @@ export class newcomer extends plugin {
     if (/^(#|\/)?(扫雷|排雷)设置地?雷数量?\d+/.test(e.msg)) {
       let emsg = e.msg.match(/\d+/)
       if (+emsg[0] > +gamemap[e.group_id].rows * +gamemap[e.group_id].cols) {
-        return e.reply(['设置超出阈值', segment.button([btn.帮助])])
+        return e.reply(['设置超出阈值', getBtn() ? segment.button([btn.帮助]) : ''])
       }
       gamemap[e.group_id].z = emsg[0] ? emsg[0] : 10
 
-      e.reply(['修改雷数：' + gamemap[e.group_id].z, segment.button([btn.开始])])
+      e.reply(['修改雷数：' + gamemap[e.group_id].z, getBtn() ? segment.button([btn.开始]) : ''])
     }
 
     if (/^(#|\/)?(扫雷|排雷)设置布局 ?\d+\s\d+(\s\d+)?/.test(e.msg)) {
@@ -38,7 +38,7 @@ export class newcomer extends plugin {
       gamemap[e.group_id].cols = emsg[1] ? emsg[1] : 9
       e.reply([
         `修改游戏布局\n宽：${gamemap[e.group_id].rows}\n高：${gamemap[e.group_id].cols}\n雷：${gamemap[e.group_id].z}`,
-        segment.button([btn.开始]),
+        getBtn() ? segment.button([btn.开始]) : '',
       ])
     }
     if (/^(#|\/)?(扫雷|排雷)设置布局初始化/.test(e.msg)) {
@@ -47,7 +47,7 @@ export class newcomer extends plugin {
       gamemap[e.group_id].cols = 9
       e.reply([
         `初始化布局\n宽：${gamemap[e.group_id].rows}\n高：${gamemap[e.group_id].cols}\n雷：${gamemap[e.group_id].z}`,
-        segment.button([btn.开始]),
+        getBtn() ? segment.button([btn.开始]) : '',
       ])
     }
   }
@@ -66,7 +66,8 @@ export class newcomer extends plugin {
    */
   async goolevel(e) {
     newgame(e)
-    if (gamemap[e.group_id].game) return e.reply(['游戏已经开始', segment.button([btn.翻开, btn.标记, btn.取消], [btn.结束])])
+    if (gamemap[e.group_id].game)
+      return e.reply(['游戏已经开始', getBtn() ? segment.button([btn.翻开, btn.标记, btn.取消], [btn.结束]) : ''])
     let emsg = e.msg.replace(new RegExp(`^(#|\/)?(扫雷|排雷)难度(:|：)?`), '')
     switch (emsg) {
       case '简单':
@@ -102,7 +103,7 @@ export class newcomer extends plugin {
   async ov(e) {
     newgame(e)
     if (gamemap[e.group_id].player == e.user_id || e.isMaster) {
-      e.reply(['已结束扫雷游戏', segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
+      e.reply(['已结束扫雷游戏', getBtn() ? segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助]) : ''])
       over(e)
     } else {
       e.reply('你不是游戏发起人，不能主动结束游戏')
@@ -118,7 +119,7 @@ export class newcomer extends plugin {
   async removemark(e, isreply = true, active = true) {
     newgame(e)
     if (!gamemap[e.group_id].game) {
-      e.reply(['游戏未开始', segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
+      e.reply(['游戏未开始', getBtn() ? segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助]) : ''])
       return false
     }
     if (active) gamemap[e.group_id].command = e.msg
@@ -160,7 +161,7 @@ export class newcomer extends plugin {
         isreply = false
       }
     }
-    if (isreply) e.reply([await image(e), segment.button([btn.翻开, btn.标记, btn.取消])])
+    if (isreply) e.reply([await image(e), getBtn() ? segment.button([btn.翻开, btn.标记, btn.取消]) : ''])
   }
 
   /**
@@ -172,7 +173,7 @@ export class newcomer extends plugin {
   async mark(e, isreply = true, active = true) {
     newgame(e)
     if (!gamemap[e.group_id].game) {
-      e.reply(['游戏未开始', segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
+      e.reply(['游戏未开始', getBtn() ? segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助]) : ''])
       return false
     }
     if (active) gamemap[e.group_id].command = e.msg
@@ -213,7 +214,7 @@ export class newcomer extends plugin {
         isreply = false
       }
     }
-    if (isreply) e.reply([await image(e), segment.button([btn.翻开, btn.标记, btn.取消])])
+    if (isreply) e.reply([await image(e), getBtn() ? segment.button([btn.翻开, btn.标记, btn.取消]) : ''])
   }
 
   /**
@@ -225,7 +226,7 @@ export class newcomer extends plugin {
   async gooplye(e, isreply = true, active = true) {
     newgame(e)
     if (!gamemap[e.group_id].game) {
-      e.reply(['游戏未开始', segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
+      e.reply(['游戏未开始', getBtn() ? segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助]) : ''])
       return false
     }
     if (active) gamemap[e.group_id].command = e.msg
@@ -309,7 +310,7 @@ export class newcomer extends plugin {
             loop(indexs)
           } catch (error) {
             gameover = true
-            e.reply(['调用栈溢出，请缩小布局大小', segment.button([btn.设置], [btn.帮助])])
+            e.reply(['调用栈溢出，请缩小布局大小', getBtn() ? segment.button([btn.设置], [btn.帮助]) : ''])
             break
           }
         }
@@ -332,7 +333,11 @@ export class newcomer extends plugin {
 
     if (outcome == 'fail') {
       gameover = true
-      e.reply(['踩雷，游戏结束', await image(e), segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
+      e.reply([
+        '踩雷，游戏结束',
+        await image(e),
+        getBtn() ? segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助]) : '',
+      ])
     }
     // 判断胜利
     if (
@@ -340,10 +345,14 @@ export class newcomer extends plugin {
         gamemap[e.group_id].z &&
       !gameover
     ) {
-      e.reply(['恭喜您成功了', await image(e), segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助])])
+      e.reply([
+        '恭喜您成功了',
+        await image(e),
+        getBtn() ? segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助]) : '',
+      ])
       gameover = true
     } else {
-      if (isreply) e.reply([await image(e), segment.button([btn.翻开, btn.标记, btn.取消])])
+      if (isreply) e.reply([await image(e), getBtn() ? segment.button([btn.翻开, btn.标记, btn.取消]) : ''])
     }
     if (gameover) {
       over(e)
@@ -391,8 +400,8 @@ async function goo(e) {
    */
 
   if (gamemap[e.group_id].game) {
-    // e.reply(['扫雷游戏已经开始', await image(e), segment.button([btn.翻开], [btn.帮助], [btn.结束])])
-    e.reply(['扫雷游戏已经开始', await image(e), segment.button([btn.翻开], [btn.帮助], [btn.结束])])
+    // e.reply(['扫雷游戏已经开始', await image(e),getBtn()? segment.button([btn.翻开], [btn.帮助], [btn.结束])])
+    e.reply(['扫雷游戏已经开始', await image(e), getBtn() ? segment.button([btn.翻开], [btn.帮助], [btn.结束]) : ''])
     return
   }
 
@@ -468,8 +477,8 @@ async function goo(e) {
   // 上帝地图
   // console.log(gamemap[e.group_id].archive);
   gamemap[e.group_id].mun = String(gamemap[e.group_id].mun)
-  // e.reply([await image(e), segment.button([btn.翻开, btn.帮助])])
-  e.reply([await image(e), segment.button([btn.翻开, btn.帮助])])
+  // e.reply([await image(e),getBtn()? segment.button([btn.翻开, btn.帮助])])
+  e.reply([await image(e), getBtn() ? segment.button([btn.翻开, btn.帮助]) : ''])
 
   gamemap[e.group_id].game = true
 }
