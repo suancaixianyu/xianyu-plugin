@@ -4,11 +4,31 @@ import { chinesechessname } from './metadata.js'
  * 指令集
  */
 let command = {
+  /** 推箱子 */
+  sokoban: [
+    {
+      reg: /^(\/|#)?推箱子\d$/i,
+      fnc: 'newGame',
+    },
+    {
+      reg: /^(\/|#)?结束推箱子$/i,
+      fnc: 'ov',
+    },
+    {
+      reg: /^(\/|#)?(推箱子)?移动 ?[wasd]+$/i,
+      fnc: 'move',
+    },
+    {
+      reg: /^(\/|#)?(推箱子)?设置 ?\d+ ?\d+$/i,
+      fnc: 'setup',
+    },
+  ],
   /** 统计 */
   tongji: [
     {
       reg: /.*/gi,
       fnc: 'adduser',
+      log: false,
     },
     {
       reg: /^(\/|#)?(xianyu|xy|咸鱼)统计$/i,

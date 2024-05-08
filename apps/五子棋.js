@@ -148,11 +148,11 @@ function ov(e) {
 async function image(e, btn = true) {
   let data = {
     quality: 100,
-    tplFile: `./plugins/xianyu-plugin/resources/html/五子棋.html`,
+    tplFile: `./plugins/xianyu-plugin/public/html/五子棋.html`,
     _data: board[e.group_id],
-    _res: `${process.cwd().replace(/\\/g, '/')}/plugins/xianyu-plugin/resources`,
+    _res: `${process.cwd().replace(/\\/g, '/')}/plugins/xianyu-plugin/public`,
   }
-  let img = await puppeteer.screenshot('五子棋', {
+  let img = await puppeteer.screenshot('xianyu-plugin', {
     ...data,
   })
   e.reply([img, btn && getBtn() ? segment.button([btn.落子], [btn.帮助]) : ''])
