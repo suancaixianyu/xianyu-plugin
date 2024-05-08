@@ -253,13 +253,13 @@ async function generate(e, tp1, tp2) {
    */
   let data = {
     quality: 100,
-    tplFile: './plugins/xianyu-plugin/resources/html/国际象棋.html',
+    tplFile: './plugins/xianyu-plugin/public/html/国际象棋.html',
     map: data_map,
     archive: biaoji,
     _res: cwd,
     ss: ss,
   }
-  let img = await puppeteer.screenshot('国际象棋', {
+  let img = await puppeteer.screenshot('xianyu-plugin', {
     ...data,
   })
   return img

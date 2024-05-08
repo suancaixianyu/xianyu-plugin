@@ -297,7 +297,7 @@ async function generate(e, tp1, tp2) {
    */
   let data = {
     quality: 100,
-    tplFile: `./plugins/xianyu-plugin/resources/html/象棋.html`,
+    tplFile: `./plugins/xianyu-plugin/public/html/象棋.html`,
     map: data_map,
     archive: biaoji,
     isrollback: isrollback,
@@ -305,7 +305,7 @@ async function generate(e, tp1, tp2) {
     ss: ss,
     nickname: game.current,
   }
-  let img = await puppeteer.screenshot('象棋', {
+  let img = await puppeteer.screenshot('xianyu-plugin', {
     ...data,
   })
   isrollback = 'off'

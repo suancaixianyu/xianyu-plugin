@@ -301,7 +301,7 @@ async function generate(e, tp1, tp2) {
    */
   let data = {
     quality: 100,
-    tplFile: './plugins/xianyu-plugin/resources/html/斗兽棋.html',
+    tplFile: './plugins/xianyu-plugin/public/html/斗兽棋.html',
     _res: cwd,
     metadata: JSON.stringify(data_map),
     num: metadata[e.group_id].num,
@@ -310,7 +310,7 @@ async function generate(e, tp1, tp2) {
 
   // console.log('截图：', data)
 
-  let img = await puppeteer.screenshot('斗兽棋', {
+  let img = await puppeteer.screenshot('xianyu-plugin', {
     ...data,
   })
   // meadow颜色

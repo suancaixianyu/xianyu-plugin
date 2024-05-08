@@ -53,7 +53,7 @@ export class xianyu_setup extends plugin {
 async function image(e, flie, name, obj, btns) {
   let data = {
     quality: 100,
-    tplFile: `./plugins/${AppName}/resources/html/${flie}.html`,
+    tplFile: `./plugins/${AppName}/public/html/${flie}.html`,
     ...obj,
   }
   let img = await puppeteer.screenshot(name, {

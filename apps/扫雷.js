@@ -534,7 +534,7 @@ async function image(e) {
 
   let data = {
     quality: 100,
-    tplFile: './plugins/xianyu-plugin/resources/html/扫雷1.html',
+    tplFile: './plugins/xianyu-plugin/public/html/扫雷1.html',
     _mapData: {
       z,
       map,
@@ -544,7 +544,7 @@ async function image(e) {
       _res: cwd,
     },
   }
-  let img = await puppeteer.screenshot('扫雷1', {
+  let img = await puppeteer.screenshot('xianyu-plugin', {
     ...data,
   })
   return img
