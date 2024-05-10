@@ -37,6 +37,7 @@ let command = {
       reg: /.*/gi,
       fnc: 'adduser',
       log: false,
+      log: false,
     },
     {
       reg: /^(\/|#)?(xianyu|xy|咸鱼)统计$/i,
