@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map Editor</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      table {
+        border-collapse: collapse;
+        margin: 0 auto;
+      }
+      td {
+        width: 32px;
+        height: 32px;
+        text-align: center;
+        border: 1px solid #ccc;
+      }
+      .kbd,
+      td {
+        user-select: none;
+      }
+      .cell-0 {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACFklEQVRYhc2XSYpCMRiEYyPiPI+IJ3AneP9juPACzvOIC5su+KBf0fb2pTdFSNKm6q/Un5cZj8fvEEIoFAo/EK7Xq7BYLApvt5uwXC4LL5eLsFQqJcasfz6fifHxePx3/1dI+S8znU6lQD6f10mazabwdDoJG42GcL1eh99KPR6PxHqY1mo14W63E7bbbeFqtRLW63XhfD6PQ4EsNen1esLtdivs9/tCmMN0v98LW61WYh6lNpvNn/Mowf5KpSJMXwHceb/fhTDhpNVqVYgyzFNjak6Nu92u8HA4CF05bgfr4/HAcDgUUkOYkgu4l/UwWy6XQpgzz36UQEnG0eRAlppQU5iRgJyUsXsEd5MbeMKZsx4lUTp9BWA2Go2EnBwmnBxlcC/MYcKY2+IJyZj1JGr6CtADcDu54AnmTFDGe4UnHomIxzqdjnA2mwnTV4CuhhK4+RNzmHB7YAoz5mHOPJ46n8+J/fHkgLvdewEnp4uReF5z7rlnP/txP70nnhwYDAZCmMHUE87fiJ6g5AQegLm/F+LJAWrkOcDJYcJt4OTMowwJyHqUo5d8eknF1wv83lNTzwFqClPcj7th6m9E9sfzHsDt1JCxM6Xm3Hu6JvOLxULI69r3sx4PsT59BWDGd4DXlBpyO/yl469jPMQ8/88TNJ5vw8lkom9DboPngjNhDJNcLid8vV5Cf1+gpPcCfi9dBUII3zhZfr0ajaB9AAAAAElFTkSuQmCC');
+      }
+      .cell-1 {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEgUlEQVRYheXX205VSxAF0GazQEAuCoH4Z77wi/wK4UFjFJH7RbmDoKLCyegwd1oOkODDeTmVNHv16q6q2VWzajUDCwsLN9+/fy+RrutKK+fn5/3ZxMRE+fnzZ33+9etXeUiePXvWX7m4uChXV1dlaGio/+7bt29le3u7vHv3rlRvHz58qBtvbm6qE7+AcHJ9fV3nDPj98eNHBTE6OlrnvV6vjt+/f1cd6/baMzIyUi4vL+uavbOzs+XLly9lYGCgHB4eVjAVwKtXr8rp6WkRCehfvHhRjo+PqyHvA4bBsbGxeiIGGbK2v79fgdszODhYQQDOHnDAPn/+vL6zb3x8vAKg36OUMHNuk7nBuTmDxvDwcDUqhECYf/78ueraGwGSYyDZFAH7RNmhosN3x9HR0VFVChc4dRK/U1NTfQdnZ2f1nRMBYVhn9ODgoJ5OyDmmz3m4Qo8NfjwDRXr+UADEQnIt3AwKEzH3ngCaUHPAmDQmitJisGe0oEQtdioHVldXy+7u7oOMfkxyCsJ4+ywFOXmE45CvD2BpaemvnEc4iLPSlHEq464A0YLqXr9+XcOL9XKrfIS9EqTrKmOTR8oGwx8/fizAz8/P1zXvGJYC6WRHJJA1fEh6cAF3cK9bXFysAFLPcZC6Vj5y2J5Kma6vr1eHmC2N9gUksuIHJ/bT4wMYh8Ozra2tSuLOAmJQsNEG85RfmhIQc3NztYQ0kzbcdABJaOmFwAbHBl8p43JL7J5QJexZyNypKKZL7uzs1HeTk5N/kA5wzsN8J09XTHMy2E2Jez45OSmdvKesUp/ZmJAnMt4Jb0ozKeOIWOPYrzDHrpMC4l3auyibdwklY06XkMex04YDlMKBlFPLFSdvOfDy5cu+HSkRTfscQOmz021sbDy59HzJCIOfPn2q8/v6QJpbpG1A6Yzd3cbwVHn79u0fGv9ZH2hPkw/OU/rAyspKefPmTekw330AIbA9n94YNKanp+svYIzjhT25D8grO545Btoae3TyoWMDIJJS7kGVW45naCl4ZohR5cIgZe/NETL3g69fv9Z5dM2NhDukBNLBkDPp6uUGU24biA1Y75kRBrA1Dcp787v3gXJbJamYhDx6IhbQOVAFUW5LCap2kWKik5uMfQFl5D6Q+0G4cjcF7Ib5SUGi3nGSRkEYzMWDzMzM9OfCmw7Xtm/S3hFJIpGWTheYpEXkKtGXl5fL5ubmg8Wn/T4kf3MfiOT9//c+gPj1W6AhUEYiRCsNQczfv3/fP6k8AmPo5bkPrK2t9b+IbKUcrXFav/u3/cXwWdcHHLiH1Ta2zYUBzzGQzqdC0qTacKe8RCsXTydnkz5w9BC6TQXfPZswP3WaaDAoEp7zKc5t2bwlXSrAACKppJsSBsIVDDC3IZVR/7FhwEJLKKjliZP2PsD4ffcBkcn/FA6R/Wlm7Flv/+XzC0zHIEe6W4iTemaModS0lBDkSRruY/pTpMvpnaLNz2NlF8l9YG9vrx+VcONu/bfzVjpsbPP5mPP7QLgPtM7bf8Pvfrb/BaKU8g+gS+OFQMG2VgAAAABJRU5ErkJggg==');
+      }
+      .cell-2 {
+        background-image: url('data:image/png;base64,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');
+      }
+      .cell-3 {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFNklEQVRYhV2XaW8cRRCGe2fH3sO3k6BgciAnCMIpjg/hA78fIa4EQmQFcjm2EpzEMY5Z7669u+ip9dPuZaTRzHRX1/F21Vs9je8+XJuMx+PENZlM4m61WvFk3Nur2Wymk5OTmO92u6nf78d8o9GIudFolKqqineefJ+enuZ5nuqu6zrVCHEhiAD38fFxFmaeBaXc3NxcOIFiFCGL04PBIOa4kGe+1MM7Y+jjYrx2oNPppF6vlz6/vpoajeUwgDK8REaFjPPO7RzGcWR+fj4jwlrRK5359dHreBpUJXwIoPC3pwfxjjLGQQOjwo6jKAd+FPDOuDpASJ3CjV7e0Y1evkW0Eq4vNy+EMu4/dt6GMr1ut9ux0NxA2XA4DEPI8M4838hqWFmc+n37n4zIJ1eWzhEwUhR9enU5JjB679nhTOIgXEalMr+BHgdxRvh14JeHr3JeaBynQLVmAUIH//ZD6PqlTnr68jjeQeLaxXbeHpJM+BjDkGi0WpP0tn8ydWg4ygm6/eq8StB9NDidSeSKxZaO+7V5eTFH8GSvN4MCC3GEXCjH0AEKPI1wZ38Ya9GJcVG0XGMO2BhcagNbM83NTYXYjq3nvRDcfXOSPnq3m9aXViOy5c7qtL5TSp1OqzBaRw7g/N29XuaBr29eytVjsJZhxUIiUiCdkQ2TH7+3mL0lJ4zA/ScyLp4mIjJ3Hu9nGcra7ZDQtBMlymLgpKyEEqMo45vq0Clq2KxmnY7yvbCwEE58f383bw1rNQzSwXx1nUuVLavM1FyXVRW1L4WCDJnrO9FZkigzV0CRLWOOb9boqElrbnARHIFX0iLKS+YiOnmBsa9uXAxHuUDC6hHe+7tH2chn11ZyL5C+DRI7OOv6Sn4u90ZhFiJMVFzffPBO5gJyAmW8Y9xA2HP7g4alZhOwbFaN25uLE+Ck3lViguEll2Slk49eHOW8sAKYv3qhlfdYdISbb+mcStna3o/xYEIF5XJhxzEbjTfz1LRM5joC4Luk6LIDGoz9xa2rzeS1xU4aDqfteBpda6YpoUAKlsdNKpJpfambBoNmbk4mm0npWtaBwIvDcWxvpddlz3cPKU1bZ3nokKA8P7D+7pM3mQeEWidFqQxGRGqEhUkBjHngEGYTkwrwnABbMk8SAuudx+P0xftr4bgOc2HMQITevKhQ6n4Tlb1BKMuypDmZzZAMa5ij7HQcJLzKbXBrzQ0DnDmQlAcJIrK/Y5TDhPNQtEkoody+tZGPYz9sPc+ywm1yyqDOV0bnvpuxGDZBMS5StzYWMpQeYFUGWTGGIyAhglFuZ1FbpjqbT8W0YAdRDgJ8czawCW2s1plASmVSrrnCGhP08nKVt8Rt5XqwcxBBVu6FySIXMEk/9+B5ZX0+NxE7YNmYyu4ITwj5s9eD7IDMWZ4hazmf8wCD1u1Pf+7lCKFgWVD4TapJt5XzBoNmPNsBXSPPeYKKmU3so/NeIHViEC9/fPB3biJlO3bMCKRX88GKkSNsSoxzKLXkJaYISno1gp//epnZDq89RpcdTb6Q1/0WQWvcADRmJUlSZw5X+QPYbcGeZDg0uF8ls1njZr3Rm5yiwjdIlCdkypb1cRz89sbSRFhUhPGS/UxSk6081/kkcrhdx6wcHcJGSVIEFuVp4/Cnw8j12H0r+7l8YQXouE6XDhCtkHOw9d2+Uvsn4w8FmWtDwvjKykoaj8+ZrKyA6d9QL//9/p/EzJ2SkNDJmHkTCOiV2Vv+Ph8eTk8+JfWWp+PSgAlbkhRyOMQYP7/qjzwajdJ/m16Ia8hSWD4AAAAASUVORK5CYII=');
+      }
+      .cell-4 {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFUUlEQVRYhZVXWyilXxRfh+M6OIcxjGtIyaWMe/MqKZcHD8glmikpzzzgAWWeZMp1kjwIkQeD8mDk0SVEKeVarjEYd8adf7+V9f0dc+h8u05r7+/be317/dZav7WOJjg4+JGIyMbGBoIuLi5Y2trasvz79y9LOzs7lufn5ywdHBzo4eGBrq6ueG1hYcHy+vra4PzJyYnR8+/evWNpRirH4+Mj+fr60rdv32hiYoJmZ2epurqaPD09+Z3aoYmKiuJT1tbWfNTJyYnl6ekpS0dHR5b7+/ssvb29qaOjw+hnsrKy6PLykueHh4csnZ2dWe7t7bHU6/Usl5eX1SNwe3tLJSUlr74vLS1VLmDq0IpPXF1dWR4cHLD8+PGjgeWCTGBg4Kuqg4KC6P7+nv78+UPv3783OC9IHB0dsbS3t1ePgLm5OZmZvX4E77BHFQISnQKd+FxuiminJ2Rg3ebmJnl5eRlVtrGxwZkBHcfHx/xMkBN9kh0SE6oQ0Gg01NTU9Or7uro6srS0VKOSzHU6XcXNzQ25u7uTlZUVRy9yG5Yjt8ELCD74DFyxuLhIa2trFBISouQyrPn+/TtNT0/zWehDtGM/eADcAH3Qj+zCexiDy2pVXfeJcEZGRvhDVVVV/KyyspLW19dZIZSrGVrxieSt+EwYUKyUNfgCGZKWlqZ85suXL0xGuISLiws/kxiQGJIYEB5ApmCYjABg9PDwoKKiIoqMjDR4FxERQV1dXTQ5OUkNDQ20u7trMgaawMBAZsKAgACDm+t0OpZQBurNy8uj2NhYk5QODw9TZ2cnbW9vK7VB9InlknVvIoBDYL6YmBiD521tbZySX79+5XVzczMHaWZmJq/j4uL4NzU1xa6RlDOKQFhYGCMgTIVIpaeY6Ovrow8fPiibu7u7qbe3lzMDsYM1Rm5uLq2srLAOzFNTU5UzsDg/P1+JMeGZ+fl5lm/yACzFGBgYoOTkZKqvr2fowHha7f/gYY5n+EhLSwtfoL+/n98hNt4aSgz4+/vzNqmCgB/5j6j//fu3UhvEEh8fH2ptbeU5oJe+QN4je5BRW1tbnPOSDdJvyL43EUDOY6MxdoNSGcbqAy6O1H2+z9hQeEDy9CV3y83Pzs5YItgQ2c8zIjExkRobG/mikucvuV/OS+clWaC6I6In9+Tk5Cjr7OxsJYjVDnO9Xl8BX6MWADb4CHQKHyIjcHNYjKqJYANPlJWV/VMR/fz8aHR0lC0H9EAC56WWIPqhH+ehH+0bXKwaARDW58+feT42NsYfxQBXgLDUDk1ERARngfha+gPxmfgUVQ2WoBwHBwfzHL6HT3t6etiaubk5KiwsVKoeGaklom9hYYGlyQiA+aKjo/njGEhBBBIu0t7ezs9Qoj99+kR3d3cm4/BPLZA+XhhLaBSWghkR1egjUQ1htVgKsgJ6sDQhIUEJSuF+6REl/6UXNQkBtFkpKSlKStXW1hr0fgioHz9+8Bx7wIRAzCQEoqOjGQGpAdKtis+wxgV+/vzJeY7eEGknVU58CsYbHBxkS/EuKSmJLyFVUJCS76yurpqGAHyMAiNsiO5HyOT5QIrif4F8BOXblFjQSrQL18tNxTIoSU9P5/nMzAyXWFxGskZ8CkvRL6IvRIOSkZHBlVP+Fwiyqv4bosCUl5cr65qamje7XhANmlMZxcXFjOCbCAicS0tLLCXQdnZ2GJXw8HBe//r1i8bHx5XskLZLLiTRjnNDQ0MUHx9PoaGhnBlgR9n/shaYu7m5VWAiN5W/2VgDLqQeDqEDBiISRNL9SjYgUOVCcBP2FRQUMBWjIsr+5/qJiP4DYUOy54n9/VwAAAAASUVORK5CYII=');
+      }
+      .cell-5 {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAJ9QTFRFZB8OYh4MYR0LYRwKZiIQZSEPYx4NXxoJXhoIYBsKZSAOaSQSiTgaiTkbhTUXjTweizodiDcahDMWhzYZijockD8ijDsehjYYjz4hjT0fZyIRaCMSkUAifTAVgDMYfTEWei4SeCsQey4TeS0SfjIWfzIXgTQZfC8UXBcGgzYbgjYadyoPhTQWXRgGjj4ggzIVgTUaeSwRbSgWayYVbCcW/PhD4AAAAtFJREFUeJwVk+t2qzgMheUrRbFiu1bsACHkEFLOTNNM5/L+zzYqi3/Skvb+tA2glDbWgTLG+O7N9m+d7oxH1fXKKwPgQIPttALtvXT4N2ON96ih16iNQVD6YAIdKVLK78fCJaYT5cqBCynwFoxyAI35eCwl0bmmWmNpMeUh4ziiNECcJiglS4Hly+WShiITEnhHMIFDSqOFzHEYEoUQGl9CYiIPmIMGMHqeryO45bb8Wuf7st0f14/rvHqt1m13Gn532/7HnwphltLnx3Zd5vv2uKHDdX5sHkCrUFI9OjWWSJyflYJIdBZi4EwewXw9Q3q1gggvDi3X+J5eCBiohJy8jIAYwyWlinZMjThybMa5WnKsKegv8PiKTCHnIvzSWZwU6zCT+EghCCOFnIIMqMcECPzK2XkMnLhwfP4lqFFzDDVS4zQ4HDlY9FRiSMcXt6eg7t0yz+t2F2+PD+cmh26+Ltu6Pq77+q0doFrut8f8eMzLsolvp5e/132dl33d99sbwOhSCyHlOITcjgj+UBtTKTXJQS+jBm84hzKczrGIaCXRscKtie4ypKo0dLrUmIhbK+xHR0fokIcaY6aYmx3B9JFyGOiZaRoxnkvuPQ6VY6zxmRVAZ6ROLf+gnMRrOsdRrCchlzILB+MzH5+R62gxSOQuw3CWkHCrcsQsFwK1fH9vn6sCvO/Lfb79Wtfdu2kVEtvWC6humbd9QWfWz9syS2ru274bCz8di/GgrEiMgpS5ylImTvQswXkXYmURiRAqKQ+J48/WJDJyeyYSxuFFkkmviY1R5TRIFGqVX44baokSphi8SPPZIJZ3epUXVVlwIi41tFAA8WQmsaksEnENoUoIKaUTZ8lLo2qt7QF6MzkS9DlFqtzK6yzRzCkNYWhuEjd29KO1aP7518qLhcMoEfry7iBXm7R38mIs4sF50HIWJ5FC723fHez4X9+Dcvg/+0JBOLeFBSsAAAAASUVORK5CYII=');
+      }
+      .cell-6 {
+        background-image: url('data:image/png;base64,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');
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="p-4">
+      <div class="overflow-x-auto">
+        <table>
+          <tbody>
+            <tr v-for="(row, rowIndex) in grid" :key="rowIndex">
+              <td
+                v-for="(cell, cellIndex) in row"
+                :key="cellIndex"
+                @click="editCell(rowIndex, cellIndex)"
+                :class="'cell-' + cell"
+                class="border border-gray-300"
+                unselectable="on"
+              ></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4">
+        <div class="flex justify-center w-full">
+          <kbd class="kbd" @click="moveContent('up')">▲</kbd>
+        </div>
+        <div class="flex justify-center gap-12 w-full">
+          <kbd class="kbd" @click="moveContent('left')">◀︎</kbd>
+          <kbd class="kbd" @click="moveContent('right')">▶︎</kbd>
+        </div>
+        <div class="flex justify-center w-full">
+          <kbd class="kbd" @click="moveContent('down')">▼</kbd>
+        </div>
+        <div class="flex space-x-2 mt-4">
+          <button @click="addRow" class="btn btn-accent">添加行</button>
+          <button @click="removeRow" class="btn btn-secondary">删除行</button>
+          <button @click="addColumn" class="btn btn-accent">添加列</button>
+          <button @click="removeColumn" class="btn btn-secondary">删除列</button>
+        </div>
+        <div class="mt-4">
+          <textarea v-model="exportData" class="textarea textarea-bordered w-full" rows="10"></textarea>
+        </div>
+        <div class="flex space-x-2 mt-4">
+          <button @click="importData" class="btn btn-accent">加载数据</button>
+          <button @click="exportDataFunc" class="btn btn-accent">导出数据</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      new Vue({
+        el: '#app',
+        data: {
+          grid: [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+            [0, 0, 0, 1, 2, 1, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 1, 1, 1, 1, 0],
+            [0, 1, 1, 1, 3, 0, 3, 2, 1, 0],
+            [0, 1, 2, 0, 3, 4, 1, 1, 1, 0],
+            [0, 1, 1, 1, 1, 3, 1, 0, 0, 0],
+            [0, 0, 0, 0, 1, 2, 1, 0, 0, 0],
+            [0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          ],
+          exportData: '',
+        },
+        methods: {
+          editCell(row, col) {
+            this.grid[row][col] = (this.grid[row][col] + 1) % 7
+            this.exportDataFunc()
+          },
+          moveContent(direction) {
+            switch (direction) {
+              case 'up':
+                this.move(-1, 0)
+                break
+              case 'down':
+                this.move(1, 0)
+                break
+              case 'left':
+                this.move(0, -1)
+                break
+              case 'right':
+                this.move(0, 1)
+                break
+            }
+          },
+          move(offsetY, offsetX) {
+            const rows = this.grid.length
+            const cols = this.grid[0].length
+            let newGrid = []
+            let canMove = true
+            // Check the boundary based on the direction of movement
+            if (offsetY === -1) {
+              // Moving up: Check the top row
+              for (let col = 0; col < cols; col++) {
+                if (this.grid[0][col] !== 0) {
+                  canMove = false
+                  break
+                }
+              }
+            } else if (offsetY === 1) {
+              // Moving down: Check the bottom row
+              for (let col = 0; col < cols; col++) {
+                if (this.grid[rows - 1][col] !== 0) {
+                  canMove = false
+                  break
+                }
+              }
+            } else if (offsetX === -1) {
+              // Moving left: Check the leftmost column
+              for (let row = 0; row < rows; row++) {
+                if (this.grid[row][0] !== 0) {
+                  canMove = false
+                  break
+                }
+              }
+            } else if (offsetX === 1) {
+              // Moving right: Check the rightmost column
+              for (let row = 0; row < rows; row++) {
+                if (this.grid[row][cols - 1] !== 0) {
+                  canMove = false
+                  break
+                }
+              }
+            }
+
+            if (canMove) {
+              for (let i = 0; i < rows; i++) {
+                newGrid.push(Array(cols).fill(0))
+                for (let k = 0; k < cols; k++) {
+                  if (this.grid && this.grid[i - offsetY] && this.grid[i - offsetY][k - offsetX]) {
+                    newGrid[i][k] = this.grid[i - offsetY][k - offsetX]
+                  }
+                }
+              }
+              this.grid = newGrid
+            }
+            this.exportDataFunc()
+          },
+          addRow() {
+            const cols = this.grid[0].length
+            this.grid.push(Array(cols).fill(0))
+            this.exportDataFunc()
+          },
+          removeRow() {
+            if (this.grid.length > 1) {
+              this.grid.pop()
+            }
+            this.exportDataFunc()
+          },
+          addColumn() {
+            this.grid.forEach((row) => row.push(0))
+            this.exportDataFunc()
+          },
+          removeColumn() {
+            if (this.grid[0].length > 1) {
+              this.grid.forEach((row) => row.pop())
+            }
+            this.exportDataFunc()
+          },
+          importData() {
+            try {
+              this.grid = JSON.parse(this.exportData)
+            } catch (e) {
+              alert('Invalid data format')
+            }
+            this.exportDataFunc()
+          },
+          exportDataFunc() {
+            this.exportData = JSON.stringify(this.grid)
+          },
+        },
+      })
+    </script>
+  </body>
+</html>
