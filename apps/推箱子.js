@@ -3,7 +3,9 @@ import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 import { command, cwd } from "../config.js";
 import { initialmap } from "../config.js";
 import { getJson, saveJson } from "../res/api.js";
-let msgID = "";
+
+// 按钮点击事件排队表
+let btns = [];
 
 function gameState() {
   let game = {
@@ -21,6 +23,9 @@ function gameState() {
     },
     setLevel: (key, value) => {
       game.level[key] = value;
+    },
+    getLevel: (key) => {
+      return game.level[key];
     },
   };
 }
@@ -51,6 +56,8 @@ export class xianyu_PushBox extends plugin {
 
   // 撤回
   async undo(e) {
+    let msgid = e.msg.match(/(?<=\<msg ?)([A-Za-z0-9]*-?)+(?=>)/)?.[0];
+    e.msg = e.msg.replace(/<msg.*>/, "");
     if (!game.get(e.group_id)) {
       return false;
     }
@@ -58,13 +65,37 @@ export class xianyu_PushBox extends plugin {
     map.pop();
     game.set(e.group_id, map);
     if (map.length >= 1) {
-      await image(e, "sokoban", { map: map[map.length - 1], _res: cwd }, null);
+      if (msgid) {
+        let img = await image(
+          e,
+          "sokoban",
+          { map: map[map.length - 1], _res: cwd },
+          null,
+          false
+        );
+        let replydata = await e.bot.adapter.makeCardMsg(e, [
+          img,
+          segment?.button(getBtn(msgid)),
+        ]);
+        console.log(replydata.msgs[0][1]);
+        await e.bot.sdk.API.message.rest.axios.post("/message/update", {
+          msg_id: msgid,
+          content: replydata.msgs[0][1],
+        });
+      } else {
+        await image(
+          e,
+          "sokoban",
+          { map: map[map.length - 1], _res: cwd },
+          null
+        );
+      }
     }
   }
 
   // 添加关卡
   async addLevel(e) {
-    let level = e.raw_message
+    let level = e.msg
       .replace(/(\/|#)?推箱子添加关卡/, "")
       .replace(/\n/g, "")
       .trim();
@@ -133,6 +164,9 @@ export class xianyu_PushBox extends plugin {
 
   // 新游戏
   async newGame(e) {
+    let msgid = e.msg.match(/(?<=\<msg ?)([A-Za-z0-9]*-?)+(?=>)/)?.[0];
+    e.msg = e.msg.replace(/<msg.*>/, "");
+
     // 取出关卡号
     let gameLevel = e.msg.match(/\d+/);
     // 取出地图
@@ -151,33 +185,48 @@ export class xianyu_PushBox extends plugin {
         return e.reply("没有这个关卡");
       }
       game.set(e.group_id, [map]);
-      e.reply(`开始第${gameLevel + 1}关`);
-      image(e, "sokoban", { map: map, _res: cwd }, null);
+      // console.log("e.bot.adapter.id", e.bot.adapter.id);
+      if (e.bot.adapter.id == "KOOK") {
+        // 续杯
+        if (msgid) {
+          updateReply(e, map, msgid);
+        } else {
+          // 开始新游戏
+          let replyID = await e.reply(`开始第${gameLevel + 1}关`);
+          updateReply(e, map, replyID.message_id[0]);
+        }
+      } else {
+        // 开始新游戏
+        e.reply(`开始第${gameLevel + 1}关`);
+        image(e, "sokoban", { map: map, _res: cwd }, null);
+      }
     } else {
       // 可能获取不到关卡，如果获取不到，就默认第一关
       gameLevel = gameLevel ? gameLevel[0] - 1 : 0;
-
       if (!map) {
         return e.reply("没有这个关卡");
       }
       game.set(e.group_id, [map]);
-      e.reply(`开始第${gameLevel + 1}关`);
-      image(e, "sokoban", { map: map, _res: cwd }, getBtn(e.message_id));
     }
     game.setLevel(e.group_id, gameLevel);
   }
+
   // 结束游戏
   async ov(e) {
     game.set(e.group_id, null);
     e.reply("游戏结束");
   }
+
   // 移动
   async move(e) {
+    let msgid = e.msg.match(/(?<=\<msg ?)([A-Za-z0-9]*-?)+(?=>)/)?.[0];
+    e.msg = e.msg.replace(/<msg.*>/, "");
+
     if (!game.get(e.group_id)) {
       return false;
     }
     // 取出所有的wasd
-    let wasd = e.raw_message.match(/[wasd]/gi);
+    let wasd = e.msg.match(/[wasd]/gi);
     if (!wasd) {
       return false;
     }
@@ -246,44 +295,10 @@ export class xianyu_PushBox extends plugin {
       map[x][y] = map[x][y] === 2 ? 6 : 4;
       player = { x, y };
     });
-    if (e.bot.adapter.id == "KOOK") {
-      let img = await image(
-        e,
-        "sokoban",
-        { map: map, _res: cwd },
-        getBtn(msgID),
-        false
-      );
-
-      // console.log(await e.bot.adapter.makeMsg(e, img));
-
-      // console.log(
-      //   await e.bot.sdk.API.message.rest.axios.post('/message/update', {
-      //     msg_id: msgID,
-      //     content: JSON.stringify([
-      //       {
-      //         type: 'card',
-      //         theme: 'secondary',
-      //         size: 'lg',
-      //         modules: [
-      //           {
-      //             type: 'section',
-      //             text: {
-      //               type: 'plain-text',
-      //               content: 'KOOK：专属游戏玩家的文字、语音与组队工具。',
-      //             },
-      //           },
-      //           {
-      //             type: 'container',
-      //             elements: [img],
-      //           },
-      //         ],
-      //       },
-      //     ]),
-      //   })
-      // )
+    if (msgid) {
+      updateReply(e, map, msgid);
     } else {
-      await image(e, "sokoban", { map: map, _res: cwd });
+      await image(e, "sokoban", { map: map, _res: cwd }, null);
     }
 
     // 保存地图
@@ -303,12 +318,17 @@ export class xianyu_PushBox extends plugin {
     if (win) {
       let initialLevel = initialmap.sokoban;
       let localLevel = getJson("level");
+      let level = game.getLevel(e.group_id);
       game.setLevel(e.group_id, null);
       if (initialLevel.length + localLevel.length == level + 1) {
         game.setLevel(e.group_id, 0);
         e.reply("恭喜你通关了");
       } else {
-        e.msg = "#推箱子" + (level + 2);
+        if (msgid) {
+          e.msg = "#推箱子" + (level + 2) + `<msg ${msgid}>`;
+        } else {
+          e.msg = "#推箱子" + (level + 2);
+        }
         this.newGame(e);
       }
     }
@@ -337,6 +357,7 @@ function findPlayer(map) {
  * @returns 发送帮助截图
  */
 async function image(e, flie, obj, btns, isreply = true) {
+  // console.log("btns", btns);
   let data = {
     quality: 100,
     tplFile: `./plugins/xianyu-plugin/public/html/${flie}.html`,
@@ -348,55 +369,66 @@ async function image(e, flie, obj, btns, isreply = true) {
   // console.log(await Bot[e.bot.uin])
 
   if (isreply) {
-    let reply = await e.reply([
+    await e.reply([
       img,
-      btns && getBtn(e.message_id) ? segment?.button(...btns) : "",
+      btns && getBtn(e.message_id) ? segment?.button(btns) : "",
     ]);
-    if (e.bot.adapter.id == "KOOK") {
-      msgID = reply.message_id[0];
-    }
   } else {
     return img;
   }
 }
 
 function getBtn(msgid) {
-  return {
-    上: {
+  return [
+    {
       text: "上",
-      clicked_text: "/推箱子上" + "id:" + msgid,
-      callback: "/推箱子上" + "id:" + msgid,
+      clicked_text: "/推箱子移动w" + `<msg ${msgid}>`,
+      callback: "/推箱子移动w" + `<msg ${msgid}>`,
       send: true,
     },
-    下: {
+    {
       text: "下",
-      clicked_text: "/推箱子下" + "id:" + msgid,
-      callback: "/推箱子下" + "id:" + msgid,
+      clicked_text: "/推箱子移动s" + `<msg ${msgid}>`,
+      callback: "/推箱子移动s" + `<msg ${msgid}>`,
       send: true,
     },
-    左: {
+    {
       text: "左",
-      clicked_text: "/推箱子左" + "id:" + msgid,
-      callback: "/推箱子左" + "id:" + msgid,
+      clicked_text: "/推箱子移动a" + `<msg ${msgid}>`,
+      callback: "/推箱子移动a" + `<msg ${msgid}>`,
       send: true,
     },
-    右: {
+    {
       text: "右",
-      clicked_text: "/推箱子右" + "id:" + msgid,
-      callback: "/推箱子右" + "id:" + msgid,
+      clicked_text: "/推箱子移动d" + `<msg ${msgid}>`,
+      callback: "/推箱子移动d" + `<msg ${msgid}>`,
       send: true,
     },
-    撤回: {
+    {
       text: "撤回",
-      clicked_text: "/推箱子撤回" + "id:" + msgid,
-      callback: "/推箱子撤回" + "id:" + msgid,
+      clicked_text: "/推箱子撤回" + `<msg ${msgid}>`,
+      callback: "/推箱子撤回" + `<msg ${msgid}>`,
       send: true,
     },
-    结束: {
+    {
       text: "结束游戏",
-      clicked_text: "/结束推箱子" + "id:" + msgid,
-      callback: "/结束推箱子" + "id:" + msgid,
+      clicked_text: "/结束推箱子",
+      callback: "/结束推箱子",
       send: true,
     },
-  };
+  ];
+}
+
+async function updateReply(e, map, msgid) {
+  let img = await image(e, "sokoban", { map: map, _res: cwd }, null, false);
+  let level = game.getLevel(e.group_id);
+  let replydata = await e.bot.adapter.makeCardMsg(e, [
+    "当前关卡：" + (level + 1),
+    img,
+    segment?.button(getBtn(msgid)),
+  ]);
+  await e.bot.sdk.API.message.rest.axios.post("/message/update", {
+    msg_id: msgid,
+    content: replydata.msgs[0][1],
+  });
 }
