@@ -22,7 +22,21 @@ export let AppName = 'xianyu-plugin'
 export let cwd = `${process.cwd()}/plugins/${AppName}/public/html/`.replace(/\\/g, '/')
 export let DirPath = `${process.cwd()}/plugins/${AppName}/`
 /** 识别棋子名称 */
-export let chinesechessname = ['車', '馬', '象', '士', '将', '炮', '兵', '卒', '仕', '相', '帅', '马', '车']
+export let chinesechessname = [
+  '車',
+  '馬',
+  '象',
+  '士',
+  '将',
+  '炮',
+  '兵',
+  '卒',
+  '仕',
+  '相',
+  '帅',
+  '马',
+  '车',
+]
 /** 识别中文数字 */
 export let chineseNumbers = [
   '一',

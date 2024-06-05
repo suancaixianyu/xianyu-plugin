@@ -42,3 +42,27 @@ export function getBtn() {
   let config = getYaml('config')
   return config.set.btn
 }
+
+/** 使用map方法实现深备份数组 */
+export function deepCopy(obj) {
+  return obj.map((item) => {
+    if (Array.isArray(item)) {
+      return deepCopy(item)
+    } else {
+      return item
+    }
+  })
+}
+
+/** 深度备份对象 */
+export function deepCopyObj(obj) {
+  let newObj = {}
+  for (let key in obj) {
+    if (typeof obj[key] === 'object') {
+      newObj[key] = deepCopyObj(obj[key])
+    } else {
+      newObj[key] = obj[key]
+    }
+  }
+  return newObj
+}
