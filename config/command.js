@@ -27,6 +27,10 @@ let command = {
       fnc: 'addLevel',
     },
     {
+      reg: /^(\/|#)?推箱子关卡工具$/i,
+      fnc: 'mapTool',
+    },
+    {
       reg: /^(\/|#)?(推箱子)?关卡列表$/i,
       fnc: 'list',
     },
@@ -184,6 +188,10 @@ let command = {
     {
       reg: /^(\/|#)?(咸鱼)?五子棋(帮助|help)/i,
       fnc: 'wuziqi',
+    },
+    {
+      reg: /^(\/|#)?(咸鱼)?推箱子(帮助|help)/i,
+      fnc: 'tuixiangzi',
     },
   ],
 }

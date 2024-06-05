@@ -42,6 +42,10 @@ export class xianyu_PushBox extends plugin {
     })
   }
 
+  async mapTool(e) {
+    e.reply(['关卡制作地址：', 'https://suancaixianyu.cn/MapEditor.html'])
+  }
+
   // 撤回
   async undo(e) {
     let msgid = e.msg.match(/(?<=\<msg ?)([A-Za-z0-9]*-?)+(?=>)/)?.[0]
@@ -77,7 +81,7 @@ export class xianyu_PushBox extends plugin {
       // 创建上下文
       this.setContext('add')
       /** 回复 */
-      await e.reply('请发送关卡内容', true)
+      await e.reply('请发送关卡数据', true)
       return true
     }
   }
@@ -91,7 +95,8 @@ export class xianyu_PushBox extends plugin {
       let leveljson = JSON.parse(msg)
       // console.log(leveljson)
       // 验证是否为二维数组
-      if (!Array.isArray(leveljson)) return this.e.reply('添加失败，只能添加二维数组', true)
+      if (!Array.isArray(leveljson))
+        return this.e.reply('添加失败，只能添加二维数组，请使用“#推箱子关卡工具”制作关卡', true)
       level.push({
         user: this.e.user_id,
         nickname: this.e.nickname ?? this.e.sender.nickname,
@@ -103,7 +108,7 @@ export class xianyu_PushBox extends plugin {
       this.setContext('setname')
     } catch (error) {
       console.log(error)
-      this.e.reply('添加失败，只能添加二维数组', true)
+      this.e.reply('添加失败，只能添加二维数组，请使用“#推箱子关卡工具”制作关卡', true)
     }
     this.finish('add')
   }
