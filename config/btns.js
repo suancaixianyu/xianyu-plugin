@@ -30,6 +30,31 @@ export const Btns = {
       send: false,
     },
   },
+  推箱子: {
+    发起: {
+      text: '推箱子',
+      clicked_text: '/推箱子',
+      callback: '/推箱子',
+      send: true,
+    },
+    列表: {
+      text: '关卡列表',
+      clicked_text: '/关卡列表',
+      callback: '/关卡列表',
+      send: true,
+    },
+    结束: {
+      text: '结束游戏',
+      clicked_text: '/结束推箱子',
+      callback: '/结束推箱子',
+      send: true,
+    },
+    移动: {
+      text: '移动',
+      input: '/推箱子移动',
+      send: false,
+    },
+  },
   国际象棋: {
     发起: {
       text: '发起游戏',
@@ -230,9 +255,15 @@ export const Btns = {
       send: true, // 是否直接发送
     },
     铅弹轮盘: {
-      text: '铅弹轮盘',
+      text: '恶魔轮盘',
       clicked_text: '/铅弹帮助',
       callback: '/铅弹帮助',
+      send: true, // 是否直接发送
+    },
+    推箱子: {
+      text: '推箱子',
+      clicked_text: '/推箱子',
+      callback: '/推箱子',
       send: true, // 是否直接发送
     },
     统计: {
@@ -251,7 +282,12 @@ export const Btns = {
     人机战: { text: '人机战', clicked_text: '/开始游戏', callback: '/开始游戏', send: true },
     发起游戏: { text: '发起游戏', clicked_text: '/发起游戏', callback: '/发起游戏', send: true },
     加入游戏: { text: '加入游戏', clicked_text: '/加入游戏', callback: '/加入游戏', send: true },
-    帮助: { text: '游戏帮助', clicked_text: '/铅弹游戏帮助', callback: '/铅弹游戏帮助', send: true },
+    帮助: {
+      text: '游戏帮助',
+      clicked_text: '/铅弹游戏帮助',
+      callback: '/铅弹游戏帮助',
+      send: true,
+    },
     原神: {
       text: '没意思，原神，启动！',
       type: 3,

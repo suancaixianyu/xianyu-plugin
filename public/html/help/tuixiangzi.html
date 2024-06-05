@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      background-color: #BDBDBD;
+    }
+
+    .box {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .num {
+      width: 45px;
+      height: 80px;
+      background-size: cover
+    }
+
+    .item {
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background-size: cover
+    }
+
+    .message {
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .content {
+      border: none;
+      box-shadow: inset -1px -1px #fff, inset 1px 1px grey, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+      padding: 4px;
+      margin: 4px;
+    }
+
+    .landmines {
+      display: flex;
+      justify-content: center;
+    }
+
+    .head {
+      border: 5px solid #808080;
+      border-left-color: #fff;
+      border-top-color: #fff;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td,
+    th {
+      border: 2px solid #808080;
+      border-left-color: #fff;
+      border-top-color: #fff;
+      text-align: left;
+      padding: 8px;
+      margin: 2px;
+    }
+
+    th {
+      text-align: center
+    }
+
+    p {
+      text-align: center;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="box1" style="text-align: center;">
+      <div class="box content" id="help">
+
+        <table>
+          <tbody>
+            <tr>
+              <th>指令</th>
+              <th>说明</th>
+              <th>示例指令</th>
+            </tr>
+            <tr>
+              <th>#推箱子</td>
+              <td>发起游戏，可以在后面加上关卡数字，1到15为默认关卡。不加数字默认为1</td>
+              <td>推箱子、推箱子2</td>
+            </tr>
+            <tr>
+              <th>#移动</td>
+              <td>移动小人，后面带上wasd参数，一个字母表示移动一格，可以多个叠加</td>
+              <td>移动swaadwwsdd</td>
+            </tr>
+            <tr>
+              <th>#撤回</td>
+              <td>撤回到上一步</td>
+              <td>撤回</td>
+            </tr>
+            <tr>
+              <th>#推箱子添加关卡</td>
+              <td>添加自定义关卡，发送后根据提示发送对应的内容</td>
+              <td>#推箱子添加关卡</td>
+            </tr>
+            <tr>
+              <th>#关卡列表</td>
+              <td>查看所有关卡，以及自定义关卡，通过关卡id可以从指定的关卡开始游玩</td>
+              <td>#推箱子关卡列表</td>
+            </tr>
+            <tr>
+              <th>结束推箱子</td>
+              <td>结束游戏</td>
+              <td>结束推箱子</td>
+            </tr>
+          </tbody>
+          <colgroup>
+            <col style="width: 25%;">
+            <col style="width: 25%;">
+            <col style="width: 25%;">
+          </colgroup>
+        </table>
+      </div>
+    </div>
+  </div>
+  <p>Created by Yunzai-Bot & xianyu-plugin</p>
+
+</body>
+
+</html>

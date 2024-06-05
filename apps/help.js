@@ -20,7 +20,7 @@ export class xianyuhelp extends plugin {
       [btn.发起, btn.加入],
       [btn.结束, btn.帮助],
     ]
-    image(e, 'doushouqi', { _res: cwd }, getBtn() ? btns : null)
+    image(e, 'doushouqi', { _res: cwd }, btns)
   }
 
   async guojixiangqi(e) {
@@ -30,7 +30,7 @@ export class xianyuhelp extends plugin {
       [btn.结束, btn.帮助],
     ]
 
-    image(e, 'guojixiangqi', { _res: cwd }, getBtn() ? btns : null)
+    image(e, 'guojixiangqi', { _res: cwd }, btns)
   }
 
   async xiangqi(e) {
@@ -39,13 +39,18 @@ export class xianyuhelp extends plugin {
       [btn.发起, btn.加入],
       [btn.结束, btn.帮助],
     ]
-    image(e, 'xiangqi', { _res: cwd }, getBtn() ? btns : null)
+    image(e, 'xiangqi', { _res: cwd }, btns)
   }
 
   async saolei(e) {
     let btn = Btns.扫雷
-    let btns = [[btn.开始], [btn.简单, btn.中等, btn.困难], [btn.设置布局, btn.设置雷数, btn.设置初始化], [btn.结束]]
-    image(e, 'saolei', {}, getBtn() ? btns : null)
+    let btns = [
+      [btn.开始],
+      [btn.简单, btn.中等, btn.困难],
+      [btn.设置布局, btn.设置雷数, btn.设置初始化],
+      [btn.结束],
+    ]
+    image(e, 'saolei', {}, btns)
   }
 
   async wuziqi(e) {
@@ -55,7 +60,14 @@ export class xianyuhelp extends plugin {
       [btn.发起, btn.加入, btn.结束],
     ]
 
-    image(e, 'wuziqi', {}, getBtn() ? btns : null)
+    image(e, 'wuziqi', {}, btns)
+  }
+
+  async tuixiangzi(e) {
+    let btn = Btns.推箱子
+    let btns = [[btn.发起], [btn.列表, btn.结束]]
+
+    image(e, 'tuixiangzi', {}, btns)
   }
 
   async help(e) {
@@ -65,10 +77,10 @@ export class xianyuhelp extends plugin {
 
     let btns = [
       [btn.扫雷, btn.象棋, btn.铅弹轮盘],
-      [btn.五子棋, btn.国际象棋],
+      [btn.五子棋, btn.国际象棋, btn.推箱子],
       [btn.斗兽棋, btn.统计],
     ]
-    image(e, 'help', { _res: _res }, getBtn() ? btns : null)
+    image(e, 'help', { _res: _res }, btns)
   }
 }
 
