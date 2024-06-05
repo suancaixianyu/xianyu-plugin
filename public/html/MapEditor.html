@@ -2,17 +2,25 @@
 <html lang="zh">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>Map Editor</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       table {
         border-collapse: collapse;
         margin: 0 auto;
       }
-      td {
+      td,
+      .td {
         width: 32px;
         height: 32px;
         text-align: center;
@@ -46,11 +54,17 @@
     </style>
   </head>
   <body>
-    <div id="app" class="p-4">
+    <div
+      id="app"
+      class="p-4"
+    >
       <div class="overflow-x-auto">
         <table>
           <tbody>
-            <tr v-for="(row, rowIndex) in grid" :key="rowIndex">
+            <tr
+              v-for="(row, rowIndex) in grid"
+              :key="rowIndex"
+            >
               <td
                 v-for="(cell, cellIndex) in row"
                 :key="cellIndex"
@@ -65,28 +79,124 @@
       </div>
       <div class="mt-4">
         <div class="flex justify-center w-full">
-          <kbd class="kbd" @click="moveContent('up')">▲</kbd>
+          <kbd
+            class="kbd"
+            @click="moveContent('up')"
+            >▲</kbd
+          >
         </div>
         <div class="flex justify-center gap-12 w-full">
-          <kbd class="kbd" @click="moveContent('left')">◀︎</kbd>
-          <kbd class="kbd" @click="moveContent('right')">▶︎</kbd>
+          <kbd
+            class="kbd"
+            @click="moveContent('left')"
+            >◀︎</kbd
+          >
+          <kbd
+            class="kbd"
+            @click="moveContent('right')"
+            >▶︎</kbd
+          >
         </div>
         <div class="flex justify-center w-full">
-          <kbd class="kbd" @click="moveContent('down')">▼</kbd>
+          <kbd
+            class="kbd"
+            @click="moveContent('down')"
+            >▼</kbd
+          >
         </div>
         <div class="flex space-x-2 mt-4">
-          <button @click="addRow" class="btn btn-accent">添加行</button>
-          <button @click="removeRow" class="btn btn-secondary">删除行</button>
-          <button @click="addColumn" class="btn btn-accent">添加列</button>
-          <button @click="removeColumn" class="btn btn-secondary">删除列</button>
+          <button
+            @click="addRow"
+            class="btn btn-accent"
+          >
+            添加行
+          </button>
+          <button
+            @click="removeRow"
+            class="btn btn-secondary"
+          >
+            删除行
+          </button>
+          <button
+            @click="addColumn"
+            class="btn btn-accent"
+          >
+            添加列
+          </button>
+          <button
+            @click="removeColumn"
+            class="btn btn-secondary"
+          >
+            删除列
+          </button>
         </div>
         <div class="mt-4">
-          <textarea v-model="exportData" class="textarea textarea-bordered w-full" rows="10"></textarea>
+          <textarea
+            v-model="exportData"
+            class="textarea textarea-bordered w-full"
+            rows="10"
+          ></textarea>
         </div>
         <div class="flex space-x-2 mt-4">
-          <button @click="importData" class="btn btn-accent">加载数据</button>
-          <button @click="exportDataFunc" class="btn btn-accent">导出数据</button>
+          <button
+            @click="importData"
+            class="btn btn-accent"
+          >
+            加载数据
+          </button>
+          <button
+            @click="exportDataFunc"
+            class="btn btn-accent"
+          >
+            导出数据
+          </button>
         </div>
+      </div>
+
+      <div class="divider">方块说明</div>
+
+      <div class="flex flex-col w-full lg:flex-row">
+        <div
+          class="cell-0 td"
+          unselectable="on"
+        ></div>
+        0：地板
+        <div class="divider lg:divider-horizontal"></div>
+        <div
+          class="cell-1 td"
+          unselectable="on"
+        ></div>
+        1：墙体
+        <div class="divider lg:divider-horizontal"></div>
+        <div
+          class="cell-2 td"
+          unselectable="on"
+        ></div>
+        2：终点
+        <div class="divider lg:divider-horizontal"></div>
+        <div
+          class="cell-3 td"
+          unselectable="on"
+        ></div>
+        3：箱子
+        <div class="divider lg:divider-horizontal"></div>
+        <div
+          class="cell-4 td"
+          unselectable="on"
+        ></div>
+        4：玩家
+        <div class="divider lg:divider-horizontal"></div>
+        <div
+          class="cell-5 td"
+          unselectable="on"
+        ></div>
+        5：进入终点的箱子
+        <div class="divider lg:divider-horizontal"></div>
+        <div
+          class="cell-6 td"
+          unselectable="on"
+        ></div>
+        6：在终点的玩家
       </div>
     </div>
 
