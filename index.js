@@ -1,6 +1,5 @@
 import fs from 'node:fs'
 import { AppName } from './config/metadata.js'
-import './newFile.js'
 
 logger.info(logger.green('-------  <・)))><<  -------'))
 logger.info(logger.blue('咸鱼插件开始加载~~'))
@@ -39,7 +38,7 @@ let LevelPath = `./data/${AppName}/level.json`
 
 if (!fs.existsSync(configPath)) {
   fs.mkdirSync(`./data/${AppName}`, { recursive: true })
-  fs.writeFileSync(configPath, `# 咸鱼插件配置\n# 设置项\nset:\n  # 是否开启按钮\n  btn: true`)
+  fs.writeFileSync(configPath, `# 咸鱼插件配置\n# 设置项\nset:\n  # 是否开启按钮\n  btn: false`)
   logger.info(logger.blue('咸鱼插件配置文件创建完成~~'))
 }
 

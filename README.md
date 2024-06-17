@@ -8,7 +8,7 @@
 
 ## 安装与更新
 
-### 使用Git安装（推荐）
+### 使用 Git 安装（推荐）
 
 请使用 git 进行安装，以方便后续升级。在 Yunzai-Bot 根目录夹打开终端，运行下述指令
 
@@ -26,23 +26,21 @@ git clone --depth=1 https://gitee.com/suancaixianyu/xianyu-plugin.git ./plugins/
 2. 国际象棋
 3. 扫雷
 4. 斗兽棋
+5. 五子棋
+6. 推箱子
+
+## 设置
+
+`#咸鱼设置按钮 开启/关闭`控制按钮是否显示，默认关闭按钮
 
 详情请发送 `#咸鱼帮助` 查看
 
 ---
 
-## Yunzai版本与支持
+## Yunzai 版本与支持
 
-`xianyu-plugin` 仅支持 V3 版本的 Yunzai-Bot
-
-目前我试过的有这两个版本
-
-* [Yunzai-V3](https://gitee.com/Le-niao/Yunzai-Bot) ：Yunzai V3 - 乐神原版，使用oicq
-
-* [Yunzai-V3](https://gitee.com/TimeRainStarSky/Yunzai) ：Yunzai V3 - 时雨版，使用gocq，可以直接在频道使用，本插件同时兼容该版本下的频道
-
-* [Yunzai-V3](https://gitee.com/yoimiya-kokomi/Miao-Yunzai) ：Yunzai V3 - 喵版，使用icqq
+`xianyu-plugin` 仅支持 V3 版本的 Yunzai-Bot，v4 正在适配中
 
 其他版本自行测试，如有报错可以提交一个`lssues`反馈
 
-也可以关注一下`xianyu-plugin`官网 [☛咸鱼插件](https://suancaixianyu.cn/)
+也可以关注一下`xianyu-plugin`官网 [☛ 咸鱼插件](https://suancaixianyu.cn/)
