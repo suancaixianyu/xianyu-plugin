@@ -155,7 +155,7 @@ export class xianyu_PushBox extends plugin {
       }
       game.set(e.group_id, [map])
       // console.log("e.bot.adapter.id", e.bot.adapter.id);
-      if (e.bot.adapter.id == 'KOOK') {
+      if (e.bot?.adapter?.id == 'KOOK') {
         // 续杯
         if (msgid) {
           updateReply(e, map, msgid)
