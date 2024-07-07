@@ -100,5 +100,7 @@ async function image(e, flie, obj, btns) {
     ...data,
   })
 
+  console.log(btns)
+
   e.reply([img, btns && getBtn() ? segment.button(...btns) : ''])
 }

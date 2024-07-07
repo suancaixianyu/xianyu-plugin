@@ -120,54 +120,54 @@ export const Btns = {
   扫雷: {
     开始: {
       text: '开始游戏',
-      clicked_text: '/扫雷',
-      callback: '/扫雷',
+      clicked_text: '/扫镭',
+      callback: '/扫镭',
       send: true,
     },
     简单: {
       text: '简单',
-      clicked_text: '/扫雷难度简单',
-      callback: '/扫雷难度简单',
+      clicked_text: '/扫镭难度简单',
+      callback: '/扫镭难度简单',
       send: true,
     },
     中等: {
       text: '中等',
-      clicked_text: '/扫雷难度中等',
-      callback: '/扫雷难度中等',
+      clicked_text: '/扫镭难度中等',
+      callback: '/扫镭难度中等',
       send: true,
     },
     困难: {
       text: '困难',
-      clicked_text: '/扫雷难度困难',
-      callback: '/扫雷难度困难',
+      clicked_text: '/扫镭难度困难',
+      callback: '/扫镭难度困难',
       send: true,
     },
     设置布局: {
       text: '设置布局',
-      input: '/扫雷设置布局9 9 10',
+      input: '/扫镭设置布局9 9 10',
       send: false,
     },
     设置雷数: {
       text: '设置雷数',
-      input: '/扫雷设置地雷10',
+      input: '/扫镭设置地雷10',
       send: false,
     },
     设置初始化: {
       text: '初始化',
-      clicked_text: '/扫雷设置布局初始化',
-      callback: '/扫雷设置布局初始化',
+      clicked_text: '/扫镭设置布局初始化',
+      callback: '/扫镭设置布局初始化',
       send: true,
     },
     结束: {
-      text: '结束扫雷',
-      clicked_text: '/结束扫雷',
-      callback: '/结束扫雷',
+      text: '结束扫镭',
+      clicked_text: '/结束扫镭',
+      callback: '/结束扫镭',
       send: true,
     },
     帮助: {
       text: '游戏帮助',
-      clicked_text: '/扫雷帮助',
-      callback: '/扫雷帮助',
+      clicked_text: '/扫镭帮助',
+      callback: '/扫镭帮助',
       send: true,
     },
     翻开: {
@@ -225,9 +225,9 @@ export const Btns = {
   },
   帮助: {
     扫雷: {
-      text: '扫雷',
-      clicked_text: '/扫雷帮助',
-      callback: '/扫雷帮助',
+      text: '扫镭',
+      clicked_text: '/扫镭帮助',
+      callback: '/扫镭帮助',
       send: true, // 是否直接发送
     },
     象棋: {
