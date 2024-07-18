@@ -99,7 +99,7 @@ export class xianyu_PushBox extends plugin {
         return this.e.reply('添加失败，只能添加二维数组，请使用“#推箱子关卡工具”制作关卡', true)
       level.push({
         user: this.e.user_id,
-        nickname: this.e.nickname ?? this.e.sender.nickname,
+        nickname: this.e.nickname || this.e.sender.nickname || '',
         name: '自定义关卡' + level.length + 1,
         map: leveljson,
       })

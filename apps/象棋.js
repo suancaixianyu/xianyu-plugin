@@ -81,7 +81,9 @@ export class ChineseChess extends plugin {
         undoGame[e.group_id] = {
           [e.user_id]: true,
         }
-        e.reply(`${e.sender.nickname}请求悔棋，${game.nickname[players_uid]} 可回复“同意”或“拒绝”`)
+        e.reply(
+          `${e.sender.nickname || ''}请求悔棋，${game.nickname[players_uid]} 可回复“同意”或“拒绝”`
+        )
         return
       }
       e.reply(`当前是你的回合，无法悔棋`)
@@ -129,15 +131,15 @@ export class ChineseChess extends plugin {
 
     // 判断是玩家几
     if (players == 0) {
-      game.nickname[e.user_id] = e.sender.nickname
+      game.nickname[e.user_id] = e.sender.nickname || ''
       game.players[e.user_id] = '红'
       e.reply([
-        `玩家${e.sender.nickname}发起了中国象棋，其他成员可发送“加入中国象棋”加入游戏`,
+        `玩家${e.sender.nickname || ''}发起了中国象棋，其他成员可发送“加入中国象棋”加入游戏`,
         getBtn() ? segment.button([btn.加入]) : '',
       ])
     }
     if (players == 1) {
-      game.nickname[e.user_id] = e.sender.nickname
+      game.nickname[e.user_id] = e.sender.nickname || ''
       game.players[e.user_id] = '黑'
 
       let players_nickname = Object.keys(game.players)
@@ -159,10 +161,10 @@ export class ChineseChess extends plugin {
       return
     }
     if (players >= 2 && emsg[0]) {
-      game.nickname[e.user_id] = e.sender.nickname
+      game.nickname[e.user_id] = e.sender.nickname || ''
       game.players[e.user_id] = emsg[0]
       e.reply([
-        `玩家${e.sender.nickname}加入队伍“${emsg[0]}”`,
+        `玩家${e.sender.nickname || ''}加入队伍“${emsg[0]}”`,
         getBtn() ? segment.button([btn.移子, btn.帮助]) : '',
       ])
     }

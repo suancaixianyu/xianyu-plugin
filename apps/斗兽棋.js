@@ -75,16 +75,16 @@ export class AnimalChess extends plugin {
     // 判断是玩家几
     if (players == 0) {
       metadata[e.group_id].players[e.user_id] = {}
-      metadata[e.group_id].players[e.user_id].name = e.sender.nickname
+      metadata[e.group_id].players[e.user_id].name = e.sender.nickname || ''
       metadata[e.group_id].players[e.user_id].team = '红'
       e.reply([
-        `玩家${e.sender.nickname}发起了斗兽棋，其他成员可发送“加入斗兽棋”加入游戏`,
+        `玩家${e.sender.nickname || ''}发起了斗兽棋，其他成员可发送“加入斗兽棋”加入游戏`,
         getBtn() ? segment.button([btn.加入, btn.帮助]) : '',
       ])
     }
     if (players == 1) {
       metadata[e.group_id].players[e.user_id] = {}
-      metadata[e.group_id].players[e.user_id].name = e.sender.nickname
+      metadata[e.group_id].players[e.user_id].name = e.sender.nickname || ''
       metadata[e.group_id].players[e.user_id].team = '蓝'
 
       let players_nickname = Object.keys(metadata[e.group_id].players)
@@ -104,7 +104,7 @@ export class AnimalChess extends plugin {
       await newgame(e)
     }
     if (players >= 2 && emsg[0]) {
-      metadata[e.group_id].players[e.user_id].name = e.sender.nickname
+      metadata[e.group_id].players[e.user_id].name = e.sender.nickname || ''
       metadata[e.group_id].players[e.user_id].team = emsg[0]
       e.reply([
         `玩家${metadata[e.group_id].players[e.user_id].name}加入队伍“${emsg[0]}”`,
@@ -123,7 +123,10 @@ export class AnimalChess extends plugin {
     /** 自己组颜色 */
     let team = metadata[e.group_id].players[e.user_id].team
     if (!team) {
-      e.reply([`你还没加入游戏，可发送”加入斗兽棋(红/蓝)”加入队伍中`, getBtn() ? segment.button([btn.加入, btn.帮助]) : ''])
+      e.reply([
+        `你还没加入游戏，可发送”加入斗兽棋(红/蓝)”加入队伍中`,
+        getBtn() ? segment.button([btn.加入, btn.帮助]) : '',
+      ])
       return false
     }
     // console.log("player：" + team)
@@ -183,7 +186,11 @@ export class AnimalChess extends plugin {
 
       // 胜利提示
       if (iscorrect[1] === true) {
-        e.reply([`恭喜${team}队获得胜利`, await generate(e, tp1, tp2), getBtn() ? segment.button([btn.发起, btn.帮助]) : ''])
+        e.reply([
+          `恭喜${team}队获得胜利`,
+          await generate(e, tp1, tp2),
+          getBtn() ? segment.button([btn.发起, btn.帮助]) : '',
+        ])
         over(e)
       } else {
         e.reply([await generate(e, tp1, tp2), getBtn() ? segment.button([btn.移动, btn.帮助]) : ''])

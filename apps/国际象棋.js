@@ -72,15 +72,15 @@ export class Chess extends plugin {
 
     // 判断是玩家几
     if (players == 0) {
-      metadata[e.group_id].nickname[e.user_id] = e.sender.nickname
+      metadata[e.group_id].nickname[e.user_id] = e.sender.nickname || ''
       metadata[e.group_id].players[e.user_id] = '黑'
       e.reply([
-        `玩家${e.sender.nickname}发起了国际象棋，其他成员可发送“加入国际象棋”加入游戏`,
+        `玩家${e.sender.nickname || ''}发起了国际象棋，其他成员可发送“加入国际象棋”加入游戏`,
         getBtn() ? segment.button([btn.加入]) : '',
       ])
     }
     if (players == 1) {
-      metadata[e.group_id].nickname[e.user_id] = e.sender.nickname
+      metadata[e.group_id].nickname[e.user_id] = e.sender.nickname || ''
       metadata[e.group_id].players[e.user_id] = '白'
 
       let players_nickname = Object.keys(metadata[e.group_id].players)
@@ -100,9 +100,12 @@ export class Chess extends plugin {
       await newgame(e)
     }
     if (players >= 2 && emsg[0]) {
-      metadata[e.group_id].nickname[e.user_id] = e.sender.nickname
+      metadata[e.group_id].nickname[e.user_id] = e.sender.nickname || ''
       metadata[e.group_id].players[e.user_id] = emsg[0]
-      e.reply([`玩家${e.sender.nickname}加入队伍“${emsg[0]}”`, getBtn() ? segment.button([btn.移动, btn.帮助]) : ''])
+      e.reply([
+        `玩家${e.sender.nickname || ''}加入队伍“${emsg[0]}”`,
+        getBtn() ? segment.button([btn.移动, btn.帮助]) : '',
+      ])
     }
   }
 
@@ -115,7 +118,10 @@ export class Chess extends plugin {
     // 判断玩家是否在游戏中
     let team = metadata[e.group_id].players[e.user_id]
     if (!team) {
-      e.reply([`你还没加入游戏，可发送”加入国际象棋黑或白“加入队伍中`, getBtn() ? segment.button([btn.加入]) : ''])
+      e.reply([
+        `你还没加入游戏，可发送”加入国际象棋黑或白“加入队伍中`,
+        getBtn() ? segment.button([btn.加入]) : '',
+      ])
       return false
     }
     // console.log("player：" + team)
@@ -167,7 +173,11 @@ export class Chess extends plugin {
       }
       // 胜利提示
       if (iscorrect[1] === true) {
-        e.reply([`恭喜${team}队获得胜利`, await generate(e, tp1, tp2), getBtn() ? segment.button([btn.发起, btn.帮助]) : ''])
+        e.reply([
+          `恭喜${team}队获得胜利`,
+          await generate(e, tp1, tp2),
+          getBtn() ? segment.button([btn.发起, btn.帮助]) : '',
+        ])
         over(e)
       } else {
         // 传入两个tp点

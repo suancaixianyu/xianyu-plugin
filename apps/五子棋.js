@@ -63,7 +63,10 @@ export class xianyu_gobang extends plugin {
         image(e)
         games[e.group_id] = true
       } else {
-        e.reply([`玩家${e.nickname}发起了 五子棋，其他玩家发送"加入五子棋"进行游戏`, getBtn() ? segment.button([btn.加入]) : ''])
+        e.reply([
+          `玩家${e.sender.nickname || ''}发起了 五子棋，其他玩家发送"加入五子棋"进行游戏`,
+          getBtn() ? segment.button([btn.加入]) : '',
+        ])
       }
     } else {
       player[e.group_id] = {}
@@ -79,7 +82,8 @@ export class xianyu_gobang extends plugin {
   }
 
   async game(e) {
-    if (!games[e.group_id]) return e.reply(['本群未开启游戏', getBtn() ? segment.button([btn.开始], [btn.发起]) : ''])
+    if (!games[e.group_id])
+      return e.reply(['本群未开启游戏', getBtn() ? segment.button([btn.开始], [btn.发起]) : ''])
     if (user[e.group_id] && user[e.group_id] == e.user_id) {
       e.reply('不是你的回合')
       return true
@@ -101,7 +105,7 @@ export class xianyu_gobang extends plugin {
 
     // 检查用户是否获胜
     if (checkWin(userRow, userCol, board[e.group_id][userRow][userCol], e)) {
-      e.reply(`${e.nickname}获胜！`)
+      e.reply(`${e.sender.nickname || ''}获胜！`)
       players.forEach((e) => players.splice(e.user_id, 1))
       player[e.group_id] = {}
       image(e)
@@ -269,7 +273,8 @@ function makeAIMove(e) {
 
   // 执行AI的移动
   const bestMove =
-    availableMovesAI[0].score > availableMovesUser[0].score && availableMovesAI[0].score - 100 > availableMovesUser[0].score
+    availableMovesAI[0].score > availableMovesUser[0].score &&
+    availableMovesAI[0].score - 100 > availableMovesUser[0].score
       ? availableMovesAI[0]
       : availableMovesUser[0]
   board[e.group_id][bestMove.row][bestMove.col] = 'O'

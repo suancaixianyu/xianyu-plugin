@@ -170,7 +170,7 @@ let command = {
       fnc: 'help',
     },
     {
-      reg: /^(\/|#)?(排雷|扫雷)(帮助|help)/i,
+      reg: /^(\/|#)?(扫雷|排雷|扫镭)(帮助|help)/i,
       fnc: 'saolei',
     },
     {
