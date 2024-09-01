@@ -344,6 +344,33 @@ export class newcomer extends plugin {
       }
     }
 
+    // 自动标记
+    // 获取所有被翻开并且为数字的坐标
+    let open = Object.keys(gamemap[e.group_id].isopen).filter(
+      (v) => gamemap[e.group_id].isopen[v] && gamemap[e.group_id].archive[v] !== '0'
+    )
+    // 遍历所有被翻开的坐标，获取周围未翻开的坐标，如果未翻开的坐标都是雷，则标记
+    for (let i = 0; i < open.length; i++) {
+      let indexs = open[i].split('-')
+      let around = [
+        [+indexs[0] - 1, +indexs[1] - 1],
+        [+indexs[0] - 1, +indexs[1]],
+        [+indexs[0] - 1, +indexs[1] + 1],
+        [+indexs[0], +indexs[1] - 1],
+        [+indexs[0], +indexs[1] + 1],
+        [+indexs[0] + 1, +indexs[1] - 1],
+        [+indexs[0] + 1, +indexs[1]],
+        [+indexs[0] + 1, +indexs[1] + 1],
+      ]
+      let around2 = around.filter((v) => gamemap[e.group_id].isopen[v.join('-')] === false)
+      let around3 = around.filter((v) => gamemap[e.group_id].archive[v.join('-')] === 9)
+      if (around2.length == around3.length) {
+        around3.forEach((v) => {
+          gamemap[e.group_id].mark[v.join('-')] = true
+        })
+      }
+    }
+
     // 处理其他指令
     let mark = e.msg.match(/((\/|#)标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
     let mark2 = e.msg.match(/((\/|#)取消标记 ?(([a-zA-Z]{1}[0-9]+){1,} ?)+)/)
@@ -359,7 +386,6 @@ export class newcomer extends plugin {
     if (outcome == 'fail') {
       gameover = true
       e.reply([
-        '踩雷，游戏结束',
         await image(e),
         getBtn() ? segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助]) : '',
       ])
@@ -372,13 +398,12 @@ export class newcomer extends plugin {
       !gameover
     ) {
       e.reply([
-        '恭喜您成功了',
         await image(e),
         getBtn() ? segment.button([btn.开始], [btn.简单, btn.中等, btn.困难], [btn.帮助]) : '',
       ])
       gameover = true
     } else {
-      if (isreply)
+      if (isreply && gameover == false)
         e.reply([await image(e), getBtn() ? segment.button([btn.翻开, btn.标记, btn.取消]) : ''])
     }
     if (gameover) {
@@ -428,11 +453,7 @@ async function goo(e) {
 
   if (gamemap[e.group_id].game) {
     // e.reply(['扫雷游戏已经开始', await image(e),getBtn()? segment.button([btn.翻开], [btn.帮助], [btn.结束])])
-    e.reply([
-      '扫雷游戏已经开始',
-      await image(e),
-      getBtn() ? segment.button([btn.翻开], [btn.帮助], [btn.结束]) : '',
-    ])
+    e.reply([await image(e), getBtn() ? segment.button([btn.翻开], [btn.帮助], [btn.结束]) : ''])
     return
   }
 
