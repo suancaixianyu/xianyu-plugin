@@ -65,16 +65,16 @@ export class xianyu_tongji extends plugin {
         .then((res) => res.json())
         .then((res) => {
           sum++
-          console.log(res, res.code == 200)
+          // console.log(res, res.code == 200)
 
           if (res.code == 200) {
             // data有数据
             // 遍历bot
             if (Object.keys(res.data).length == 0) return
-            console.log(res.data)
+            // console.log(res.data)
             for (const j in res.data) {
               let bot = res.data[j]
-              console.log('bot', bot)
+              // console.log('bot', bot)
               delete bot.sum
               // 遍历plugin
 
@@ -83,10 +83,10 @@ export class xianyu_tongji extends plugin {
                   const el_plugin = bot[plugin]
                   // 遍历app
                   for (const app in el_plugin) {
-                    console.log('app', app)
+                    // console.log('app', app)
                     // 累加
                     const el_app = el_plugin[app]
-                    console.log('el_app', el_app)
+                    // console.log('el_app', el_app)
 
                     if (!values[app]) values[app] = el_app
                     else values[app] += el_app
@@ -97,7 +97,7 @@ export class xianyu_tongji extends plugin {
 
             // 添加到serie
             datas[i] = values
-            console.log(datas)
+            // console.log(datas)
           }
         })
     }
@@ -130,7 +130,7 @@ export class xianyu_tongji extends plugin {
             result[i][key] = datas[i] ? datas[i][key] || 0 : 0
           }
         }
-        console.log('result', result)
+        // console.log('result', result)
         for (const key in result) {
           let el = result[key]
           option.xAxis.data.push(new Date(timeArr[key]).getHours() + 1)
@@ -161,7 +161,7 @@ export class xianyu_tongji extends plugin {
         option.xAxis.data = option.xAxis.data.reverse()
         image(e, '统计', { option: option, cwd: cwd })
       } else {
-        console.log('sum', sum)
+        // console.log('sum', sum)
       }
     }, 1000)
   }
