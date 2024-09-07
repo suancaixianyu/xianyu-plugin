@@ -4,6 +4,37 @@ import { chinesechessname } from './metadata.js'
  * 指令集
  */
 let command = {
+  /** 俄罗斯轮盘 */
+  roulette: [
+    {
+      reg: /^(#|\/)?(发起|加入)游戏$/,
+      fnc: 'newgame',
+    },
+    {
+      reg: /^(#|\/)?开始游戏$/,
+      fnc: 'start',
+    },
+    {
+      reg: /^(#|\/)?使用(放大镜|酒|烟|手铐|锯子)/,
+      fnc: 'operate',
+    },
+    {
+      reg: /^(#|\/)?(-|打|射)(对方|自己)$/,
+      fnc: 'attack',
+    },
+    {
+      reg: /^(#|\/)?查看道具$/,
+      fnc: 'look',
+    },
+    {
+      reg: /^(#|\/)?(铅弹(游戏)?|游戏|轮盘赌)帮助$/,
+      fnc: 'help',
+    },
+    {
+      reg: /^(#|\/)?退出游戏$/,
+      fnc: 'gameover',
+    },
+  ],
   /** 推箱子 */
   sokoban: [
     {
@@ -35,19 +66,6 @@ let command = {
       fnc: 'list',
     },
   ],
-  /** 统计 */
-  tongji: [
-    {
-      reg: /.*/gi,
-      fnc: 'adduser',
-      log: false,
-      log: false,
-    },
-    {
-      reg: /^(\/|#)?(xianyu|xy|咸鱼)统计$/i,
-      fnc: 'tongji',
-    },
-  ],
   /** 五子棋 */
   gobang: [
     {
@@ -59,7 +77,7 @@ let command = {
       fnc: 'ov',
     },
     {
-      reg: /^(\/|#)?落子 ?\d+[\S\s]\d+/,
+      reg: /^(\/|#)?(落子)? ?\d+[\S\s]\d+/,
       fnc: 'game',
     },
   ],
@@ -101,7 +119,7 @@ let command = {
       fnc: 'LaunchGame',
     },
     {
-      reg: /^(\/|#)?(移动|瞬移).*$/,
+      reg: /^(\/|#)?移动( ?[a-zA-z]\d ?){2}$/,
       fnc: 'game',
     },
     {
@@ -130,7 +148,7 @@ let command = {
       fnc: 'LaunchGame',
     },
     {
-      reg: /^(\/|#)?移动.*$/,
+      reg: /^(\/|#)?移动( ?[a-zA-z]\d ?){2}$/,
       fnc: 'game',
     },
     {
@@ -149,7 +167,7 @@ let command = {
       fnc: 'ov',
     },
     {
-      reg: /^(\/|#)?移子.*$/,
+      reg: /^(\/|#)?移子( ?[a-zA-z]\d ?){2}$/,
       fnc: 'game',
     },
     {

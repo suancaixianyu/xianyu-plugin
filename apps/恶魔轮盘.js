@@ -1,34 +1,10 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import puppeteer from '../../../lib/puppeteer/puppeteer.js'
-import { propName } from '../config.js'
-import { getBtn } from '../res/api.js'
-import fs from 'node:fs'
+import { propName, command, Btns } from '../config.js'
+import { getBtn, adduser } from '../res/api.js'
 
 /** 游戏数据 */
 const game = {}
-const btns = {
-  查看道具: { text: '查看道具', type: 2, input: '/查看道具' },
-  使用道具: { text: '使用道具', type: 2, input: '/使用道具' },
-  打对方: { text: '->对手', type: 2, input: '-对方' },
-  打自己: { text: '->自己', type: 2, input: '-自己' },
-  开始游戏: { text: '开始游戏', type: 2, input: '/开始游戏' },
-  人机战: { text: '人机战', type: 2, input: '/开始游戏' },
-  发起游戏: { text: '发起游戏', type: 2, input: '/发起游戏' },
-  加入游戏: { text: '加入游戏', type: 2, input: '/加入游戏' },
-  帮助: { text: '游戏帮助', type: 2, input: '/铅弹游戏帮助' },
-  测试: {
-    text: '测试',
-    type: 3,
-    input: '/链接',
-    link: 'https://ys.mihoyo.com/cloud/?utm_source=default#/',
-  },
-  原神: {
-    text: '没意思，原神，启动！',
-    type: 3,
-    input: '/链接',
-    link: 'https://ys.mihoyo.com/cloud/?utm_source=default#/',
-  },
-}
+const btns = Btns.铅弹轮盘
 
 export class StartGame extends plugin {
   constructor() {
@@ -38,34 +14,7 @@ export class StartGame extends plugin {
       event: 'message',
       priority: 4000,
       rule: [
-        {
-          reg: /^(#|\/)?(发起|加入)游戏$/,
-          fnc: 'newgame',
-        },
-        {
-          reg: /^(#|\/)?开始游戏$/,
-          fnc: 'start',
-        },
-        {
-          reg: /^(#|\/)?使用(放大镜|酒|烟|手铐|锯子)/,
-          fnc: 'operate',
-        },
-        {
-          reg: /^(#|\/)?(-|打|射)(对方|自己)$/,
-          fnc: 'attack',
-        },
-        {
-          reg: /^(#|\/)?查看道具$/,
-          fnc: 'look',
-        },
-        {
-          reg: /^(#|\/)?(铅弹(游戏)?|游戏|轮盘赌)帮助$/,
-          fnc: 'help',
-        },
-        {
-          reg: /^(#|\/)?退出游戏$/,
-          fnc: 'gameover',
-        },
+        ...command.roulette,
         // {
         //   reg: /^(#|\/)?打印$/,
         //   fnc: 'log',
@@ -89,6 +38,7 @@ export class StartGame extends plugin {
   }
 
   async help(e) {
+    adduser(e, this.name)
     sendCard(
       e,
       `BUCKSHOT ROULETTE游戏帮助
@@ -120,6 +70,7 @@ export class StartGame extends plugin {
    * 创建游戏
    */
   async newgame(e) {
+    adduser(e, this.name)
     isgame(e)
     /** 当前游戏 */
     let g = game[e.group_id]
@@ -139,7 +90,11 @@ export class StartGame extends plugin {
     if (Object.keys(g.player).length == 2) {
       sendCard(e, '你已加入游戏，成员已满，可以开始了', [[btns.开始游戏], [btns.帮助]])
     } else {
-      sendCard(e, '你发起了游戏，可直接发送“开始游戏”与人机对战', [[btns.人机战], [btns.加入游戏], [btns.帮助]])
+      sendCard(e, '你发起了游戏，可直接发送“开始游戏”与人机对战', [
+        [btns.人机战],
+        [btns.加入游戏],
+        [btns.帮助],
+      ])
     }
   }
 
@@ -147,6 +102,7 @@ export class StartGame extends plugin {
    * 开始游戏
    */
   async start(e) {
+    adduser(e, this.name)
     isgame(e)
     /** 当前游戏 */
     let g = game[e.group_id]
@@ -183,13 +139,15 @@ export class StartGame extends plugin {
     let zzz = arr.map((boolValue) => (boolValue ? '真' : '假'))
 
     // 回复消息
-    sendCard(e, `游戏开始！\n当前回合: ${g.round}\n行动者: ${g.action}\n当前子弹为: ${zzz.join(',')}`, [
-      [btns.打对方, btns.打自己],
-      [btns.帮助],
-    ])
+    sendCard(
+      e,
+      `游戏开始！\n当前回合: ${g.round}\n行动者: ${g.action}\n当前子弹为: ${zzz.join(',')}`,
+      [[btns.打对方, btns.打自己], [btns.帮助]]
+    )
   }
 
   async look(e) {
+    adduser(e, this.name)
     isgame(e)
     /** 当前游戏 */
     let g = game[e.group_id]
@@ -229,6 +187,7 @@ export class StartGame extends plugin {
    * 游戏操作-使用道具
    */
   async operate(e) {
+    adduser(e, this.name)
     isgame(e)
     /** 当前游戏 */
     let g = game[e.group_id]
@@ -279,9 +238,9 @@ export class StartGame extends plugin {
         } else {
           sendCard(
             e,
-            `你使用了${propName[id]}\n枪里的子弹为：${g.current ? '真弹' : '假弹'}\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(
-              e
-            )}\n＿＿＿＿＿＿＿＿＿＿`,
+            `你使用了${propName[id]}\n枪里的子弹为：${
+              g.current ? '真弹' : '假弹'
+            }\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
             [getbtnB(e), [btns.打对方], [btns.打自己]]
           )
         }
@@ -292,9 +251,9 @@ export class StartGame extends plugin {
         } else {
           sendCard(
             e,
-            `你使用了${propName[id]}\n抛出了一枚：${g.current ? '真弹' : '假弹'}\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(
-              e
-            )}\n＿＿＿＿＿＿＿＿＿＿`,
+            `你使用了${propName[id]}\n抛出了一枚：${
+              g.current ? '真弹' : '假弹'
+            }\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
             [getbtnB(e), [btns.打对方], [btns.打自己]]
           )
         }
@@ -316,7 +275,9 @@ export class StartGame extends plugin {
           else {
             sendCard(
               e,
-              `你使用了${propName[id]}，但是没有奏效\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
+              `你使用了${propName[id]}，但是没有奏效\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(
+                e
+              )}\n＿＿＿＿＿＿＿＿＿＿`,
               [getbtnB(e), [btns.打对方], [btns.打自己]]
             )
           }
@@ -326,9 +287,9 @@ export class StartGame extends plugin {
           else
             sendCard(
               e,
-              `你使用了${propName[id]}\n当前血量为：${g.player[e.user_id].health}\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(
-                e
-              )}\n＿＿＿＿＿＿＿＿＿＿`,
+              `你使用了${propName[id]}\n当前血量为：${
+                g.player[e.user_id].health
+              }\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
               [getbtnB(e), [btns.打对方], [btns.打自己]]
             )
         }
@@ -341,7 +302,9 @@ export class StartGame extends plugin {
         else
           sendCard(
             e,
-            `你使用了${propName[id]}，对方受限一回合\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
+            `你使用了${propName[id]}，对方受限一回合\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(
+              e
+            )}\n＿＿＿＿＿＿＿＿＿＿`,
             [getbtnB(e), [btns.打对方], [btns.打自己]]
           )
         break
@@ -351,7 +314,9 @@ export class StartGame extends plugin {
         else
           sendCard(
             e,
-            `你使用了${propName[id]}，当前回合伤害加一\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
+            `你使用了${propName[id]}，当前回合伤害加一\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(
+              e
+            )}\n＿＿＿＿＿＿＿＿＿＿`,
             [getbtnB(e), [btns.打对方], [btns.打自己]]
           )
         break
@@ -368,6 +333,7 @@ export class StartGame extends plugin {
    * 游戏操作-攻击
    */
   async attack(e) {
+    adduser(e, this.name)
     isgame(e)
     /** 当前游戏 */
     let g = game[e.group_id]
@@ -413,12 +379,14 @@ export class StartGame extends plugin {
           }
           die = true
         } else {
-          if (isAI) g.aimsg += `\n朝自己射击，造成了${damage}点伤害，当前剩余${g.player[e.user_id].health}`
+          if (isAI)
+            g.aimsg += `\n朝自己射击，造成了${damage}点伤害，当前剩余${g.player[e.user_id].health}`
           else
-            sendCard(e, `朝自己射击，造成了${damage}点伤害，当前剩余${g.player[e.user_id].health}`, [
-              [btns.打对方, btns.打自己],
-              [btns.查看道具],
-            ])
+            sendCard(
+              e,
+              `朝自己射击，造成了${damage}点伤害，当前剩余${g.player[e.user_id].health}`,
+              [[btns.打对方, btns.打自己], [btns.查看道具]]
+            )
         }
       } else {
         if (isAI) g.aimsg += '\n朝自己射击，没有受到伤害'
@@ -437,16 +405,19 @@ export class StartGame extends plugin {
           else e.reply(`朝对方射击，造成了${damage}点伤害，你击败了对方`)
           die = true
         } else {
-          if (isAI) g.aimsg += `\n朝你射击，造成了${damage}点伤害，你血量剩余${g.player[opponent].health}`
+          if (isAI)
+            g.aimsg += `\n朝你射击，造成了${damage}点伤害，你血量剩余${g.player[opponent].health}`
           else
-            sendCard(e, `朝对方射击，造成了${damage}点伤害，对方血量剩余${g.player[opponent].health}`, [
-              [btns.打对方, btns.打自己],
-              [btns.查看道具],
-            ])
+            sendCard(
+              e,
+              `朝对方射击，造成了${damage}点伤害，对方血量剩余${g.player[opponent].health}`,
+              [[btns.打对方, btns.打自己], [btns.查看道具]]
+            )
         }
       } else {
         if (isAI) g.aimsg += '\n朝你射击，没有受到伤害'
-        else sendCard(e, '你朝对方射击，没有受到伤害', [[btns.打对方, btns.打自己], [btns.查看道具]])
+        else
+          sendCard(e, '你朝对方射击，没有受到伤害', [[btns.打对方, btns.打自己], [btns.查看道具]])
       }
     }
 
@@ -492,11 +463,13 @@ export class StartGame extends plugin {
         g.player[opponent].islock = false
         if (isAI) g.aimsg += '\n对方被锁，继续行动'
         else
-          sendCard(e, `对方被锁，你继续行动\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [
-            getbtnB(e),
-            [btns.打对方],
-            [btns.打自己],
-          ])
+          sendCard(
+            e,
+            `对方被锁，你继续行动\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(
+              e
+            )}\n＿＿＿＿＿＿＿＿＿＿`,
+            [getbtnB(e), [btns.打对方], [btns.打自己]]
+          )
 
         if (isAI) {
           await 延迟()
@@ -525,20 +498,20 @@ export class StartGame extends plugin {
               console.log('ai行动3')
               this.AI(e)
             } else {
-              sendCard(e, `继续行动\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`, [
-                getbtnB(e),
-                [btns.打对方],
-                [btns.打自己],
-              ])
+              sendCard(
+                e,
+                `继续行动\n＿＿＿＿＿＿＿＿＿＿\n持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
+                [getbtnB(e), [btns.打对方], [btns.打自己]]
+              )
             }
           } else {
             if (isAI) {
               e.user_id = g.action
               sendCard(
                 e,
-                `${g.aimsg}\n接下来是${g.action}行动\n＿＿＿＿＿＿＿＿＿＿\n${g.action}持有道具：\n${getbtn(
-                  e
-                )}\n＿＿＿＿＿＿＿＿＿＿`,
+                `${g.aimsg}\n接下来是${g.action}行动\n＿＿＿＿＿＿＿＿＿＿\n${
+                  g.action
+                }持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
                 [getbtnB(e), [btns.打对方], [btns.打自己]]
               )
 
@@ -547,7 +520,9 @@ export class StartGame extends plugin {
               e.user_id = g.action
               sendCard(
                 e,
-                `接下来是${g.action}行动\n＿＿＿＿＿＿＿＿＿＿\n${g.action}持有道具：\n${getbtn(e)}\n＿＿＿＿＿＿＿＿＿＿`,
+                `接下来是${g.action}行动\n＿＿＿＿＿＿＿＿＿＿\n${g.action}持有道具：\n${getbtn(
+                  e
+                )}\n＿＿＿＿＿＿＿＿＿＿`,
                 [getbtnB(e), [btns.打对方], [btns.打自己]]
               )
             }
@@ -650,11 +625,13 @@ function nextGame(e, die = false) {
 
   let zzz = arr.map((boolValue) => (boolValue ? '真' : '假'))
   if (die) {
-    sendCard(e, `新一轮开始\n当前回合：${g.round}\n当前子弹为：${zzz.join(',')}\n${g.player[g.action].name}行动：`, [
-      [btns.查看道具],
-      [btns.打对方],
-      [btns.打自己],
-    ])
+    sendCard(
+      e,
+      `新一轮开始\n当前回合：${g.round}\n当前子弹为：${zzz.join(',')}\n${
+        g.player[g.action].name
+      }行动：`,
+      [[btns.查看道具], [btns.打对方], [btns.打自己]]
+    )
   } else {
     sendCard(e, `子弹重新填满\n当前子弹为：${zzz.join(',')}\n${g.player[g.action].name}行动：`, [
       [btns.查看道具],
@@ -704,7 +681,6 @@ function getbtnB(e) {
  * 初始化游戏
  */
 function isgame(e) {
-  adduser(e)
   if (!game[e.group_id]) {
     game[e.group_id] = {
       isGame: false,
@@ -788,43 +764,4 @@ function getProp(count, arr = [1, 2, 3, 4, 5]) {
   }
 
   return result
-}
-
-function adduser(e) {
-  const botname = JSON.parse(fs.readFileSync(`./package.json`, 'utf-8'))
-  const nickname = e.sender.nickname
-
-  try {
-    const raw = JSON.stringify({
-      userid: e.user_id,
-      nickname: nickname,
-      plugin: 'Buckshot-Roulette',
-      bot: botname.name,
-      channel: e.bot.adapter.name,
-    })
-    let myHeaders = new Headers()
-    myHeaders.append('Content-Type', 'application/json')
-
-    let requestOptions = {
-      method: 'POST',
-      body: raw,
-      headers: myHeaders,
-      redirect: 'follow',
-    }
-
-    fetch('https://suancaixianyu.cn/xyapi/adduser', requestOptions)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        // console.log('请求成功')
-      })
-      .catch(() => {
-        return false
-      })
-  } catch (error) {
-    console.log(error)
-  }
-
-  return false
 }

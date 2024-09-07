@@ -1,7 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { command, Btns } from '../config.js'
-import { getBtn } from '../res/api.js'
+import { getBtn, adduser } from '../res/api.js'
 
 /** 游戏地图 */
 let board = {}
@@ -46,6 +46,7 @@ export class xianyu_gobang extends plugin {
 
   /** 创建游戏 */
   async goo(e) {
+    adduser(e, this.name)
     if (games[e.group_id]) {
       e.reply('本群游戏已开始')
       return false
@@ -84,6 +85,7 @@ export class xianyu_gobang extends plugin {
   async game(e) {
     if (!games[e.group_id])
       return e.reply(['本群未开启游戏', getBtn() ? segment.button([btn.开始], [btn.发起]) : ''])
+    adduser(e, this.name)
     if (user[e.group_id] && user[e.group_id] == e.user_id) {
       e.reply('不是你的回合')
       return true

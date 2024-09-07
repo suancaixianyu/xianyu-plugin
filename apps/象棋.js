@@ -1,7 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import panduan from '../lib/ChineseChessDecide.js'
-import { getBtn, deepCopyObj } from '../res/api.js'
+import { getBtn, deepCopyObj, adduser } from '../res/api.js'
 import { cwd, command, initialmap, Btns } from '../config.js'
 const as = new panduan()
 
@@ -40,7 +40,9 @@ export class ChineseChess extends plugin {
     })
   }
 
+  /** 悔棋 */
   async undo(e) {
+    adduser(e, this.name)
     let game = deepCopyObj(map_bak[e.group_id]?.[map_bak[e.group_id].length - 1])
     if (game && game.nickname[e.user_id] === e.sender.nickname) {
       // 获取当前行动者
@@ -114,6 +116,7 @@ export class ChineseChess extends plugin {
    * 发起游戏
    */
   async LaunchGame(e) {
+    adduser(e, this.name)
     let game = deepCopyObj(map_bak[e.group_id]?.[map_bak[e.group_id].length - 1])
     if (Object.keys(game).length === 0) {
       game = getGame()
@@ -178,6 +181,7 @@ export class ChineseChess extends plugin {
     let game = deepCopyObj(map_bak[e.group_id]?.[map_bak[e.group_id].length - 1])
     // console.log(game)
     if (!game || !game.game) return false
+    adduser(e, this.name)
     // await beifen(e)
     // 判断玩家是否在游戏中
     let team = game.players[e.user_id]

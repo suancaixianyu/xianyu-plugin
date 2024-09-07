@@ -1,7 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { cwd, command, Btns } from '../config.js'
-import { getBtn } from '../res/api.js'
+import { getBtn, adduser } from '../res/api.js'
 
 export class xianyuhelp extends plugin {
   constructor() {
@@ -91,6 +91,7 @@ export class xianyuhelp extends plugin {
  * @returns 发送帮助截图
  */
 async function image(e, flie, obj, btns) {
+  adduser(e, '咸鱼_帮助')
   let data = {
     quality: 100,
     tplFile: `./plugins/xianyu-plugin/public/html/help/${flie}.html`,
@@ -100,7 +101,7 @@ async function image(e, flie, obj, btns) {
     ...data,
   })
 
-  console.log(btns)
+  // console.log(btns)
 
   e.reply([img, btns && getBtn() ? segment.button(...btns) : ''])
 }

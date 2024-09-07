@@ -2,7 +2,7 @@ import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { command, cwd } from '../config.js'
 import { initialmap } from '../config.js'
-import { getJson, saveJson } from '../res/api.js'
+import { getJson, saveJson, adduser } from '../res/api.js'
 
 // 按钮点击事件排队表
 let btns = []
@@ -43,11 +43,13 @@ export class xianyu_PushBox extends plugin {
   }
 
   async mapTool(e) {
+    adduser(e, this.name)
     e.reply(['关卡制作地址：', 'https://suancaixianyu.cn/MapEditor.html'])
   }
 
   // 撤回
   async undo(e) {
+    adduser(e, this.name)
     let msgid = e.msg.match(/(?<=\<msg ?)([A-Za-z0-9]*-?)+(?=>)/)?.[0]
     e.msg = e.msg.replace(/<msg.*>/, '')
     if (!game.get(e.group_id)) {
@@ -73,6 +75,7 @@ export class xianyu_PushBox extends plugin {
 
   // 添加关卡
   async addLevel(e) {
+    adduser(e, this.name)
     let level = e.msg
       .replace(/(\/|#)?推箱子添加关卡/, '')
       .replace(/\n/g, '')
@@ -127,6 +130,7 @@ export class xianyu_PushBox extends plugin {
 
   // 关卡列表
   async list(e) {
+    adduser(e, this.name)
     let level1 = initialmap.sokoban
     let level2 = getJson('level')
     let level = [...level1, ...level2]
@@ -136,6 +140,7 @@ export class xianyu_PushBox extends plugin {
 
   // 新游戏
   async newGame(e) {
+    adduser(e, this.name)
     let msgid = e.msg.match(/(?<=\<msg ?)([A-Za-z0-9]*-?)+(?=>)/)?.[0]
     e.msg = e.msg.replace(/<msg.*>/, '')
 
@@ -191,9 +196,9 @@ export class xianyu_PushBox extends plugin {
     let msgid = e.msg.match(/(?<=\<msg ?)([A-Za-z0-9]*-?)+(?=>)/)?.[0]
     e.msg = e.msg.replace(/<msg.*>/, '')
 
-    if (!game.get(e.group_id)) {
-      return false
-    }
+    if (!game.get(e.group_id)) return false
+    adduser(e, this.name)
+
     // 取出所有的wasd
     let wasd = e.msg.match(/[wasd]/gi)
     if (!wasd) {

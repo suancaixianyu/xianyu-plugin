@@ -56,13 +56,79 @@ export function deepCopy(obj) {
 
 /** 深度备份对象 */
 export function deepCopyObj(obj) {
+  if (obj instanceof RegExp) {
+    // 如果是正则表达式，直接返回一个新的正则表达式实例
+    return new RegExp(obj)
+  }
+
   let newObj = {}
   for (let key in obj) {
-    if (typeof obj[key] === 'object') {
+    if (typeof obj[key] === 'object' && obj[key] !== null) {
       newObj[key] = deepCopyObj(obj[key])
     } else {
       newObj[key] = obj[key]
     }
   }
   return newObj
+}
+
+/** 深度备份数组对象 */
+// 对象中每个key对应一个数组，数组中每个元素是一个对象
+export function deepCopyArrObj(obj) {
+  let newObj = {}
+  for (let key in obj) {
+    newObj[key] = obj[key].map((item) => {
+      return deepCopyObj(item)
+    })
+  }
+  return newObj
+}
+
+/** 上传统计 */
+export function adduser(e, app) {
+  const bottype = JSON.parse(fs.readFileSync(`./package.json`, 'utf-8'))
+  let nickname = e.sender.nickname || e.user_name || e.nickname || '匿名'
+
+  let myHeaders = new Headers()
+  myHeaders.append('Content-Type', 'application/json')
+
+  const raw = JSON.stringify({
+    user_id: e.user_id,
+    user_name: nickname,
+    group_id: e.group_id,
+    group_name: e.group_name,
+    bot_name: e.bot.nickname,
+    bot_type: bottype.name,
+    bot_id: e.bot.uin,
+    app: app,
+    plugin_name: AppName,
+    platform: e.adapter_id,
+  })
+
+  let requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow',
+  }
+
+  fetch('http://xy.suancaixianyu.cn/xyapi/record', requestOptions)
+    // fetch('http://[::1]:8000/xyapi/record', requestOptions)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+      return response.json()
+    })
+    .then((result) => {
+      // console.log(result)
+      if (result.code == 200) {
+        // console.log('记录成功')
+      }
+    })
+    .catch((err) => {
+      console.log('记录失败', err)
+    })
+
+  return false
 }

@@ -2,7 +2,7 @@ import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import panduan from '../lib/ChessDecides.js'
 import { command, initialmap, cwd, Btns } from '../config.js'
-import { getBtn } from '../res/api.js'
+import { getBtn, adduser } from '../res/api.js'
 
 const as = new panduan()
 
@@ -57,6 +57,7 @@ export class Chess extends plugin {
    * 发起游戏
    */
   async LaunchGame(e) {
+    adduser(e, this.name)
     if (!metadata[e.group_id]) {
       await over(e)
     }
@@ -114,6 +115,7 @@ export class Chess extends plugin {
    */
   async game(e) {
     if (!metadata[e.group_id] || !metadata[e.group_id].game) return false
+    adduser(e, this.name)
 
     // 判断玩家是否在游戏中
     let team = metadata[e.group_id].players[e.user_id]

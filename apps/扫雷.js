@@ -1,7 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import { command, gamemap, ABC, cwd, Btns } from '../config.js'
-import { getBtn } from '../res/api.js'
+import { getBtn, adduser } from '../res/api.js'
 let btn = Btns.扫雷
 
 export class newcomer extends plugin {
@@ -18,6 +18,7 @@ export class newcomer extends plugin {
    * 游戏设置
    */
   async setup(e) {
+    adduser(e, this.name)
     newgame(e)
     if (gamemap[e.group_id].game) return e.reply(`游戏已开始，不可设置`)
     if (/^(#|\/)?(扫雷|排雷|扫镭)设置地?雷数量?\d+/.test(e.msg)) {
@@ -61,6 +62,7 @@ export class newcomer extends plugin {
    * 开始游戏
    */
   async goo(e) {
+    adduser(e, this.name)
     newgame(e)
     gamemap[e.group_id].command = e.msg
     goo(e)
@@ -70,6 +72,7 @@ export class newcomer extends plugin {
    * 设置难度
    */
   async goolevel(e) {
+    adduser(e, this.name)
     newgame(e)
     if (gamemap[e.group_id].game)
       return e.reply([
@@ -128,6 +131,7 @@ export class newcomer extends plugin {
    * @param {*} active 是否主动触发
    */
   async removemark(e, isreply = true, active = true) {
+    adduser(e, this.name)
     newgame(e)
     if (!gamemap[e.group_id].game) {
       e.reply([
@@ -186,6 +190,7 @@ export class newcomer extends plugin {
    * @param {*} active 是否主动触发
    */
   async mark(e, isreply = true, active = true) {
+    adduser(e, this.name)
     newgame(e)
     if (!gamemap[e.group_id].game) {
       e.reply([
@@ -243,6 +248,7 @@ export class newcomer extends plugin {
    * @param {*} active 是否主动触发
    */
   async gooplye(e, isreply = true, active = true) {
+    adduser(e, this.name)
     newgame(e)
     if (!gamemap[e.group_id].game) {
       e.reply([

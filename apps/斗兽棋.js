@@ -1,7 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import panduan from '../lib/AnimalChessDecision.js'
-import { getBtn } from '../res/api.js'
+import { getBtn, adduser } from '../res/api.js'
 import { command, ABC, cwd, initialmap, Btns } from '../config.js'
 const as = new panduan()
 
@@ -40,6 +40,7 @@ export class AnimalChess extends plugin {
    * 认输
    */
   async ov(e) {
+    adduser(e, this.name)
     // 判断玩家是否在游戏中
     if (metadata[e.group_id] && metadata[e.group_id].players[e.user_id]) {
       let team = metadata[e.group_id].players[e.user_id].team
@@ -58,6 +59,7 @@ export class AnimalChess extends plugin {
    * 发起游戏
    */
   async LaunchGame(e) {
+    adduser(e, this.name)
     // 没有本群数据则创建
     if (!metadata[e.group_id]) {
       await over(e)
@@ -118,6 +120,7 @@ export class AnimalChess extends plugin {
    */
   async game(e) {
     if (!metadata[e.group_id] || !metadata[e.group_id].game) return false
+    adduser(e, this.name)
 
     // 判断玩家是否在游戏中
     /** 自己组颜色 */

@@ -1,223 +1,208 @@
 <!DOCTYPE html>
+<html>
 
 <head>
   <meta charset="utf-8" />
   <title>ECharts</title>
+  <!-- 引入刚刚下载的 ECharts 文件 -->
+  <script src="{{cwd}}js/echarts.min.js"></script>
 </head>
 
-<style>
-  fieldset {
-    border-color: #FDF0E1;
-  }
-
-  legend {
-    font-size: 1.2em;
-  }
-
-  img {
-    width: 100%;
-    max-width: 500px;
-  }
-
-  h2 {
-    text-align: center;
-  }
-
-  body {
-    background-color: bisque;
-  }
-
-  th {
-    text-align: center;
-    background-color: #fddbb3;
-  }
-
-  th,
-  td,
-  th,
-  #help {
-    border: 2px solid #B58863;
-    border-left-color: #fff;
-    border-top-color: #fff;
-    text-align: left;
-    padding: 8px;
-  }
-
-  ul {
-    list-style: none;
-    background-color: #fdf0e1;
-    padding: 10px;
-  }
-</style>
-
 <body>
-  <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-  <div id="main" style="width: 800px; height: 400px; margin: 0 auto"></div>
-  <div id="main1" style="width: 800px; height: 400px; margin: 0 auto"></div>
-  <div id="help" style="background-color: bisque;">
-    <h3 style="margin:auto;text-align: center;">咸鱼插件用户统计表</h3>
-    <table style="width:60%;margin: 0 auto" id="box">
-      <tr>
-        <th>使用的Bot名称</th>
-        <th>用户数量</th>
-      </tr>
-    </table>
-    <table style="width:60%;margin: 0 auto" id="box1">
-      <tr>
-        <th>指令名称</th>
-        <th>累计使用次数</th>
-      </tr>
-    </table>
-  </div>
-
-  <!-- ECharts单文件引入 -->
-  <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+  <h1 style="color: #474747;text-align: center;">咸鱼插件统计</h1>
+  <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+  <div id="main" style="width: 800px;height:400px;"></div>
+  <!-- <div id="main1" style="width: 800px;height:400px;"></div> -->
+  <p style="text-align: center;">xianyu-plugin</p>
   <script type="text/javascript">
 
-    let tonji = {
-      "minesweeper": "扫雷",
-      "animalchess": "斗兽棋",
-      "update": "更新",
-      "chess": "国际象棋",
-      "tonji": "统计",
-      "chinesechess": "中国象棋",
-      "help": "帮助"
-    }
-    let option = {
-        animation: false, // 是否显示动画
-        xAxis: {
-          type: "category",
-          data: [], //底部显示的内容
-          name: "Bot名称", // 末尾显示的内容
-        },
-        yAxis: {
-          type: 'value',
-          name: "用户数量",
-        },
-        series: [
-          {
-            data: [],
-            type: 'bar',
-          }
-        ]
-      };
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    // var myChart1 = echarts.init(document.getElementById('main1'));
 
-      let option1 = {
-          animation: false, // 是否显示动画
-          xAxis: {
-            type: "category",
-            data: [], //底部显示的内容
-            name: "功能名称", // 末尾显示的内容
-          },
-          yAxis: {
-            type: 'value',
-            name: "累计使用次数",
-          },
-          series: [
-            {
-              data: [],
-              type: 'bar',
-            }
-          ]
-        };
-      let frequency = '{{frequency}}' //指令使用次数
-        frequency = frequency.replace(/&#34;/g, '"')
-        frequency = JSON.parse(frequency)
+    // 指定图表的配置项和数据
+    var option = "{{option}}"
+    option = option.replace(/&#34;/g, '"')
+    let data = JSON.parse(option)
+    myChart.setOption(data)
 
-        let usernumber = '{{usernumber}}' // 用户数量
-        usernumber = usernumber.replace(/&#34;/g, '"')
-        usernumber = JSON.parse(usernumber)
+    // var option1 = {
+    //   title: {
+    //     text: '近24小时内用户活跃人数'
+    //   },
+    //   tooltip: {
+    //     trigger: 'axis'
+    //   },
+    //   grid: {
+    //     left: '3%',
+    //     right: '4%',
+    //     bottom: '3%',
+    //     containLabel: true
+    //   },
+    //   legend: {
+    //   },
+    //   xAxis: {
+    //     type: 'category',
+    //     boundaryGap: false,
+    //     data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] // 时间
+    //   },
+    //   yAxis: {
 
-    // 路径配置
-    require.config({
-      paths: {
-        echarts: "http://echarts.baidu.com/build/dist",
-      },
-    });
+    //   },
+    //   series: [
+    //     {
+    //       name: 'trss_yunzai',
+    //       type: 'line',
+    //       data: [5, 20, 36, 13, 54, 32, 12, 4, 34, 56],
+    //       markPoint: {
+    //         data: [
+    //           { type: 'max', name: 'Max' },
+    //           { type: 'min', name: 'Min' },
+    //         ]
+    //       },
+    //     },
+    //     {
+    //       name: 'miao_yunzai',
+    //       type: 'line',
+    //       data: [1, 2, 34, 34, 53, 23, 56, 43, 12, 43],
+    //       markPoint: {
+    //         data: [
+    //           { type: 'max', name: 'Max' },
+    //           { type: 'min', name: 'Min' },
+    //         ]
+    //       },
+    //     }
+    //   ]
+    // };
 
-    // 使用
-    require([
-      "echarts",
-      "echarts/chart/bar", // 使用柱状图就加载bar模块，按需加载
-      "echarts/chart/line",
-    ], function (ec) {
-      // 基于准备好的dom，初始化echarts图表
-      let myChart = ec.init(document.getElementById("main"));
-      let myChart1 = ec.init(document.getElementById("main1"));
+    // // 列出从当前时间开始的24小时内的时间，每个小时的时间区间
+    // let time = new Date().getTime()
+    // let timeArr = []
+    // for (let i = 1; i < 25; i++) {
+    //   timeArr.push(time - i * 3600 * 1000)
+    // }
+    // let serie = []
+    // let datas = {}
+    // let sum = 0
 
 
-      // 获取表格元素
-      let table = document.getElementById('box')
-      let table1 = document.getElementById('box1')
-      let A = 0
-      let A1 = 0
+    // // 遍历时间
+    // for (const i in timeArr) {
+    //   // 当前时间段数据
+    //   let values = {}
+    //   // 获取数据
+    //   fetch(`https://xy.suancaixianyu.cn/xyapi/rank/count?plugin=xianyu-plugin&end=${timeArr[i] + 1 * 3600 * 1000}&start=${timeArr[i]}`)
+    //     .then(res => res.json())
+    //     .then(res => {
+    //       sum++
+    //       console.log(res, res.code == 200);
 
-      // 遍历json中的键
-      for (let key in usernumber) {
-        // 新建一行
-        let row = table.insertRow(-1)
-        // 添加第一个单元格，显示键名
-        let nameCell = row.insertCell(0)
-        nameCell.innerHTML = key;
-        // 添加第二个单元格，显示该键下的数字键数量
-        let countCell = row.insertCell(1)
-        countCell.innerHTML = usernumber[key]
+    //       if (res.code == 200) {
+    //         // data有数据
+    //         // 遍历bot
+    //         if (Object.keys(res.data).length == 0) return
+    //         console.log(res.data);
+    //         for (const j in res.data) {
+    //           let bot = res.data[j]
+    //           console.log('bot', bot)
+    //           delete bot.sum
+    //           // 遍历plugin
 
-        // 添加柱状图的单元格
-        option.xAxis.data.push(key)
+    //           for (const plugin in bot) {
+    //             if (bot.hasOwnProperty(plugin)) {
+    //               const el_plugin = bot[plugin];
+    //               // 遍历app
+    //               for (const app in el_plugin) {
+    //                 console.log('app', app);
+    //                 // 累加
+    //                 const el_app = el_plugin[app];
+    //                 console.log('el_app', el_app);
 
-        // 添加柱状图的单元数据
-        option.series[0].data.push(usernumber[key])
+    //                 if (!values[app])
+    //                   values[app] = el_app
+    //                 else
+    //                   values[app] += el_app
+    //               }
+    //             }
+    //           }
+    //         }
 
+    //         // 添加到serie
+    //         datas[i] = values
+    //         console.log(datas);
+    //       }
+    //     })
+    // }
 
-        // 添加总用户数量
-        A = A + usernumber[key]
-      }
+    // // 定时器
+    // const intervalId = setInterval(function () {
+    //   if (sum == 24) {
+    //     // 结束循环
+    //     clearTimeout(intervalId);
+    //     const result = {};
+    //     // 提取所有可能的 key
+    //     const allKeys = new Set();
+    //     for (const key in datas) {
+    //       if (datas.hasOwnProperty(key)) {
+    //         for (const subKey in datas[key]) {
+    //           if (datas[key].hasOwnProperty(subKey)) {
+    //             allKeys.add(subKey);
+    //           }
+    //         }
+    //       }
+    //     }
 
-      // 添加第二个表
-      for (let key in frequency) {
-        // 新建一行
-        let row1 = table1.insertRow(-1)
-        // 添加第一个单元格，显示键名
-        let nameCell1 = row1.insertCell(0)
-        nameCell1.innerHTML = tonji[key]
-        // 添加第二个单元格，显示该键下的数字键数量
-        let countCell1 = row1.insertCell(1)
-        countCell1.innerHTML = frequency[key]
+    //     // 将 Set 转换为数组
+    //     const keys = Array.from(allKeys);
 
-        // 添加总用户数量
-        A1 = A1 + frequency[key]
-      }
+    //     // 遍历从 0 到 23 的数字
+    //     for (let i = 0; i <= 23; i++) {
+    //       result[i] = {};
+    //       for (const key of keys) {
+    //         result[i][key] = datas[i] ? (datas[i][key] || 0) : 0;
+    //       }
+    //     }
+    //     console.log('result', result);
+    //     for (const key in result) {
+    //       let el = result[key]
+    //       option.xAxis.data.push(new Date(timeArr[key]).getHours() + 1)
+    //       for (const k in el) {
+    //         if (el.hasOwnProperty(k)) {
+    //           const element = el[k];
+    //           if (option.series.findIndex(e => e.name == k) == -1) {
+    //             option.series.push({
+    //               name: k,
+    //               type: 'line',
+    //               data: [],
+    //               markPoint: {
+    //                 data: [
+    //                   { type: 'max', name: 'Max' },
+    //                 ]
+    //               },
+    //             })
+    //           }
+    //           option.series.find(e => e.name == k).data.push(element)
+    //         }
+    //       }
 
-      // 添加插件
-      let plugin = Object.keys(frequency)
-      plugin.forEach((ev,index) => {
-        plugin[index] = tonji[ev]
-      })
-      option1.xAxis.data = [...plugin]
-      option1.series[0].data = [...Object.values(frequency)]
+    //     }
+    //     // 将option.series.data倒序
+    //     for (const key in option.series) {
+    //       if (option.series.hasOwnProperty(key)) {
+    //         const element = option.series[key];
+    //         element.data = element.data.reverse()
+    //       }
+    //     }
+    //     option.xAxis.data = option.xAxis.data.reverse()
+    //     // 使用刚指定的配置项和数据显示图表。
+    //     myChart.setOption(option);
+    //     // myChart1.setOption(option1);
 
-      // 新建一行
-      let row = table.insertRow(-1)
-      // 添加第一个单元格，显示键名
-      let nameCell = row.insertCell(0)
-      nameCell.innerHTML = '总用户数量'
-      // 添加第二个单元格，显示该键下的数字键数量
-      let countCell = row.insertCell(1)
-      countCell.innerHTML = A
-
-      // 新建一行
-      let row1 = table1.insertRow(-1)
-      // 添加第一个单元格，显示键名
-      let nameCell1 = row1.insertCell(0)
-      nameCell1.innerHTML = '总使用次数'
-      // 添加第二个单元格，显示该键下的数字键数量
-      let countCell1 = row1.insertCell(1)
-      countCell1.innerHTML = A1
-
-      // 为echarts对象加载数据
-      myChart.setOption(option)
-      myChart1.setOption(option1)
-    });
+    //   } else {
+    //     console.log('sum', sum);
+    //   }
+    // }, 1000);
   </script>
 </body>
+
+</html>
