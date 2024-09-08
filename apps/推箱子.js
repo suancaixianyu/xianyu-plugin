@@ -34,8 +34,8 @@ const game = gameState()
 export class xianyu_PushBox extends plugin {
   constructor() {
     super({
-      name: 'PluginName',
-      dsc: 'PluginName',
+      name: '咸鱼_推箱子',
+      dsc: '推箱子小游戏',
       event: 'message',
       priority: 5000,
       rule: [...command.sokoban],

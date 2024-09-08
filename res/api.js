@@ -132,3 +132,25 @@ export function adduser(e, app) {
 
   return false
 }
+
+/**
+ * 获取时间区-小时
+ * [开始时间, 结束时间, 小时数]
+ */
+export function getHourlyIntervals(hours) {
+  const intervals = []
+  const currentTime = new Date()
+
+  for (let i = 0; i < hours; i++) {
+    // 结束时间为当前时间 - i 个小时
+    const endTime = new Date(currentTime.getTime() - i * 60 * 60 * 1000)
+    // 开始时间为结束时间再减去 1 小时
+    const startTime = new Date(endTime.getTime() - 60 * 60 * 1000)
+    // 获取结束时间的小时数
+    const hour = endTime.getHours()
+    // 保存 [开始时间, 结束时间, 小时数] 作为一组
+    intervals.push([startTime.getTime(), endTime.getTime(), hour])
+  }
+
+  return intervals
+}
