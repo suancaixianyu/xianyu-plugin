@@ -1,4 +1,4 @@
-import { Game } from "./typeing";
+import { Game } from "../../typing";
 
 const pools = () => {
   const games: {
