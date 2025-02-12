@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"]
+    },
+     "jsx": "react"
+  },
+  "include": ["src/**/*", "jsxp.config.tsx"],
+  "extends": "lvyjs/tsconfig.json"
+  
+}

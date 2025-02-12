@@ -1,0 +1,19 @@
+# 具体见 pm2.config.cjs
+pm2:
+  apps:
+    - name: 'gui'
+      script: 'node index.js --login gui'
+      env:
+        NODE_ENV: 'production'
+
+kook:
+  token: '1/MzA2ODA=/dfdqYV30ZhPC7uum6FQTng=='
+  master_id: []
+
+qq-bot:
+  # 编号
+  app_id: '102045588'
+  # 令牌
+  token: 'ulWXPHM9DlkaYqGSuSLcF6NazdMq6Dau'
+  # 密钥
+  secret: 'nP2fIvYBoS6kO2gKydIxcHwbHxdJzfL1'
