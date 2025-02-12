@@ -27,9 +27,6 @@ export default OnResponse(async (e, next) => {
 
   const level = e.MessageText.match(/(简单|中等|困难)/)?.[0] || "简单";
   const newgame = newGame(level as "简单" | "中等" | "困难");
-
-  log(level, newgame);
-
   const img = await Pictures("minesweeper", { game: newgame });
   if (typeof img != "boolean") {
     Send(Image(img));

@@ -1,19 +1,23 @@
 # 具体见 pm2.config.cjs
 pm2:
   apps:
-    - name: 'gui'
-      script: 'node index.js --login gui'
+    - name: "kook"
+      script: "node index.js --login kook"
       env:
-        NODE_ENV: 'production'
+        NODE_ENV: "production"
+    - name: "qq-bot"
+      script: "node index.js --login qq-bot"
+      env:
+        NODE_ENV: "production"
 
 kook:
-  token: '1/MzA2ODA=/dfdqYV30ZhPC7uum6FQTng=='
+  token: "1/MzA2ODA=/dfdqYV30ZhPC7uum6FQTng=="
   master_id: []
 
 qq-bot:
   # 编号
-  app_id: '102045588'
+  app_id: "102045588"
   # 令牌
-  token: 'ulWXPHM9DlkaYqGSuSLcF6NazdMq6Dau'
+  token: "ulWXPHM9DlkaYqGSuSLcF6NazdMq6Dau"
   # 密钥
-  secret: 'nP2fIvYBoS6kO2gKydIxcHwbHxdJzfL1'
+  secret: "nP2fIvYBoS6kO2gKydIxcHwbHxdJzfL1"
