@@ -2,7 +2,7 @@ import { Pictures } from "@src/image";
 import { Text, useSend, Image } from "alemonjs";
 import { Game, gamePools, timeDiff } from "../api";
 export const name = "扫雷_标记";
-export const regular = /^(#|\/)?(扫雷|扫镭)?(取消)?标记 ?([a-zA-z][0-9]+)+ ?$/;
+export const regular = /^(#|\/)?(扫雷|扫镭)?(取消)?标记/;
 
 export default OnResponse(async (e, next) => {
   // 创建一个send
@@ -10,7 +10,7 @@ export default OnResponse(async (e, next) => {
   const game = gamePools.getGame(e.ChannelId);
 
   if (!game) {
-    Send(Text("请先开始游戏"));
+    Send(Text("请先开始游戏: /扫镭"));
     next();
     return;
   }
@@ -22,7 +22,7 @@ export default OnResponse(async (e, next) => {
 
   const input = e.MessageText.match(/[a-zA-z][0-9]+/g);
   if (!input) {
-    Send(Text("输入错误"));
+    Send(Text("输入错误，请查看 /扫镭帮助"));
     next();
     return;
   }
