@@ -38,17 +38,11 @@ export default OnResponse(async (e, next) => {
 
   for (const v of input) {
     // 将输入转换为坐标，a0 => 0-0,A0 => 0-0
-    const [a, b] = v.toUpperCase();
+    const [ a ] = v.toUpperCase();
     const x = a.charCodeAt(0) - 65;
-    const y = parseInt(b);
+    const y = parseInt(v.slice(1));
 
-    if (!game.map[`${x}-${y}`]) {
-      Send(Text("输入错误"));
-      next();
-      return;
-    }
-
-    if (game.map[`${x}-${y}`].isOpen) {
+    if (!game.map[`${x}-${y}`] || game.map[`${x}-${y}`].isOpen) {
       continue;
     }
 

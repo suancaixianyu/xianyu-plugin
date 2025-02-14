@@ -1,10 +1,6 @@
 # 具体见 pm2.config.cjs
 pm2:
   apps:
-    - name: "kook"
-      script: "node index.js --login kook"
-      env:
-        NODE_ENV: "production"
     - name: "qq-bot"
       script: "node index.js --login qq-bot"
       env:
