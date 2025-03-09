@@ -6,6 +6,9 @@ pm2:
       env:
         NODE_ENV: "production"
 
+gui:
+  port: 17127
+
 kook:
   token: "1/MzA2ODA=/dfdqYV30ZhPC7uum6FQTng=="
   master_id: []

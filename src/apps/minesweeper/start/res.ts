@@ -2,9 +2,8 @@ import { Pictures } from "@src/image";
 import { Text, useSend, Image } from "alemonjs";
 import { Game, gameLevels, timeDiff } from "../api";
 import { gamePools } from "@src/apps/minesweeper/api";
-import { log } from "console";
 export const name = "开始扫雷";
-export const regular = /^(#|\/)?(扫雷|扫镭) ?(难度 ?(简单|中等|困难))? ?/;
+export const regular = /^(#|\/)?(扫雷|扫镭) ?(难度 ?(简单|中等|困难))? ?$/;
 export default OnResponse(async (e, next) => {
   // 创建一个send
   const Send = useSend(e);

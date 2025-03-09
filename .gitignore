@@ -7,5 +7,4 @@ node_modules
 *.logs
 *.log
 yarn.lock
-
 alemon.config.yaml
