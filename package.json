@@ -1,9 +1,14 @@
 {
-  "name": "alemon-template",
+  "name": "alemonjs-xianyu",
   "version": "1.0.0",
-  "description": "template",
+  "description": "xianyu plugin for alemonjs",
   "main": "lib/index.js",
   "type": "module",
+  "author": {
+    "name": "suancaixianyu",
+    "email": "3501869534@qq.com",
+    "url": "https://gitee.com/suancaixianyu"
+  },
   "scripts": {
     "dev": "npx lvy dev",
     "build": "npx lvy build",
@@ -16,15 +21,20 @@
   },
   "exports": {
     ".": "./lib/index.js",
-    "./package": "./package.json"
+    "./package": "./package.json",
+    "./desktop": "./lib/desktop.js"
   },
-  "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
+  },
+  "keywords": [
+    "alemonjs"
+  ],
+  "bugs": "https://gitee.com/suancaixianyu/xianyu-plugin/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/suancaixianyu/xianyu-plugin.git"
   },
   "dependencies": {
     "axios": "^1.6.5",
