@@ -1,7 +1,9 @@
-var index = defineChildren(() => ({
+var index = defineChildren({
     onCreated() {
-        console.log("onCreated");
-    },
-}));
+        logger.info({
+            message: '本地测试启动'
+        });
+    }
+});
 
 export { index as default };

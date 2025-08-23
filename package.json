@@ -1,0 +1,22 @@
+{
+  "name": "xianyu-plugin",
+  "version": "0.0.2",
+  "description": "小游戏插件",
+  "author": "suancaixianyu",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package": "./package.json"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "classnames": "^2.5.1",
+    "dayjs": "^1.11.13",
+    "jsxp": "1.2.2",
+    "raw-body": "^3.0.0"
+  },
+  "peerDependencies": {
+    "alemonjs": "^2.1.0-alpha.37"
+  }
+}
