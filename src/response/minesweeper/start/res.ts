@@ -5,7 +5,7 @@ import { gamePools } from "@src/api";
 import GameMap from "@src/image/conponent/minesweeper/map";
 export const name = "开始扫雷";
 export const regular = /^(#|\/)?(扫雷|扫镭) ?(难度 ?(简单|中等|困难))? ?$/;
-export const selects = onSelects(["message.create"]);
+export const selects = onSelects(["message.create", "private.message.create"]);
 
 export default onResponse(selects, async (e) => {
   const [message] = useMessage(e);

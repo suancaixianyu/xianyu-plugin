@@ -4,7 +4,7 @@ import { Game, gamePools, timeDiff } from "../../../api";
 import GamaeMap from "@src/image/conponent/minesweeper/map";
 export const name = "扫雷_翻开";
 export const regular = /^(#|\/)?(扫雷|扫镭)?翻开/;
-export const selects = onSelects(["message.create"]);
+export const selects = onSelects(["message.create", "private.message.create"]);
 
 export default onResponse(selects, async (e) => {
   // 创建一个send

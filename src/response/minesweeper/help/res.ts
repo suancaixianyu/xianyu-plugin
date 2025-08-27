@@ -3,7 +3,7 @@ import { Text, useMessage, Image } from "alemonjs";
 import Help from "@src/image/conponent/minesweeper/help";
 
 export const name = "扫雷_帮助";
-export const selects = onSelects(["message.create"]);
+export const selects = onSelects(["message.create", "private.message.create"]);
 export const regular = /^(\/|#)?(扫雷|扫镭)(help|帮助) ?$/;
 
 export default onResponse(selects, async (e) => {
