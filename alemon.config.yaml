@@ -1,12 +1,14 @@
 # 具体见 pm2.config.cjs
-pm2:
-  apps:
-    - name: "gui"
-      script: "node index.js --login gui"
-      env:
-        NODE_ENV: "production"
+# pm2:
+#   apps:
+#     - name: "gui"
+#       script: "node index.js --login gui"
+#       env:
+#         NODE_ENV: "production"
 
-port: 17117
-
-onebot:
-  url: "ws://1.95.85.178:3001"
+# port: 17117
+login: "gui"
+gui:
+  port: 17118
+# onebot:
+#   url: "ws://1.95.85.178:3001"

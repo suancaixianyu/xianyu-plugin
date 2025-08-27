@@ -20,6 +20,7 @@
     "@types/node": "^22",
     "@alemonjs/gui": "^2.1.0-alpha.5",
     "@alemonjs/db": "^0.0.9",
+    "@alemonjs/onebot": "^2.1.0-alpha.9",
     "alemonjs": "2.1.0-alpha.18",
     "jsxp": "1.2.2",
     "tailwindcss": "3",
