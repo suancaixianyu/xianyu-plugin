@@ -1,12 +1,12 @@
 [
   {
-    "name": "发起扫雷",
+    "name": "hello",
     "type": "command",
-    "value": "/扫雷"
+    "value": "/hello"
   },
   {
-    "name": "扫雷帮助",
+    "name": "pic",
     "type": "command",
-    "value": "/扫雷帮助"
+    "value": "/pic"
   }
 ]
