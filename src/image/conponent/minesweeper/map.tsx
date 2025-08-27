@@ -2,7 +2,7 @@ import React from "react";
 import css_output from "@src/asstes/main.css";
 import { LinkStyleSheet } from "jsxp";
 import { description } from "@src/config/plugin";
-import { Game } from "@src/response/minesweeper/api";
+import { Game } from "@src/api";
 import num0 from "@src/asstes/minesweeper/num0.gif";
 import num1 from "@src/asstes/minesweeper/num1.gif";
 import num2 from "@src/asstes/minesweeper/num2.gif";
