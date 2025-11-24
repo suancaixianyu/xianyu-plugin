@@ -42,7 +42,7 @@ export class newcomer extends plugin {
       startTime: Date.now(),
     }
     return e.reply(
-      `24点游戏开始！你抽取的牌是：${hand.join(" ")}\n请使用 /解 或 /答 加上你的计算式来回答，例如：/解 3*3+3*5`,
+      `24点游戏开始！你抽取的牌是：\n${hand.join(" ")}\n请使用 /解 或 /答 加上你的计算式来回答，例如：/解 3*3+3*5`,
     )
   }
 
