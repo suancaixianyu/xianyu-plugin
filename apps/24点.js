@@ -52,11 +52,18 @@ export class newcomer extends plugin {
       return e.reply("当前没有进行中的24点游戏，请使用 /开始24点 来开始游戏。")
     }
     // 提取用户输入的表达式并将所有字母大写
-    const expression = e.msg.replace(/^(\/|#)?(解|答|答题|=) ?/, "").toUpperCase()
+    const expression = e.msg
+      .replace(/^(\/|#)?(解|答|答题|=) ?/, "")
+      .replace(/×/g, "*")
+      .replace(/÷/g, "/")
+      .replace(/﹢/g, "+")
+      .replace(/﹣/g, "-")
+      .replace(/ /g, "")
+      .toUpperCase()
     try {
       // 检查是否只用了允许的字符
-      if (!/^[\d\+\-\*\/\(\)a-zA-Z]+$/.test(expression)) {
-        return e.reply("表达式包含不允许的字符，请只使用数字和运算符（+、-、*、/、括号）。")
+      if (!/^[\d\+\-\*\/\(\)a-zA-Z ×÷﹢﹣]+$/.test(expression)) {
+        return e.reply("表达式包含不允许的字符，请只使用数字和运算符（+、-、*、/、×、÷、括号）。")
       }
       // 检查是否只用了抽取的牌
       const usedCards = expression.match(/\d+/g).map(Number)
