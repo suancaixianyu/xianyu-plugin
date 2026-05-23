@@ -1,22 +1,37 @@
 {
-  "name": "alemonjs-xianyu",
-  "version": "0.0.2",
-  "description": "小游戏插件",
-  "author": "suancaixianyu",
+  "name": "alemonjs-app",
+  "version": "1.0.0",
+  "description": "template app",
+  "main": "lib/index.js",
   "type": "module",
-  "main": "./index.js",
+  "scripts": {
+    "dev": "npx lvy app.ts",
+    "view": "npx lvy app.ts --jsxp",
+    "build": "npx lvy build",
+    "smoke:games": "node scripts/game-smoke-check.mjs",
+    "review": "npx alemonc start",
+    "start": "npx pm2 startOrRestart pm2.config.cjs",
+    "stop": "npx pm2 stop pm2.config.cjs",
+    "delete": "npx pm2 delete pm2.config.cjs"
+  },
   "exports": {
-    ".": "./index.js",
+    ".": "./lib/index.js",
     "./package": "./package.json"
   },
-  "dependencies": {
-    "chalk": "^5.4.1",
-    "classnames": "^2.5.1",
-    "dayjs": "^1.11.13",
-    "jsxp": "1.2.2",
-    "raw-body": "^3.0.0"
+  "devDependencies": {
+    "@alemonjs/db": "^0.0.17",
+    "@alemonjs/gui": "^2.1.0-alpha.5",
+    "@alemonjs/onebot": "^2.1.16",
+    "@types/node": "^22",
+    "alemonjs": "2.1.89",
+    "cssnano": "^7",
+    "jsxp": "1.4.0",
+    "lvyjs": "^0.3.0-alpha.2",
+    "pm2": "^5",
+    "tailwindcss": "3"
   },
-  "peerDependencies": {
-    "alemonjs": "^2.1.0-alpha.37"
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   }
 }
