@@ -6,3 +6,5 @@ node_modules
 *.logs
 *.log
 yarn.lock
+packages/alemonjs-dev-skill/
+lib/

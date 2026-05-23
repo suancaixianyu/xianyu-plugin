@@ -4,9 +4,7 @@ import Help from "@src/image/conponent/help";
 
 export default async () => {
   const [message] = useMessage();
-  const img = await renderComponentToBuffer("/help", Help, {
-    data: "AlemonJS 跨平台开发框架",
-  });
+  const img = await renderComponentToBuffer("pluginHelp", Help, {});
 
   if (typeof img !== "boolean") {
     await message.send(format(Image(img)));

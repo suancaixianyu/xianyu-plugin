@@ -1,6 +1,5 @@
 import React from "react";
 import css_output from "@src/asstes/main.css";
-import { LinkStyleSheet } from "jsxp";
 import { description } from "@src/config/plugin";
 import { Game } from "@src/api";
 import num0 from "@src/asstes/minesweeper/num0.gif";
@@ -131,7 +130,7 @@ export default function App({ game }: { game: Game }) {
   return (
     <html>
       <head>
-        <LinkStyleSheet src={css_output} />
+        <link rel="stylesheet" href={css_output} />
       </head>
       <body style={{ background: "#CCCCCC", width: `${panelWidth}px` }}>
         <div style={{ width: `${panelWidth}px` }}>

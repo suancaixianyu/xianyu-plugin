@@ -1,6 +1,5 @@
 import React from "react";
 import css_output from "@src/asstes/main.css";
-import { LinkStyleSheet } from "jsxp";
 import { description, helpPrefix } from "@src/config/plugin";
 
 const th = [
@@ -43,7 +42,7 @@ export default function App() {
   return (
     <html>
       <head>
-        <LinkStyleSheet src={css_output} />
+        <link rel="stylesheet" href={css_output} />
       </head>
       <body style={{ background: "#CCCCCC" }}>
         <div className="p-8">

@@ -1,7 +1,13 @@
 import { renderComponentToBuffer } from "jsxp";
 import { Text, useMessage, Image } from "alemonjs";
-import { Game, gameLevels, timeDiff } from "../../../api";
-import { gamePools } from "@src/api";
+import {
+  Game,
+  MINESWEEPER_GAME,
+  gameLevels,
+  gamePools,
+  gameSession,
+  timeDiff,
+} from "../../../api";
 import GameMap from "@src/image/conponent/minesweeper/map";
 
 const findLevel = (event: { __route?: { parsedArgs?: string[] }; MessageText?: string }) => {
@@ -13,11 +19,13 @@ const findLevel = (event: { __route?: { parsedArgs?: string[] }; MessageText?: s
 export default async (event) => {
   const [message] = useMessage();
   // 获取游戏，如果游戏的状态不是playing，那么就是结束了，可以开始新的游戏
-  const game = gamePools.getGame(event.ChannelId);
+  const game = gamePools.getGame<Game>(event, MINESWEEPER_GAME);
   if (game && game.state != "playing") {
-    gamePools.removeGame(event.ChannelId);
+    gamePools.removeGame(event, MINESWEEPER_GAME);
+    gameSession.deactivate(event, MINESWEEPER_GAME);
   } else if (game && game.state == "playing") {
     game.time = timeDiff(game.startTime, Date.now());
+    gameSession.activate(event, MINESWEEPER_GAME);
     const img = await renderComponentToBuffer("minesweeper", GameMap, {
       game: game,
     });
@@ -40,7 +48,8 @@ export default async (event) => {
     await message.send(format(Text("图片加载失败")));
   }
 
-  gamePools.saveGame(event.ChannelId, newgame);
+  gamePools.saveGame(event, MINESWEEPER_GAME, newgame);
+  gameSession.activate(event, MINESWEEPER_GAME);
 };
 
 export function newGame(level: "简单" | "中等" | "困难") {

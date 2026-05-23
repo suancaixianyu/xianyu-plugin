@@ -1,11 +1,10 @@
 import React, { PropsWithChildren } from 'react'
 import css_output from '@src/asstes/main.css'
-import { LinkStyleSheet } from 'jsxp'
 export default function Html({ children }: PropsWithChildren) {
   return (
     <html>
       <head>
-        <LinkStyleSheet src={css_output} />
+        <link rel="stylesheet" href={css_output} />
       </head>
       <body>{children}</body>
     </html>

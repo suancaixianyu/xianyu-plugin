@@ -21,3 +21,51 @@ export interface Game {
     };
   };
 }
+
+export type GameType = string;
+
+export interface ScopedEvent {
+  UserId?: string;
+  ChannelId?: string;
+  GuildId?: string;
+  SpaceId?: string;
+  IsPrivate?: boolean;
+  MessageText?: string;
+  __route?: {
+    key?: string;
+    parsedArgs?: string[];
+  };
+}
+
+export interface GameSessionRecord<T = unknown> {
+  game: GameType;
+  state: T;
+  updatedAt: number;
+}
+
+export interface GameSessionMeta {
+  activeGame?: GameType;
+  updatedAt: number;
+}
+
+export interface GameCommandController {
+  game: GameType;
+  rewriteCommand(event: ScopedEvent): string | null;
+}
+
+export interface GameRouteDefinition {
+  aliases: string[];
+  importer: () => Promise<unknown>;
+}
+
+export interface GameCompactRouteDefinition {
+  pattern: RegExp;
+  importer: () => Promise<unknown>;
+}
+
+export interface GameDefinition {
+  game: GameType;
+  routes: GameRouteDefinition[];
+  compactRoutes?: GameCompactRouteDefinition[];
+  controller?: GameCommandController;
+}
