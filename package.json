@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "type": "module",
   "scripts": {
-    "dev": "npx lvy dev",
+    "dev": "npx lvy app.ts",
+    "view": "npx lvy app.ts --jsxp",
     "build": "npx lvy build",
     "review": "npx alemonc start",
     "start": "npx pm2 startOrRestart pm2.config.cjs",
@@ -17,16 +18,16 @@
     "./package": "./package.json"
   },
   "devDependencies": {
-    "@types/node": "^22",
+    "@alemonjs/db": "^0.0.17",
     "@alemonjs/gui": "^2.1.0-alpha.5",
-    "@alemonjs/db": "^0.0.9",
-    "@alemonjs/onebot": "^2.1.0-alpha.9",
-    "alemonjs": "2.1.0-alpha.37",
-    "jsxp": "1.2.2",
-    "tailwindcss": "3",
+    "@alemonjs/onebot": "^2.1.16",
+    "@types/node": "^22",
+    "alemonjs": "2.1.89",
     "cssnano": "^7",
-    "lvyjs": "^0.2.20",
-    "pm2": "^5"
+    "jsxp": "1.4.0",
+    "lvyjs": "^0.3.0-alpha.2",
+    "pm2": "^5",
+    "tailwindcss": "3"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

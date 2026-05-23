@@ -9,3 +9,13 @@
 # port: 17117
 # onebot:
 #   url: "ws://1.95.85.178:3001"
+
+login: onebot
+
+onebot:
+  url: 'ws://1.95.85.178:3001' # 正向url
+  token: 'xianyu' # access_token
+  reverse_enable: false # 启用后正向连接配置失效，地址：ws://127.0.0.1:17158
+  reverse_port: 17158 # 返向连接服务端口，启用反向连接后生效
+  master_id: ['3501869534'] # 主人QQ号列表
+ 

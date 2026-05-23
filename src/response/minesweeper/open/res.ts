@@ -2,17 +2,19 @@ import { renderComponentToBuffer } from "jsxp";
 import { Text, useMessage, Image } from "alemonjs";
 import { Game, gamePools, timeDiff } from "../../../api";
 import GamaeMap from "@src/image/conponent/minesweeper/map";
-export const name = "扫雷_翻开";
-export const regular = /^(#|\/)?(扫雷|扫镭)?翻开/;
-export const selects = onSelects(["message.create", "private.message.create"]);
 
-export default onResponse(selects, async (e) => {
-  // 创建一个send
-  const [message] = useMessage(e);
-  const game = gamePools.getGame(e.ChannelId);
+const findInput = (event: { __route?: { parsedArgs?: string[] }; MessageText?: string }) => {
+  const routeArgs = event.__route?.parsedArgs?.join(" ") ?? "";
+  const source = routeArgs || event.MessageText || "";
+  return source.match(/[a-zA-Z][0-9]+/g);
+};
+
+export default async (event) => {
+  const [message] = useMessage();
+  const game = gamePools.getGame(event.ChannelId);
 
   if (!game) {
-    message.send(format(Text("请先开始游戏: /扫镭")));
+    await message.send(format(Text("请先开始游戏：/扫雷")));
     return;
   }
 
@@ -20,10 +22,9 @@ export default onResponse(selects, async (e) => {
     return;
   }
 
-  const input = e.MessageText.match(/[a-zA-z][0-9]+/g);
+  const input = findInput(event);
   if (!input) {
-    message.send(format(Text("输入错误，请查看 /扫镭帮助")));
-
+    await message.send(format(Text("输入错误，请查看 /扫雷帮助")));
     return;
   }
 
@@ -121,8 +122,8 @@ export default onResponse(selects, async (e) => {
 
   const img = await renderComponentToBuffer("minesweeper", GamaeMap, { game });
   if (typeof img != "boolean") {
-    message.send(format(Image(img)));
+    await message.send(format(Image(img)));
   } else {
-    message.send(format(Text("图片加载失败")));
+    await message.send(format(Text("图片加载失败")));
   }
-});
+};

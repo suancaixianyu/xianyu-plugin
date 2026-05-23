@@ -30,7 +30,10 @@ import ongoing from "@src/asstes/minesweeper/ongoing.gif";
 import over from "@src/asstes/minesweeper/over.gif";
 import win from "@src/asstes/minesweeper/win.gif";
 
-const windowWidth = 800 - 8;
+const boardMaxWidth = 792;
+const getCellSize = (game: Game) => {
+  return boardMaxWidth / game.col;
+};
 const getN = (num: number) => {
   switch (num) {
     case 0:
@@ -121,60 +124,78 @@ const getSrc = (
  * @returns
  */
 export default function App({ game }: { game: Game }) {
+  const cellSize = getCellSize(game);
+  const boardWidth = cellSize * game.col;
+  const panelWidth = boardWidth + 8;
+
   return (
     <html>
       <head>
         <LinkStyleSheet src={css_output} />
       </head>
-      <body style={{ background: "#CCCCCC" }}>
-        <div className="flex justify-between border-4 border-b-white border-r-white border-t-gray-500 border-l-gray-500">
-          <div className="flex">
-            {getNum(game.remain).map((img, index) => (
-              <img key={index} src={img} alt="" className="w-auto h-16" />
-            ))}
+      <body style={{ background: "#CCCCCC", width: `${panelWidth}px` }}>
+        <div style={{ width: `${panelWidth}px` }}>
+          <div className="flex justify-between border-4 border-b-white border-r-white border-t-gray-500 border-l-gray-500">
+            <div className="flex">
+              {getNum(game.remain).map((img, index) => (
+                <img key={index} src={img} alt="" className="w-auto h-16" />
+              ))}
+            </div>
+
+            <div className="flex">
+              <img
+                src={
+                  game.state === "playing"
+                    ? ongoing
+                    : game.state === "win"
+                      ? win
+                      : over
+                }
+                alt=""
+                className="w-auto h-16"
+              />
+            </div>
+
+            <div className="flex">
+              {getNum(game.time).map((img, index) => (
+                <img key={index} src={img} alt="" className="w-auto h-16" />
+              ))}
+            </div>
+          </div>
+          <div
+            className="border-4 border-b-white border-r-white border-t-gray-500 border-l-gray-500"
+            style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${game.col}, ${cellSize}px)`,
+              gridAutoRows: `${cellSize}px`,
+              width: `${boardWidth}px`,
+            }}
+          >
+            {Object.keys(game.map).map((key) => {
+              const { isMine, value, isOpen, isFlag, name } = game.map[key];
+              return (
+                <div
+                  className="flex justify-center items-center"
+                  key={key}
+                  style={{
+                    width: `${cellSize}px`,
+                    height: `${cellSize}px`,
+                    backgroundImage: `url(${getSrc(game, key, isMine, value, isOpen, isFlag)})`,
+                    backgroundSize: "100% 100%",
+                    fontSize: `${Math.max(10, Math.floor(cellSize * 0.4))}px`,
+                    lineHeight: 1,
+                  }}
+                >
+                  {!isOpen && game.state === "playing" ? name : ""}
+                </div>
+              );
+            })}
           </div>
 
-          <div className="flex">
-            <img
-              src={
-                game.state === "playing"
-                  ? ongoing
-                  : game.state === "win"
-                    ? win
-                    : over
-              }
-              alt=""
-              className="w-auto h-16"
-            />
-          </div>
-
-          <div className="flex">
-            {getNum(game.time).map((img, index) => (
-              <img key={index} src={img} alt="" className="w-auto h-16" />
-            ))}
+          <div className="flex justify-center" style={{ width: `${panelWidth}px` }}>
+            {description}
           </div>
         </div>
-        <div className="flex w-full flex-wrap border-4 border-b-white border-r-white border-t-gray-500 border-l-gray-500">
-          {Object.keys(game.map).map((key) => {
-            const { isMine, value, isOpen, isFlag, name } = game.map[key];
-            return (
-              <div
-                className="flex justify-center items-center"
-                key={key}
-                style={{
-                  width: windowWidth / game.col + "px",
-                  height: windowWidth / game.row + "px",
-                  backgroundImage: `url(${getSrc(game, key, isMine, value, isOpen, isFlag)})`,
-                  backgroundSize: "100% 100%",
-                }}
-              >
-                {!isOpen && game.state === "playing" ? name : ""}
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="flex justify-center">{description}</div>
       </body>
     </html>
   );

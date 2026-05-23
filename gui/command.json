@@ -1,12 +1,22 @@
 [
   {
-    "name": "hello",
+    "name": "你好",
     "type": "command",
-    "value": "/hello"
+    "value": "/你好"
   },
   {
-    "name": "pic",
+    "name": "帮助",
     "type": "command",
-    "value": "/pic"
+    "value": "/帮助"
+  },
+  {
+    "name": "扫雷",
+    "type": "command",
+    "value": "/扫雷"
+  },
+  {
+    "name": "扫雷帮助",
+    "type": "command",
+    "value": "/扫雷帮助"
   }
 ]

@@ -1,18 +1,18 @@
-import { defineConfig } from 'lvyjs'
-import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const includes = (value: string) => process.argv.includes(value)
-const alemonjs = () => import('alemonjs').then(res => res.start('src/index.ts'))
-const jsxp = () => import('jsxp').then(res => res.createServer())
+import { defineConfig } from "lvyjs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 export default defineConfig({
-  plugins: [
-    () => {
-      if (includes('--view')) return jsxp
-      return alemonjs
-    }
-  ],
   alias: {
-    entries: [{ find: '@src', replacement: join(__dirname, 'src') }]
-  }
-})
+    entries: [{ find: "@src", replacement: join(__dirname, "src") }],
+  },
+  assets: {
+    filter: /\.(png|jpg|jpeg|gif|svg|webp|ico|yaml|txt|ttf|md)$/,
+  },
+  styles: {
+    filter: /\.(css|scss|less|sass)$/,
+  },
+  watch: ["src/**/*.{ts,tsx,js,jsx,json,html}", "app.ts"],
+});

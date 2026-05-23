@@ -3,42 +3,45 @@ import { Text, useMessage, Image } from "alemonjs";
 import { Game, gameLevels, timeDiff } from "../../../api";
 import { gamePools } from "@src/api";
 import GameMap from "@src/image/conponent/minesweeper/map";
-export const name = "开始扫雷";
-export const regular = /^(#|\/)?(扫雷|扫镭) ?(难度 ?(简单|中等|困难))? ?$/;
-export const selects = onSelects(["message.create", "private.message.create"]);
 
-export default onResponse(selects, async (e) => {
-  const [message] = useMessage(e);
+const findLevel = (event: { __route?: { parsedArgs?: string[] }; MessageText?: string }) => {
+  const routeArgs = event.__route?.parsedArgs?.join(" ") ?? "";
+  const source = `${event.MessageText ?? ""} ${routeArgs}`;
+  return source.match(/(简单|中等|困难)/)?.[0] || "简单";
+};
+
+export default async (event) => {
+  const [message] = useMessage();
   // 获取游戏，如果游戏的状态不是playing，那么就是结束了，可以开始新的游戏
-  const game = gamePools.getGame(e.ChannelId);
+  const game = gamePools.getGame(event.ChannelId);
   if (game && game.state != "playing") {
-    gamePools.removeGame(e.ChannelId);
+    gamePools.removeGame(event.ChannelId);
   } else if (game && game.state == "playing") {
     game.time = timeDiff(game.startTime, Date.now());
     const img = await renderComponentToBuffer("minesweeper", GameMap, {
       game: game,
     });
     if (typeof img != "boolean") {
-      message.send(format(Image(img)));
+      await message.send(format(Image(img)));
     } else {
-      message.send(format(Text("图片加载失败")));
+      await message.send(format(Text("图片加载失败")));
     }
     return;
   }
 
-  const level = e.MessageText.match(/(简单|中等|困难)/)?.[0] || "简单";
+  const level = findLevel(event);
   const newgame = newGame(level as "简单" | "中等" | "困难");
   const img = await renderComponentToBuffer("minesweeper", GameMap, {
     game: newgame,
   });
   if (typeof img != "boolean") {
-    message.send(format(Image(img)));
+    await message.send(format(Image(img)));
   } else {
-    message.send(format(Text("图片加载失败")));
+    await message.send(format(Text("图片加载失败")));
   }
 
-  gamePools.saveGame(e.ChannelId, newgame);
-});
+  gamePools.saveGame(event.ChannelId, newgame);
+};
 
 export function newGame(level: "简单" | "中等" | "困难") {
   const { row, col, mine } = gameLevels[level];
