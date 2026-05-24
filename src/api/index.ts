@@ -1,4 +1,5 @@
 export * from "./gamePools";
+export * from "./boardRooms";
 export * from "./gameSession";
 export * from "./gameRegistry";
 export * from "./games";
