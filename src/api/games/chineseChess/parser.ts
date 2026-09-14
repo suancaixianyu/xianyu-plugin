@@ -66,7 +66,7 @@ export const parseChineseChessCoordinate = (input: string): ChineseChessPoint | 
 
 export const parseChineseChessCoordinateMove = (raw: string): ChineseChessMoveIntent | null => {
   const text = raw.trim().replace(/^(?:[!！/#＃]\s*)/, "");
-  const match = text.match(/^移子\s*([a-jA-J]\s*\d)\s*([a-jA-J]\s*\d)$/);
+  const match = text.match(/^(?:中国象棋|象棋)?移子\s*([a-jA-J]\s*\d)\s*([a-jA-J]\s*\d)$/);
 
   if (!match) {
     return null;
@@ -144,7 +144,8 @@ export const parseChineseChessNotationMove = (
   let text = raw
     .trim()
     .replace(/^(?:[!！/#＃]\s*)/, "")
-    .replace(/^中国象棋棋谱\s*/, "")
+    .replace(/^(?:中国象棋|象棋)?棋谱\s*/, "")
+    .replace(/^(?:中国象棋|象棋)/, "")
     .replace(/\s+/g, "");
   const prefixMatch = text.match(/^(前|后)/);
   const prefix = prefixMatch?.[1];

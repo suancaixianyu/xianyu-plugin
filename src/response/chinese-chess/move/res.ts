@@ -52,5 +52,5 @@ export default async (event) => {
 
   boardRooms.saveRoom(event, CHINESE_CHESS_GAME, room);
   gameSession.activate(event, CHINESE_CHESS_GAME);
-  await message.send(await renderChineseChessMessage(room));
+  await message.send(await renderChineseChessMessage(room, result.check ? `${room.state.current}方被将军。` : undefined));
 };

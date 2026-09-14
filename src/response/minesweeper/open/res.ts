@@ -1,6 +1,13 @@
 import { renderComponentToBuffer } from "jsxp";
 import { Text, useMessage, Image } from "alemonjs";
-import { Game, MINESWEEPER_GAME, gamePools, gameSession, timeDiff } from "../../../api";
+import {
+  Game,
+  MINESWEEPER_GAME,
+  gamePools,
+  gameSession,
+  openMinesweeperCells,
+  timeDiff,
+} from "../../../api";
 import GamaeMap from "@src/image/conponent/minesweeper/map";
 
 const findInput = (event: {
@@ -31,95 +38,7 @@ export default async (event) => {
     return;
   }
 
-  const open = (game: Game, x: number, y: number) => {
-    game.select = { x, y };
-    if (game.map[`${x}-${y}`].isMine) {
-      game.state = "lose";
-      return;
-    }
-    if (game.map[`${x}-${y}`].isOpen) {
-      return;
-    }
-    game.map[`${x}-${y}`].isOpen = true;
-    if (game.map[`${x}-${y}`].value != 0) {
-      return;
-    }
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dy = -1; dy <= 1; dy++) {
-        if (dx == 0 && dy == 0) {
-          continue;
-        }
-        if (game.map[`${x + dx}-${y + dy}`]) {
-          open(game, x + dx, y + dy);
-        }
-      }
-    }
-  };
-
-  for (const v of input) {
-    // 将输入转换为坐标，a0 => 0-0,A0 => 0-0
-    const [a] = v.toUpperCase();
-    const x = a.charCodeAt(0) - 65;
-    const y = parseInt(v.slice(1));
-
-    if (!game.map[`${x}-${y}`] || game.map[`${x}-${y}`].isOpen) {
-      continue;
-    }
-
-    open(game, x, y);
-  }
-
-  // 自动标记
-  for (const key in game.map) {
-    const [x, y] = key.split("-").map(Number);
-    const neighbors = [
-      `${x - 1}-${y - 1}`,
-      `${x - 1}-${y}`,
-      `${x - 1}-${y + 1}`,
-      `${x}-${y - 1}`,
-      `${x}-${y + 1}`,
-      `${x + 1}-${y - 1}`,
-      `${x + 1}-${y}`,
-      `${x + 1}-${y + 1}`,
-    ];
-    // 只处理已翻开的格子
-    if (!game.map[key].isOpen) {
-      continue;
-    }
-    // 获取周围8个位置
-    const unopened: string[] = [];
-    let mineCount = 0;
-    for (const n of neighbors) {
-      const cell = game.map[n];
-      if (!cell) continue;
-      if (!cell.isOpen) {
-        unopened.push(n);
-        if (cell.isMine) mineCount++;
-      }
-    }
-    // 如果有未翻开的格子
-    if (unopened.length > 0) {
-      // 如果所有未翻开的格子都是雷，则全部标记
-      const allMines = unopened.every((n) => game.map[n].isMine);
-      if (allMines) {
-        for (const n of unopened) {
-          game.map[n].isFlag = true;
-        }
-      }
-    }
-  }
-
-  // 判断是否胜利,除了雷的格子都已经打开
-  let win = true;
-  for (const key in game.map) {
-    if (!game.map[key].isMine && !game.map[key].isOpen) {
-      win = false;
-      break;
-    }
-  }
-  if (win) {
-    game.state = "win";
-  }
+  openMinesweeperCells(game, input);
 
   game.time = timeDiff(game.startTime, Date.now());
   if (game.state !== "playing") {

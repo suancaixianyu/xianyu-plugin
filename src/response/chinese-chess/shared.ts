@@ -15,7 +15,10 @@ export const parseRequestedTeam = (event): ChineseChessTeam | null => {
 };
 
 export const renderChineseChessMessage = async (room: ChineseChessRoom, title?: string) => {
-  const img = await renderComponentToBuffer("chineseChess", ChineseChessMap, { room });
+  const img = await renderComponentToBuffer("chineseChess", ChineseChessMap, {
+    room,
+    viewTeam: room.state.current,
+  });
 
   if (typeof img === "boolean") {
     return format(Text(title ? `${title}\n图片加载失败` : "图片加载失败"));

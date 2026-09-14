@@ -7,7 +7,7 @@ const coordinateMovePattern =
   /^(?:[!！/#＃]\s*)?(?:中国象棋)?移子\s*([a-jA-J]\s*\d)\s*([a-jA-J]\s*\d)$/;
 
 const notationMovePattern =
-  /^(?:[!！/#＃]\s*)?(?:中国象棋棋谱\s*)?(?:前|后)?[車车馬马象相士仕将帅炮兵卒][一二三四五六七八九十壹贰叁肆伍陆柒捌玖拾\d](?:进|退|平)[一二三四五六七八九十壹贰叁肆伍陆柒捌玖拾\d]$/;
+  /^(?:[!！/#＃]\s*)?(?:(?:中国)?象棋(?:棋谱)?\s*)?(?:前|后)?\s*[車车馬马象相士仕将帅炮兵卒]\s*[一二三四五六七八九十壹贰叁肆伍陆柒捌玖拾\d]\s*(?:进|退|平)\s*[一二三四五六七八九十壹贰叁肆伍陆柒捌玖拾\d]$/;
 
 export const chineseChessCommandController: GameCommandController = {
   game: CHINESE_CHESS_GAME,

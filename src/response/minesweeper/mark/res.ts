@@ -1,6 +1,13 @@
 import { renderComponentIsHtmlToBuffer } from "jsxp";
 import { Text, useMessage, Image } from "alemonjs";
-import { Game, MINESWEEPER_GAME, gamePools, gameSession, timeDiff } from "../../../api";
+import {
+  Game,
+  MINESWEEPER_GAME,
+  gamePools,
+  gameSession,
+  markMinesweeperCells,
+  timeDiff,
+} from "../../../api";
 import GamaeMap from "@src/image/conponent/minesweeper/map";
 
 const findInput = (event: {
@@ -41,31 +48,7 @@ export default async (event) => {
     return;
   }
 
-  const mark = (game: Game, x: number, y: number) => {
-    game.select = { x, y };
-    if (isCancelMark(event)) {
-      game.map[`${x}-${y}`].isFlag = false;
-    } else {
-      game.map[`${x}-${y}`].isFlag = true;
-    }
-  };
-
-  for (const v of input) {
-    // 将输入转换为坐标，a0 => 0-0,A0 => 0-0
-    const [a] = v.toUpperCase();
-    const x = a.charCodeAt(0) - 65;
-    const y = parseInt(v.slice(1));
-
-    if (!game.map[`${x}-${y}`] || game.map[`${x}-${y}`].isOpen) {
-      continue;
-    }
-
-    mark(game, x, y);
-  }
-
-  // 设置剩余雷数
-  const mapCells = Object.values(game.map) as Array<Game["map"][string]>;
-  game.remain = game.mine - mapCells.filter((cell) => cell.isFlag).length;
+  markMinesweeperCells(game, input, !isCancelMark(event));
 
   game.time = timeDiff(game.startTime, Date.now());
   gameSession.activate(event, MINESWEEPER_GAME);

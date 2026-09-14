@@ -1,5 +1,4 @@
 import React from "react";
-import css_output from "@src/asstes/main.css";
 import { description, helpPrefix, version } from "@src/config/plugin";
 
 const gameCards = [
@@ -18,11 +17,32 @@ const gameCards = [
     desc: "纯文本速算小游戏，开始后可直接用解/答/= 快速作答。",
   },
   {
-    name: "更多游戏",
-    status: "迁移中",
+    name: "五子棋",
+    status: "已上线",
     color: "#7fa7ff",
-    commands: ["推箱子", "五子棋", "斗兽棋", "中国象棋", "国际象棋"],
-    desc: "老版本游戏正在逐个迁移，会继续接入当前注册中心和状态控制器。",
+    commands: ["开始五子棋", "发起五子棋", "加入五子棋", "落子 8 8", "结束五子棋"],
+    desc: "支持人机和双人对战，开始后可直接发送坐标短指令落子。",
+  },
+  {
+    name: "推箱子",
+    status: "已上线",
+    color: "#b58be8",
+    commands: ["推箱子", "推箱子3", "移动 wasd", "撤回", "结束推箱子"],
+    desc: "旧版内置关卡已迁移，支持指定关卡、连续移动、撤回和自动下一关。",
+  },
+  {
+    name: "中国象棋",
+    status: "已上线",
+    color: "#e26d5c",
+    commands: ["发起中国象棋", "加入中国象棋", "移子 A1 A2", "兵一进一", "悔棋"],
+    desc: "支持双人房间、坐标移子、中文棋谱、悔棋申请、棋盘反转和上一步标记。",
+  },
+  {
+    name: "斗兽棋",
+    status: "已上线",
+    color: "#d99a4e",
+    commands: ["发起斗兽棋", "加入斗兽棋", "加入斗兽棋蓝", "移动 A0 B0", "结束斗兽棋"],
+    desc: "群内双人棋局，按坐标移动棋子，支持红蓝阵营、回合控制和胜负判定。",
   },
 ];
 
@@ -30,14 +50,15 @@ const quickCommands = [
   "帮助 / 咸鱼帮助",
   "扫雷帮助",
   "24点帮助",
+  "五子棋帮助",
+  "推箱子帮助",
+  "中国象棋帮助",
+  "斗兽棋帮助",
 ];
 
 export default function App() {
   return (
     <html>
-      <head>
-        <link rel="stylesheet" href={css_output} />
-      </head>
       <body
         style={{
           margin: 0,
@@ -46,7 +67,7 @@ export default function App() {
           fontFamily: '"Segoe UI", "Microsoft YaHei", sans-serif',
         }}
       >
-        <div className="p-8">
+        <div style={{ padding: "32px" }}>
           <div
             style={{
               background: "rgba(255,255,255,0.88)",
@@ -55,7 +76,15 @@ export default function App() {
               padding: "28px",
             }}
           >
-            <div className="flex items-start justify-between gap-6 mb-6">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                gap: "24px",
+                marginBottom: "24px",
+              }}
+            >
               <div>
                 <div
                   style={{
@@ -71,8 +100,8 @@ export default function App() {
                   咸鱼插件帮助
                 </div>
                 <h1
-                  className="mt-4 mb-2"
                   style={{
+                    margin: "16px 0 8px",
                     fontSize: "40px",
                     lineHeight: 1.1,
                     color: "#233142",
@@ -89,7 +118,7 @@ export default function App() {
                     maxWidth: "760px",
                   }}
                 >
-                  当前已经接入扫雷和24点，并完成统一状态控制。后续迁移的新游戏也会沿用这一套命令与会话架构。
+                  当前已接入 6 个小游戏，并完成统一状态控制。每个游戏都有独立帮助图，开局后短指令会自动交给当前激活游戏。
                 </p>
               </div>
               <div
@@ -134,7 +163,7 @@ export default function App() {
                 >
                   快速入口
                 </div>
-                <div className="flex flex-wrap gap-3">
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
                   {quickCommands.map((item) => (
                     <div
                       key={item}
@@ -182,15 +211,22 @@ export default function App() {
                   当前状态
                 </div>
                 <div style={{ color: "#49566a", fontSize: "16px", lineHeight: 1.75 }}>
-                  <div>已接入游戏：2 个</div>
+                  <div>已接入游戏：6 个</div>
                   <div>状态控制：已启用</div>
-                  <div>老版本迁移：进行中</div>
-                  <div>推荐入口：先发帮助，再进入单个游戏帮助</div>
+                  <div>帮助图：插件总览 + 单游戏说明</div>
+                  <div>推荐入口：先发帮助，再查看单个游戏帮助</div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 flex flex-col gap-4">
+            <div
+              style={{
+                marginTop: "24px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+              }}
+            >
               {gameCards.map((item) => (
                 <div
                   key={item.name}
@@ -250,7 +286,13 @@ export default function App() {
                     >
                       常用命令
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                        gap: "12px",
+                      }}
+                    >
                       {item.commands.map((command) => (
                         <div
                           key={command}

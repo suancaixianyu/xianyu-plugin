@@ -5,7 +5,12 @@ import type {
   ChineseChessRoom,
   ChineseChessTeam,
 } from "../../../api/games/chineseChess/state";
-import { CHINESE_CHESS_COLS, CHINESE_CHESS_ROWS, pointKey } from "../../../api/games/chineseChess/state";
+import {
+  CHINESE_CHESS_COLS,
+  CHINESE_CHESS_ROWS,
+  formatChineseChessMoveIntent,
+  pointKey,
+} from "../../../api/games/chineseChess/state";
 import bg from "../../../asstes/chinese-chess/bg.png";
 import bg2 from "../../../asstes/chinese-chess/bg2.png";
 import bBox from "../../../asstes/chinese-chess/b_box.png";
@@ -71,7 +76,7 @@ const getPlayerName = (room: ChineseChessRoom) => {
   );
 };
 
-const getCells = (room: ChineseChessRoom) => {
+const getCells = (room: ChineseChessRoom, viewTeam: ChineseChessTeam) => {
   const cells: Array<{
     key: string;
     piece: ChineseChessPiece;
@@ -81,7 +86,7 @@ const getCells = (room: ChineseChessRoom) => {
     ? [pointKey(room.state.lastMove.from), pointKey(room.state.lastMove.to)]
     : [];
   const highlightTeam = room.state.current === "红" ? "黑" : "红";
-  const rotated = room.state.current === "红";
+  const rotated = viewTeam === "红";
 
   for (let row = 0; row < CHINESE_CHESS_ROWS; row += 1) {
     for (let col = 0; col < CHINESE_CHESS_COLS; col += 1) {
@@ -105,9 +110,18 @@ const getCells = (room: ChineseChessRoom) => {
   }));
 };
 
-export default function ChineseChessMap({ room }: { room: ChineseChessRoom }) {
-  const cells = getCells(room);
-  const isRollback = room.state.current === "红";
+export default function ChineseChessMap({
+  room,
+  viewTeam = room.state.current,
+}: {
+  room: ChineseChessRoom;
+  viewTeam?: ChineseChessTeam;
+}) {
+  const cells = getCells(room, viewTeam);
+  const isRollback = viewTeam === "红";
+  const lastMoveText = room.state.lastMove
+    ? `${room.state.lastMove.input.raw}（${formatChineseChessMoveIntent(room.state.lastMove)}）`
+    : "暂无";
 
   return (
     <html>
@@ -170,6 +184,7 @@ export default function ChineseChessMap({ room }: { room: ChineseChessRoom }) {
             }}
           />
           <h2>{getPlayerName(room)}</h2>
+          <h3 style={{ margin: "16px", color: "#6b4f2f" }}>上一步：{lastMoveText}</h3>
           <h4 style={{ margin: "16px" }}>Created by Yunzai-Bot & xianyu-plugin</h4>
         </div>
       </body>

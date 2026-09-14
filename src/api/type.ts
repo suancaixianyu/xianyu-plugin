@@ -25,6 +25,8 @@ export interface Game {
 export type GameType = string;
 
 export interface ScopedEvent {
+  /** AlemonJS 会话标识。棋类 AI 对手配置必须与 Aichat 使用同一 guid。 */
+  guid?: string;
   UserId?: string;
   ChannelId?: string;
   GuildId?: string;

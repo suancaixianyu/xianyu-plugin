@@ -9,6 +9,7 @@ import {
   timeDiff,
 } from "../../../api";
 import GameMap from "@src/image/conponent/minesweeper/map";
+import { bindMinesweeperSession } from "@src/api/gameAgents";
 
 const findLevel = (event: { __route?: { parsedArgs?: string[] }; MessageText?: string }) => {
   const routeArgs = event.__route?.parsedArgs?.join(" ") ?? "";
@@ -24,6 +25,7 @@ export default async (event) => {
     gamePools.removeGame(event, MINESWEEPER_GAME);
     gameSession.deactivate(event, MINESWEEPER_GAME);
   } else if (game && game.state == "playing") {
+    bindMinesweeperSession(event.guid, event);
     game.time = timeDiff(game.startTime, Date.now());
     gameSession.activate(event, MINESWEEPER_GAME);
     const img = await renderComponentToBuffer("minesweeper", GameMap, {
@@ -39,6 +41,9 @@ export default async (event) => {
 
   const level = findLevel(event);
   const newgame = newGame(level as "简单" | "中等" | "困难");
+  gamePools.saveGame(event, MINESWEEPER_GAME, newgame);
+  gameSession.activate(event, MINESWEEPER_GAME);
+  bindMinesweeperSession(event.guid, event);
   const img = await renderComponentToBuffer("minesweeper", GameMap, {
     game: newgame,
   });
@@ -48,8 +53,6 @@ export default async (event) => {
     await message.send(format(Text("图片加载失败")));
   }
 
-  gamePools.saveGame(event, MINESWEEPER_GAME, newgame);
-  gameSession.activate(event, MINESWEEPER_GAME);
 };
 
 export function newGame(level: "简单" | "中等" | "困难") {

@@ -20,6 +20,11 @@ export interface BoardRoom<TState = unknown, TPlayerMeta = unknown> {
 }
 
 const buildRoomScopeKey = (event: ScopedEvent) => {
+  const guid = String(event.guid ?? "").trim();
+  if (guid) {
+    return `guid:${guid}`;
+  }
+
   if (event.IsPrivate) {
     return `private:${event.UserId ?? "anonymous"}`;
   }
@@ -35,6 +40,9 @@ export const boardRooms = {
     const scopeKey = buildRoomScopeKey(event);
     return rooms.get(`${scopeKey}:${game}`) as BoardRoom<TState, TPlayerMeta> | undefined;
   },
+  getRoomByGuid: <TState, TPlayerMeta = unknown>(guid: string, game: GameType) => {
+    return rooms.get(`guid:${guid}:${game}`) as BoardRoom<TState, TPlayerMeta> | undefined;
+  },
   saveRoom: <TState, TPlayerMeta = unknown>(
     event: ScopedEvent,
     game: GameType,
@@ -48,5 +56,14 @@ export const boardRooms = {
   removeRoom: (event: ScopedEvent, game: GameType) => {
     const scopeKey = buildRoomScopeKey(event);
     rooms.delete(`${scopeKey}:${game}`);
+  },
+  saveRoomByGuid: <TState, TPlayerMeta = unknown>(
+    guid: string,
+    game: GameType,
+    room: BoardRoom<TState, TPlayerMeta>
+  ) => {
+    room.updatedAt = Date.now();
+    rooms.set(`guid:${guid}:${game}`, room as BoardRoom);
+    return room;
   },
 };

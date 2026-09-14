@@ -1,4 +1,11 @@
-import type { ChineseChessMoveIntent, ChineseChessPoint, ChineseChessRoom, ChineseChessTeam } from "./state";
+import type {
+  ChineseChessMoveIntent,
+  ChineseChessPiece,
+  ChineseChessPoint,
+  ChineseChessRoom,
+  ChineseChessState,
+  ChineseChessTeam,
+} from "./state";
 import {
   cloneChineseChessState,
   isInsideChineseChessBoard,
@@ -10,6 +17,7 @@ export interface ChineseChessMoveResult {
   ok: boolean;
   message?: string;
   win?: boolean;
+  check?: boolean;
 }
 
 const sameLine = (from: ChineseChessPoint, to: ChineseChessPoint) =>
@@ -40,6 +48,162 @@ const countPiecesBetween = (room: ChineseChessRoom, from: ChineseChessPoint, to:
 const inPalace = (point: ChineseChessPoint, team: ChineseChessTeam) => {
   const palaceRows = team === "红" ? [0, 1, 2] : [7, 8, 9];
   return palaceRows.includes(point.row) && point.col >= 3 && point.col <= 5;
+};
+
+const isElephantOnOwnSide = (point: ChineseChessPoint, team: ChineseChessTeam) =>
+  team === "红" ? point.row <= 4 : point.row >= 5;
+
+const findGeneral = (state: ChineseChessState, team: ChineseChessTeam) => {
+  for (const [key, piece] of Object.entries(state.board)) {
+    if (piece !== "将" || state.ownership[key] !== team) {
+      continue;
+    }
+
+    const [row, col] = key.split("-").map(Number);
+    return { row, col };
+  }
+
+  return null;
+};
+
+const countPiecesBetweenState = (
+  state: ChineseChessState,
+  from: ChineseChessPoint,
+  to: ChineseChessPoint
+) => {
+  if (!sameLine(from, to)) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  const rowStep = Math.sign(to.row - from.row);
+  const colStep = Math.sign(to.col - from.col);
+  let row = from.row + rowStep;
+  let col = from.col + colStep;
+  let count = 0;
+
+  while (row !== to.row || col !== to.col) {
+    if (state.board[pointKey({ row, col })] !== "空") {
+      count += 1;
+    }
+    row += rowStep;
+    col += colStep;
+  }
+
+  return count;
+};
+
+const canPieceAttack = (
+  state: ChineseChessState,
+  from: ChineseChessPoint,
+  to: ChineseChessPoint,
+  attackerTeam: ChineseChessTeam
+) => {
+  if (!isInsideChineseChessBoard(from) || !isInsideChineseChessBoard(to)) {
+    return false;
+  }
+
+  const piece = state.board[pointKey(from)] as ChineseChessPiece | undefined;
+  const rowDelta = to.row - from.row;
+  const colDelta = to.col - from.col;
+  const absRow = Math.abs(rowDelta);
+  const absCol = Math.abs(colDelta);
+
+  if (!piece || piece === "空") {
+    return false;
+  }
+
+  if (piece === "車") {
+    return sameLine(from, to) && countPiecesBetweenState(state, from, to) === 0;
+  }
+
+  if (piece === "馬") {
+    if (!((absRow === 2 && absCol === 1) || (absRow === 1 && absCol === 2))) {
+      return false;
+    }
+
+    const leg =
+      absRow === 2
+        ? { row: from.row + Math.sign(rowDelta), col: from.col }
+        : { row: from.row, col: from.col + Math.sign(colDelta) };
+    return state.board[pointKey(leg)] === "空";
+  }
+
+  if (piece === "象") {
+    if (absRow !== 2 || absCol !== 2 || !isElephantOnOwnSide(to, attackerTeam)) {
+      return false;
+    }
+
+    const eye = { row: from.row + rowDelta / 2, col: from.col + colDelta / 2 };
+    return state.board[pointKey(eye)] === "空";
+  }
+
+  if (piece === "士") {
+    return absRow === 1 && absCol === 1 && inPalace(to, attackerTeam);
+  }
+
+  if (piece === "将") {
+    if (from.col === to.col && state.board[pointKey(to)] === "将") {
+      return countPiecesBetweenState(state, from, to) === 0;
+    }
+
+    return absRow + absCol === 1 && inPalace(to, attackerTeam);
+  }
+
+  if (piece === "兵") {
+    const forward = attackerTeam === "红" ? 1 : -1;
+    const crossedRiver = attackerTeam === "红" ? from.row > 4 : from.row < 5;
+
+    if (rowDelta === forward && colDelta === 0) {
+      return true;
+    }
+
+    return crossedRiver && rowDelta === 0 && absCol === 1;
+  }
+
+  if (piece === "炮") {
+    return sameLine(from, to) && countPiecesBetweenState(state, from, to) === 1;
+  }
+
+  return false;
+};
+
+const isTeamInCheckOnState = (state: ChineseChessState, team: ChineseChessTeam) => {
+  const general = findGeneral(state, team);
+  if (!general) {
+    return true;
+  }
+
+  const opponent = opponentTeam(team);
+  for (const [key, owner] of Object.entries(state.ownership)) {
+    if (owner !== opponent) {
+      continue;
+    }
+
+    const [row, col] = key.split("-").map(Number);
+    if (canPieceAttack(state, { row, col }, general, opponent)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const previewMoveState = (
+  state: ChineseChessState,
+  intent: ChineseChessMoveIntent,
+  team: ChineseChessTeam
+) => {
+  const next = cloneChineseChessState(state);
+  const fromKey = pointKey(intent.from);
+  const toKey = pointKey(intent.to);
+
+  next.board[toKey] = next.board[fromKey];
+  next.board[fromKey] = "空";
+  next.ownership[toKey] = team;
+  next.ownership[fromKey] = "0";
+  next.lastMove = intent;
+  next.current = opponentTeam(team);
+  return next;
 };
 
 const validatePieceMove = (
@@ -74,7 +238,7 @@ const validatePieceMove = (
   }
 
   if (piece === "象") {
-    if (absRow !== 2 || absCol !== 2) {
+    if (absRow !== 2 || absCol !== 2 || !isElephantOnOwnSide(to, team)) {
       return false;
     }
 
@@ -157,9 +321,15 @@ export const validateChineseChessMove = (
     return { ok: false, message: "移动不正确" };
   }
 
+  const nextState = previewMoveState(room.state, intent, team);
+  if (isTeamInCheckOnState(nextState, team)) {
+    return { ok: false, message: "不能让自己的将处于被将军状态" };
+  }
+
   return {
     ok: true,
     win: room.state.board[toKey] === "将" && room.state.ownership[toKey] === opponentTeam(team),
+    check: isTeamInCheckOnState(nextState, opponentTeam(team)),
   };
 };
 

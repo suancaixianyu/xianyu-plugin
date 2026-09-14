@@ -52,6 +52,12 @@ export const initialChineseChessBoard: ChineseChessPiece[][] = [
 
 export const pointKey = (point: ChineseChessPoint) => `${point.row}-${point.col}`;
 
+export const formatChineseChessPoint = (point: ChineseChessPoint) =>
+  `${String.fromCharCode(65 + point.row)}${point.col + 1}`;
+
+export const formatChineseChessMoveIntent = (intent: ChineseChessMoveIntent) =>
+  `${formatChineseChessPoint(intent.from)} -> ${formatChineseChessPoint(intent.to)}`;
+
 export const isInsideChineseChessBoard = (point: ChineseChessPoint) =>
   point.row >= 0 && point.row < CHINESE_CHESS_ROWS && point.col >= 0 && point.col < CHINESE_CHESS_COLS;
 

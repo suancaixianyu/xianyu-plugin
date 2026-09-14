@@ -1,14 +1,15 @@
-import { renderComponentToBuffer } from "jsxp";
+import { renderComponentIsHtmlToBuffer } from "jsxp";
 import { Text, useMessage, Image } from "alemonjs";
 import Help from "@src/image/conponent/minesweeper/help";
 
 export default async () => {
   const [message] = useMessage();
-  const img = await renderComponentToBuffer("minesweeperHelp", Help, {});
+  const img = await renderComponentIsHtmlToBuffer(Help, {});
 
   if (typeof img != "boolean") {
     await message.send(format(Image(img)));
+    return;
   } else {
-    await message.send(format(Text("图片加载失败")));
+    await message.send(format(Text("扫雷帮助图加载失败")));
   }
 };
