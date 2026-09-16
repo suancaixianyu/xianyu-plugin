@@ -9,6 +9,7 @@ import {
   timeDiff,
 } from "../../../api";
 import GamaeMap from "@src/image/conponent/minesweeper/map";
+import { bindMinesweeperSession } from "@src/api/gameAgents";
 
 const findInput = (event: {
   __route?: { parsedArgs?: string[] };
@@ -46,6 +47,8 @@ export default async (event) => {
   } else {
     gameSession.activate(event, MINESWEEPER_GAME);
   }
+  // 玩家在哪个会话操作，AI 接管作用域就跟随到哪个会话。
+  bindMinesweeperSession(event.guid, event);
 
   const img = await renderComponentToBuffer("minesweeper", GamaeMap, { game });
   if (typeof img != "boolean") {

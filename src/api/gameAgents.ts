@@ -9,10 +9,12 @@ import { gameSession } from "./gameSession";
 import { timeDiff } from "./lib";
 import type { Game, ScopedEvent } from "./type";
 import {
+  createMinesweeperGame,
   markMinesweeperCells,
   MINESWEEPER_GAME,
   openMinesweeperCells,
   snapshotVisibleMinesweeper,
+  type MinesweeperLevel,
 } from "./games/minesweeper";
 import {
   checkGobangWin,
@@ -56,7 +58,9 @@ type PendingGobangTurn = {
 };
 
 const pendingTurns = new Map<string, PendingGobangTurn>();
-const minesweeperSessions = new Map<string, ScopedEvent>();
+/** 记录每个会话当前由 AI 接管的扫雷玩家作用域；AI 后续操作必须使用同一作用域。 */
+const minesweeperScopes = new Map<string, ScopedEvent>();
+const minesweeperLevels = new Set<MinesweeperLevel>(["简单", "中等", "困难"]);
 let settingsLoaded = false;
 
 export const availableGames = [
@@ -197,14 +201,21 @@ const getPendingTurn = (guid: string, token: string) => {
 export const bindMinesweeperSession = (guid: string | undefined, event: ScopedEvent) => {
   const safeGuid = String(guid ?? "").trim();
   if (!safeGuid) return;
-  minesweeperSessions.set(safeGuid, {
+  minesweeperScopes.set(safeGuid, {
     ...event,
     guid: safeGuid,
   });
 };
 
+/** 用户结束扫雷时清理 AI 接管的作用域，避免留下已失效的玩家作用域。 */
+export const unbindMinesweeperSession = (guid: string | undefined) => {
+  const safeGuid = String(guid ?? "").trim();
+  if (!safeGuid) return;
+  minesweeperScopes.delete(safeGuid);
+};
+
 const getMinesweeperGame = (guid: string) => {
-  const event = minesweeperSessions.get(guid);
+  const event = minesweeperScopes.get(guid);
   if (!event) return undefined;
   return gamePools.getGame<Game>(event, MINESWEEPER_GAME);
 };
@@ -214,9 +225,157 @@ const snapshotMinesweeper = (guid: string) => {
   return game ? snapshotVisibleMinesweeper(game, guid) : null;
 };
 
+/**
+ * 解析扫雷玩家作用域：优先使用宿主注入的真实会话，其次复用插件记录的会话。
+ * 宿主注入优先，是为了让 AI 新建的对局落在当前真实会话作用域，
+ * 而不是上一次 #扫雷 留下的旧作用域。
+ */
+const resolveMinesweeperSession = (
+  guid: string,
+  session?: ScopedEvent,
+): { event: ScopedEvent } | { error: string } => {
+  const injected = session && session.UserId ? { ...session, guid } : undefined;
+  const event = injected ?? minesweeperScopes.get(guid);
+  if (!event?.UserId) {
+    return {
+      error: "当前会话缺少扫雷玩家作用域，请先调用 minesweeper_start 开始对局。",
+    };
+  }
+  return { event };
+};
+
+const sessionKeyOf = (event: ScopedEvent) =>
+  `${event.UserId ?? ""}|${event.IsPrivate ? "private" : "group"}`.toLowerCase();
+
+/**
+ * 解析当前实际持有的扫雷作用域：会话里只有一张棋盘，
+ * 所以先看宿主注入的作用域，再回退到插件记录的接管作用域。
+ */
+const resolveActiveMinesweeperSession = (
+  guid: string,
+  session?: ScopedEvent,
+): { event: ScopedEvent; game: Game } | { error: string } => {
+  const candidates: ScopedEvent[] = [];
+  if (session?.UserId) candidates.push({ ...session, guid });
+  const bound = minesweeperScopes.get(guid);
+  if (bound) candidates.push(bound);
+  const seen = new Set<string>();
+  for (const event of candidates) {
+    const key = sessionKeyOf(event);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const game = gamePools.getGame<Game>(event, MINESWEEPER_GAME);
+    if (!game) continue;
+    if (game.state !== "playing") {
+      return {
+        error: "当前扫雷对局已经结束，请按快照确认结果，或用 minesweeper_start 开始新的一局。",
+      };
+    }
+    return { event, game };
+  }
+  return {
+    error: "当前没有可由 AI 操作的扫雷对局，请先调用 minesweeper_start 开始一局。",
+  };
+};
+
+const renderMinesweeperMedia = async (
+  game: Game,
+  summary: string,
+  final = false,
+) => {
+  try {
+    const [{ renderComponentToBuffer }, { default: GameMap }] = await Promise.all([
+      import("jsxp"),
+      import("@src/image/conponent/minesweeper/map"),
+    ]);
+    const image = await renderComponentToBuffer("minesweeper", GameMap, { game });
+    return {
+      summary: typeof image === "boolean" ? `${summary}\n棋盘图片渲染失败。` : summary,
+      image: typeof image === "boolean" ? undefined : image,
+      final,
+    };
+  } catch (error) {
+    console.warn("[xianyu-game] 渲染扫雷 AI 操作棋盘失败", error);
+    return { summary: `${summary}\n棋盘图片渲染失败。`, final };
+  }
+};
+
+export const startMinesweeperFromTool = async (input: {
+  guid?: string;
+  difficulty?: MinesweeperLevel;
+  session?: ScopedEvent;
+}) => {
+  const guid = String(input.guid ?? "").trim();
+  if (!guid) return { ok: false, error: "当前会话缺少 guid" };
+  const difficulty = input.difficulty ?? "简单";
+  if (!minesweeperLevels.has(difficulty)) {
+    return { ok: false, error: "扫雷难度仅支持：简单、中等、困难" };
+  }
+  const resolved = resolveMinesweeperSession(guid, input.session);
+  if ("error" in resolved) return { ok: false, error: resolved.error };
+  const { event } = resolved;
+  const scopeKey = gamePools.getScopeKey(event);
+  const current = gamePools.getGame<Game>(event, MINESWEEPER_GAME);
+  if (current?.state === "playing") {
+    return {
+      ok: true,
+      started: false,
+      alreadyRunning: true,
+      scopeKey,
+      snapshot: snapshotVisibleMinesweeper(current, guid),
+      hint: "当前会话已有进行中的扫雷，已直接返回该棋盘，不会重开；请按快照继续操作。",
+    };
+  }
+
+  // 同一个会话里只有一张棋盘：别人正在玩的对局不能被静默接管或重置。
+  const active = resolveActiveMinesweeperSession(guid, event);
+  if ("game" in active && sessionKeyOf(active.event) !== sessionKeyOf(event)) {
+    return {
+      ok: false,
+      error:
+        "当前会话已有其他成员正在进行的扫雷对局，不能抢占或重置。请先由该成员结束对局，或用 minesweeper_exit 结束当前对局后再开始。",
+    };
+  }
+
+  if (current) gamePools.removeGame(event, MINESWEEPER_GAME);
+  const game = createMinesweeperGame(difficulty);
+  gamePools.saveGame(event, MINESWEEPER_GAME, game);
+  bindMinesweeperSession(guid, event);
+  gameSession.activate(event, MINESWEEPER_GAME);
+  const summary = `已开始${difficulty}扫雷：${game.row}×${game.col}，共 ${game.mine} 雷。`;
+  return {
+    ok: true,
+    started: true,
+    difficulty,
+    scopeKey,
+    snapshot: snapshotVisibleMinesweeper(game, guid),
+    progressMedia: await renderMinesweeperMedia(game, summary),
+  };
+};
+
+export const exitMinesweeperFromTool = (input: {
+  guid?: string;
+  session?: ScopedEvent;
+}) => {
+  const guid = String(input.guid ?? "").trim();
+  if (!guid) return { ok: false, error: "当前会话缺少 guid" };
+  const resolved = resolveMinesweeperSession(guid, input.session);
+  if ("error" in resolved) return { ok: false, error: resolved.error };
+  // 结束对局时同样要覆盖插件记录的接管作用域，
+  // 否则其他成员的结束请求会漏掉真正的棋盘。
+  const active = resolveActiveMinesweeperSession(guid, resolved.event);
+  const event = "event" in active ? active.event : resolved.event;
+  const existed = Boolean(gamePools.getGame<Game>(event, MINESWEEPER_GAME));
+  if (existed) gamePools.removeGame(event, MINESWEEPER_GAME);
+  gameSession.deactivate(event, MINESWEEPER_GAME);
+  unbindMinesweeperSession(guid);
+  return { ok: true, ended: existed };
+};
+
 const renderMinesweeperProgress = async (
   game: Game,
   operation: "open" | "mark" | "unmark",
+  changedCells: string[],
   progress: {
     openedDelta: number;
     flagDelta: number;
@@ -228,27 +387,19 @@ const renderMinesweeperProgress = async (
   },
 ) => {
   try {
-    const [{ renderComponentToBuffer }, { default: GameMap }] = await Promise.all([
-      import("jsxp"),
-      import("@src/image/conponent/minesweeper/map"),
-    ]);
-    const image = await renderComponentToBuffer("minesweeper", GameMap, { game });
+    const coordinateText = changedCells.join("、");
     const actionText = operation === "open"
-      ? `本次新增翻开 ${progress.openedDelta} 格`
+      ? `翻开 ${coordinateText}`
       : operation === "mark"
-        ? `本次新增标记 ${Math.max(0, progress.flagDelta)} 格`
-        : `本次取消标记 ${Math.max(0, -progress.flagDelta)} 格`;
+        ? `标记 ${coordinateText}`
+        : `取消标记 ${coordinateText}`;
     const resultText = progress.status === "win"
       ? "扫雷成功"
       : progress.status === "lose"
         ? "踩雷，游戏结束"
         : "游戏继续";
     const summary = `${actionText}；累计翻开 ${progress.openedCount}/${progress.totalCells} 格，已标记 ${progress.flagCount}/${progress.mineCount}，${resultText}。`;
-    return {
-      summary: typeof image === "boolean" ? `${summary}\n棋盘图片渲染失败。` : summary,
-      image: typeof image === "boolean" ? undefined : image,
-      final: progress.status !== "playing",
-    };
+    return renderMinesweeperMedia(game, summary, progress.status !== "playing");
   } catch (error) {
     console.warn("[xianyu-game] 渲染扫雷 AI 操作棋盘失败", error);
     return undefined;
@@ -259,14 +410,17 @@ export const actMinesweeperFromTool = async (input: {
   guid?: string;
   operation?: "open" | "mark" | "unmark";
   cells?: string[];
+  session?: ScopedEvent;
 }) => {
   const guid = String(input.guid ?? "").trim();
   if (!guid) return { ok: false, error: "当前会话缺少 guid" };
-  const event = minesweeperSessions.get(guid);
-  const game = event ? gamePools.getGame<Game>(event, MINESWEEPER_GAME) : undefined;
-  if (!event || !game || game.state !== "playing") {
-    return { ok: false, error: "当前没有可由 AI 操作的扫雷对局" };
-  }
+  const resolved = resolveMinesweeperSession(guid, input.session);
+  if ("error" in resolved) return { ok: false, error: resolved.error };
+  // 同一个会话只有一张棋盘：优先用宿主注入的作用域，
+  // 找不到对局时回退到插件记录的接管作用域（例如另一位群成员发起的操作）。
+  const active = resolveActiveMinesweeperSession(guid, resolved.event);
+  if ("error" in active) return { ok: false, error: active.error };
+  const { event, game } = active;
   const cells = Array.isArray(input.cells)
     ? input.cells.map(String).slice(0, 100)
     : [];
@@ -305,7 +459,12 @@ export const actMinesweeperFromTool = async (input: {
     mineCount: game.mine,
     status: game.state,
   };
-  const progressMedia = await renderMinesweeperProgress(game, operation, progress);
+  const progressMedia = await renderMinesweeperProgress(
+    game,
+    operation,
+    changed,
+    progress,
+  );
   return {
     ok: true,
     changed,
@@ -421,12 +580,26 @@ export const xianyuGameExpose = Expose.create().provide({
       handler: (input: { guid?: string } = {}) =>
         snapshotMinesweeper(String(input.guid ?? "").trim()),
     },
+    minesweeperStart: {
+      description: "由 Aichat 在当前真实会话中选择难度并开始扫雷。",
+      handler: (input: {
+        guid?: string;
+        difficulty?: MinesweeperLevel;
+        session?: ScopedEvent;
+      } = {}) => startMinesweeperFromTool(input),
+    },
+    minesweeperExit: {
+      description: "由 Aichat 随时结束当前会话中的扫雷。",
+      handler: (input: { guid?: string; session?: ScopedEvent } = {}) =>
+        exitMinesweeperFromTool(input),
+    },
     minesweeperAction: {
       description: "供 Aichat 工具按当前 guid 批量翻开、标记或取消标记扫雷格。",
       handler: (input: {
         guid?: string;
         operation?: "open" | "mark" | "unmark";
         cells?: string[];
+        session?: ScopedEvent;
       } = {}) => actMinesweeperFromTool(input),
     },
   },

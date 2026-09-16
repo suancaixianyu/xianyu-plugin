@@ -1,9 +1,57 @@
 import { gameRegistry } from "../gameRegistry";
+import { gameLevels } from "../map";
 import type { Game, GameCommandController, GameDefinition, ScopedEvent } from "../type";
 
 export const MINESWEEPER_GAME = "minesweeper" as const;
+export type MinesweeperLevel = keyof typeof gameLevels;
 
 export type MinesweeperVisibleCell = "unknown" | "flag" | number;
+
+export const createMinesweeperGame = (level: MinesweeperLevel): Game => {
+  const { row, col, mine } = gameLevels[level];
+  const map: Game["map"] = {};
+
+  for (let x = 0; x < row; x += 1) {
+    for (let y = 0; y < col; y += 1) {
+      map[`${x}-${y}`] = {
+        isMine: false,
+        value: 0,
+        isOpen: false,
+        isFlag: false,
+        name: `${String.fromCharCode(65 + x)}${y}`,
+      };
+    }
+  }
+
+  for (let placed = 0; placed < mine; placed += 1) {
+    const x = Math.floor(Math.random() * row);
+    const y = Math.floor(Math.random() * col);
+    if (map[`${x}-${y}`].isMine) {
+      placed -= 1;
+      continue;
+    }
+    map[`${x}-${y}`].isMine = true;
+    for (let dx = -1; dx <= 1; dx += 1) {
+      for (let dy = -1; dy <= 1; dy += 1) {
+        if ((dx !== 0 || dy !== 0) && map[`${x + dx}-${y + dy}`]) {
+          map[`${x + dx}-${y + dy}`].value += 1;
+        }
+      }
+    }
+  }
+
+  return {
+    row,
+    col,
+    mine,
+    map,
+    remain: mine,
+    state: "playing",
+    time: 0,
+    startTime: Date.now(),
+    select: { x: -1, y: -1 },
+  };
+};
 
 export const parseMinesweeperCoordinate = (input: string) => {
   const match = String(input ?? "").trim().match(/^([a-zA-Z])(\d+)$/);

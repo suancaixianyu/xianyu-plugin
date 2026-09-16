@@ -27,6 +27,11 @@ import {
   snapshotVisibleMinesweeper,
 } from "../lib/api/games/minesweeper.js";
 import {
+  actMinesweeperFromTool,
+  exitMinesweeperFromTool,
+  startMinesweeperFromTool,
+} from "../lib/api/gameAgents.js";
+import {
   applyAnimalChessMove,
   createAnimalChessRoom,
   parseAnimalChessMove,
@@ -115,6 +120,221 @@ openMinesweeperCells(minesweeperVisibilityGame, ["A1"]);
 if (snapshotVisibleMinesweeper(minesweeperVisibilityGame, "guid-test").board[1][0] !== 1) {
   throw new Error("minesweeper opened number was not represented in visible snapshot");
 }
+
+// AI 工具开局/结束：宿主注入真实会话作用域，模型不能自己指定玩家作用域。
+const aiGroupA = "ai-group-a";
+const aiGroupB = "ai-group-b";
+const aiPlayer = "ai-user";
+const aiPrivate = "ai-private-guid";
+const aiPrivateUser = "ai-private-user";
+const aiSession = (guid, userId, channelId) => ({
+  guid,
+  UserId: userId,
+  ChannelId: channelId,
+  GuildId: channelId,
+  IsPrivate: false,
+});
+const aiPrivateSession = (guid, userId) => ({
+  guid,
+  UserId: userId,
+  IsPrivate: true,
+});
+
+const aiStart = await startMinesweeperFromTool({
+  guid: aiGroupA,
+  difficulty: "中等",
+  session: aiSession(aiGroupA, aiPlayer, aiGroupA),
+});
+if (!aiStart.ok || aiStart.started !== true) {
+  throw new Error(`minesweeper_start failed: ${JSON.stringify(aiStart)}`);
+}
+if (aiStart.snapshot?.width !== 16 || aiStart.snapshot?.mineCount !== 40) {
+  throw new Error(`minesweeper_start used the wrong difficulty: ${JSON.stringify(aiStart.snapshot)}`);
+}
+if (JSON.stringify(aiStart).includes("isMine")) {
+  throw new Error("minesweeper_start leaked hidden mine state");
+}
+
+const aiAlreadyRunning = await startMinesweeperFromTool({
+  guid: aiGroupA,
+  difficulty: "困难",
+  session: aiSession(aiGroupA, aiPlayer, aiGroupA),
+});
+if (aiAlreadyRunning.started !== false || aiAlreadyRunning.alreadyRunning !== true) {
+  throw new Error(`minesweeper_start should not replace a running game: ${JSON.stringify(aiAlreadyRunning)}`);
+}
+if (aiAlreadyRunning.snapshot?.width !== 16) {
+  throw new Error("minesweeper_start replaced the running board without an explicit restart");
+}
+
+if ((await startMinesweeperFromTool({ guid: aiGroupA, difficulty: "地狱" })).ok !== false) {
+  throw new Error("minesweeper_start should reject an unsupported difficulty");
+}
+if ((await startMinesweeperFromTool({ guid: "" })).ok !== false) {
+  throw new Error("minesweeper_start should reject a missing guid");
+}
+
+const aiScopedStart = await startMinesweeperFromTool({
+  guid: aiGroupA,
+  difficulty: "简单",
+  session: aiSession(aiGroupA, "other-user", aiGroupA),
+});
+if (aiScopedStart.ok) {
+  throw new Error("minesweeper_start should not hijack another user's running game");
+}
+
+const aiSnapshotWithoutSession = await actMinesweeperFromTool({
+  guid: aiGroupB,
+  operation: "open",
+  cells: ["A0"],
+});
+if (aiSnapshotWithoutSession.ok) {
+  throw new Error("minesweeperAction should reject a session without a running game");
+}
+if (!String(aiSnapshotWithoutSession.error).includes("minesweeper_start")) {
+  throw new Error(`minesweeperAction error should point at minesweeper_start: ${aiSnapshotWithoutSession.error}`);
+}
+
+// 同一个真实会话里，另一个群成员的 AI 操作必须落在同一张棋盘上。
+// 只做标记，避免随机踩雷提前结束对局导致后续断言失效。
+const aiSecondPlayerMark = await actMinesweeperFromTool({
+  guid: aiGroupA,
+  operation: "mark",
+  cells: ["A0", "B0", "C0", "D0"],
+  session: aiSession(aiGroupA, "second-user", aiGroupA),
+});
+if (!aiSecondPlayerMark.ok) {
+  throw new Error(`minesweeperAction should reuse the started board for a second player: ${JSON.stringify(aiSecondPlayerMark)}`);
+}
+if (
+  aiSecondPlayerMark.progress?.totalCells !== 256 ||
+  aiSecondPlayerMark.progress?.mineCount !== 40
+) {
+  throw new Error(`second player should operate on the started 16x16 board: ${JSON.stringify(aiSecondPlayerMark.progress)}`);
+}
+
+// 不带会话的 AI 操作必须回退到插件记录的接管作用域，仍然落在同一张棋盘上。
+const aiOpenWithoutSession = await actMinesweeperFromTool({
+  guid: aiGroupA,
+  operation: "unmark",
+  cells: ["A0"],
+});
+if (!aiOpenWithoutSession.ok) {
+  throw new Error(`minesweeperAction without a session should reuse the bound scope: ${JSON.stringify(aiOpenWithoutSession)}`);
+}
+if (
+  aiOpenWithoutSession.progress?.totalCells !==
+  aiSecondPlayerMark.progress?.totalCells
+) {
+  throw new Error("an action without a session should not reset the shared board");
+}
+// 每次操作后都返回可见快照，且不泄露雷区答案。
+if (!aiSecondPlayerMark.snapshot || JSON.stringify(aiSecondPlayerMark).includes("isMine")) {
+  throw new Error("minesweeperAction should return a visible snapshot without hidden state");
+}
+
+// 独立会话必须拥有独立棋盘。
+const aiGroupBStart = await startMinesweeperFromTool({
+  guid: aiGroupB,
+  difficulty: "简单",
+  session: aiSession(aiGroupB, aiPlayer, aiGroupB),
+});
+if (!aiGroupBStart.ok || aiGroupBStart.started !== true) {
+  throw new Error(`second session minesweeper_start failed: ${JSON.stringify(aiGroupBStart)}`);
+}
+if (aiGroupBStart.snapshot?.openedCount !== 0) {
+  throw new Error("minesweeper boards leaked across sessions");
+}
+
+// 结束对局后，快照与操作都必须拒绝，避免操作已结束的棋盘。
+const aiExit = exitMinesweeperFromTool({
+  guid: aiGroupB,
+  session: aiSession(aiGroupB, aiPlayer, aiGroupB),
+});
+if (!aiExit.ok || aiExit.ended !== true) {
+  throw new Error(`minesweeper_exit failed: ${JSON.stringify(aiExit)}`);
+}
+const aiExitAgain = exitMinesweeperFromTool({
+  guid: aiGroupB,
+  session: aiSession(aiGroupB, aiPlayer, aiGroupB),
+});
+if (!aiExitAgain.ok || aiExitAgain.ended !== false) {
+  throw new Error(`minesweeper_exit should be idempotent: ${JSON.stringify(aiExitAgain)}`);
+}
+const aiOpenAfterExit = await actMinesweeperFromTool({
+  guid: aiGroupB,
+  operation: "open",
+  cells: ["A0"],
+});
+if (aiOpenAfterExit.ok) {
+  throw new Error("minesweeperAction should reject an ended game");
+}
+if ((await exitMinesweeperFromTool({ guid: "" })).ok !== false) {
+  throw new Error("minesweeper_exit should reject a missing guid");
+}
+
+// 私聊作用域按 IsPrivate 落到独立棋盘，不与群聊共用。
+const aiPrivateStart = await startMinesweeperFromTool({
+  guid: aiPrivate,
+  difficulty: "简单",
+  session: aiPrivateSession(aiPrivate, aiPrivateUser),
+});
+if (!aiPrivateStart.ok || aiPrivateStart.started !== true) {
+  throw new Error(`private minesweeper_start failed: ${JSON.stringify(aiPrivateStart)}`);
+}
+if (aiPrivateStart.snapshot?.openedCount !== 0) {
+  throw new Error("private minesweeper board leaked from a group session");
+}
+exitMinesweeperFromTool({
+  guid: aiPrivate,
+  session: aiPrivateSession(aiPrivate, aiPrivateUser),
+});
+
+// 一个会话里已经有其他成员进行中的对局时，不能把别人的棋盘顶掉。
+const aiSharedGuid = "ai-shared-group";
+const aiSharedStart = await startMinesweeperFromTool({
+  guid: aiSharedGuid,
+  difficulty: "简单",
+  session: aiSession(aiSharedGuid, "shared-user-1", aiSharedGuid),
+});
+if (!aiSharedStart.ok || aiSharedStart.started !== true) {
+  throw new Error(`shared scope minesweeper_start failed: ${JSON.stringify(aiSharedStart)}`);
+}
+const aiSharedTakeover = await startMinesweeperFromTool({
+  guid: aiSharedGuid,
+  difficulty: "困难",
+  session: aiSession(aiSharedGuid, "shared-user-2", aiSharedGuid),
+});
+if (aiSharedTakeover.ok || !String(aiSharedTakeover.error).includes("其他成员")) {
+  throw new Error(`minesweeper_start should not replace another member's board: ${JSON.stringify(aiSharedTakeover)}`);
+}
+// 另一位成员可以操作同一张共享棋盘；只做标记，避免猜格踩雷提前结束对局。
+const aiSharedAction = await actMinesweeperFromTool({
+  guid: aiSharedGuid,
+  operation: "mark",
+  cells: ["A0", "B0"],
+  session: aiSession(aiSharedGuid, "shared-user-2", aiSharedGuid),
+});
+if (!aiSharedAction.ok) {
+  throw new Error(`shared board action failed: ${JSON.stringify(aiSharedAction)}`);
+}
+if (aiSharedAction.progress?.totalCells !== 81) {
+  throw new Error(`shared board should be the started 9x9 board: ${JSON.stringify(aiSharedAction.progress)}`);
+}
+// 不带会话的操作必须回退到插件记录的接管作用域，落在同一张棋盘上。
+const aiBoundAction = await actMinesweeperFromTool({
+  guid: aiSharedGuid,
+  operation: "unmark",
+  cells: ["A0"],
+});
+if (!aiBoundAction.ok) {
+  throw new Error(`bound scope action failed: ${JSON.stringify(aiBoundAction)}`);
+}
+if (aiBoundAction.progress?.totalCells !== aiSharedAction.progress?.totalCells) {
+  throw new Error("bound scope action should not reset the shared board");
+}
+
+exitMinesweeperFromTool({ guid: aiGroupA, session: aiSession(aiGroupA, aiPlayer, aiGroupA) });
 
 if (!points24.routes.some((route) => route.aliases.includes("开始24点"))) {
   throw new Error("points24 start route is missing");
@@ -790,3 +1010,5 @@ if (!animalWinValidation.ok || !animalWinValidation.win) {
 boardRooms.removeRoom(redEvent, "chinese-chess");
 
 console.log("game smoke check passed");
+// jsxp 会缓存 playwright 浏览器用于复用，脚本断言完成后显式退出，避免 node 一直挂着。
+process.exit(0);
