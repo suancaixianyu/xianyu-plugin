@@ -3,12 +3,14 @@ import { gamePools, gameSession } from "@src/api";
 import { SOKOBAN_GAME, undoSokoban, type SokobanGameState } from "@src/api/games/sokoban";
 import { renderSokobanMessage } from "../shared";
 
-export default async (event) => {
+export default async (event, next) => {
   const [message] = useMessage();
   const game = gamePools.getGame<SokobanGameState>(event, SOKOBAN_GAME);
 
   if (!game) {
-    await message.send(format(Text("请先开始游戏：/推箱子")));
+    if (typeof next === "function") {
+      await next();
+    }
     return;
   }
 

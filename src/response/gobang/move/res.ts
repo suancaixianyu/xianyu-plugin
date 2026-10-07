@@ -22,13 +22,15 @@ const finishRoom = (event, room: GobangRoom, title: string) => {
   return renderGobangMessage(room, title);
 };
 
-export default async (event) => {
+export default async (event, next) => {
   const [message] = useMessage();
   const userId = getEventUserId(event);
   const room = boardRooms.getRoom(event, GOBANG_GAME) as GobangRoom | undefined;
 
   if (!room || room.status === "finished") {
-    await message.send(format(Text("请先开始五子棋。")));
+    if (typeof next === "function") {
+      await next();
+    }
     return;
   }
 
