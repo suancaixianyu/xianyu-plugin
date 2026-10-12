@@ -1,6 +1,7 @@
 import { Text, useMessage } from "alemonjs";
 import { gamePools, gameSession } from "@src/api";
 import { POINTS24_GAME } from "@src/api/games/points24";
+import { unbindSingleGameSession } from "@src/api/gameToolActions";
 
 export default async (event) => {
   const [message] = useMessage();
@@ -12,6 +13,7 @@ export default async (event) => {
   }
 
   gamePools.removeGame(event, POINTS24_GAME);
+  unbindSingleGameSession(event.guid, POINTS24_GAME);
   gameSession.deactivate(event, POINTS24_GAME);
   await message.send(format(Text("24点游戏已结束。")));
 };

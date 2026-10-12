@@ -1,6 +1,7 @@
 import { Text, useMessage } from "alemonjs";
 import { gamePools, gameSession } from "@src/api";
 import { POINTS24_GAME } from "@src/api/games/points24";
+import { bindSingleGameSession, unbindSingleGameSession } from "@src/api/gameToolActions";
 
 interface Points24GameState {
   cards: string[];
@@ -92,6 +93,7 @@ export default async (event) => {
     if (result === 24) {
       const timeTaken = ((Date.now() - game.startTime) / 1000).toFixed(2);
       gamePools.removeGame(event, POINTS24_GAME);
+      unbindSingleGameSession(event.guid, POINTS24_GAME);
       gameSession.deactivate(event, POINTS24_GAME);
       await message.send(
         format(Text(`恭喜你，计算正确！${expression} = 24\n游戏结束。使用时间：${timeTaken} 秒。`))
@@ -100,6 +102,7 @@ export default async (event) => {
     }
 
     gameSession.activate(event, POINTS24_GAME);
+    bindSingleGameSession(event.guid, POINTS24_GAME, event);
     await message.send(format(Text(`计算结果是 ${result}，不等于24，请重新计算。`)));
   } catch {
     await message.send(format(Text("表达式有误，请检查后重新输入。")));

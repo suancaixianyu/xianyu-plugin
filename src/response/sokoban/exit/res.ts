@@ -1,6 +1,7 @@
 import { Text, useMessage } from "alemonjs";
 import { gamePools, gameSession } from "@src/api";
 import { SOKOBAN_GAME, type SokobanGameState } from "@src/api/games/sokoban";
+import { unbindSingleGameSession } from "@src/api/gameToolActions";
 
 export default async (event) => {
   const [message] = useMessage();
@@ -8,6 +9,7 @@ export default async (event) => {
 
   if (game) {
     gamePools.removeGame(event, SOKOBAN_GAME);
+    unbindSingleGameSession(event.guid, SOKOBAN_GAME);
     gameSession.deactivate(event, SOKOBAN_GAME);
     await message.send(format(Text("推箱子游戏已结束")));
     return;

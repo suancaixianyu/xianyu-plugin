@@ -6,6 +6,7 @@ import {
   sokobanLevelCount,
   type SokobanGameState,
 } from "@src/api/games/sokoban";
+import { bindSingleGameSession } from "@src/api/gameToolActions";
 import { parseSokobanLevelNumber, renderSokobanMessage } from "../shared";
 
 export default async (event) => {
@@ -13,6 +14,7 @@ export default async (event) => {
   const current = gamePools.getGame<SokobanGameState>(event, SOKOBAN_GAME);
 
   if (current?.status === "playing") {
+    bindSingleGameSession(event.guid, SOKOBAN_GAME, event);
     gameSession.activate(event, SOKOBAN_GAME);
     await message.send(await renderSokobanMessage(current, "当前已有推箱子游戏进行中"));
     return;
@@ -28,6 +30,7 @@ export default async (event) => {
   }
 
   gamePools.saveGame(event, SOKOBAN_GAME, game);
+  bindSingleGameSession(event.guid, SOKOBAN_GAME, event);
   gameSession.activate(event, SOKOBAN_GAME);
   await message.send(await renderSokobanMessage(game, `推箱子开始：第 ${levelNumber} 关`));
 };

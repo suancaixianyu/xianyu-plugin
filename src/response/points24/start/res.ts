@@ -1,56 +1,22 @@
 import { Text, useMessage } from "alemonjs";
 import { gamePools, gameSession } from "@src/api";
-import { POINTS24_GAME } from "@src/api/games/points24";
-
-interface Points24GameState {
-  cards: string[];
-  title: string;
-  startTime: number;
-  status: "playing";
-}
-
-const createDeck = () => {
-  const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-  const deck: string[] = [];
-
-  for (let i = 0; i < 4; i += 1) {
-    for (const value of values) {
-      deck.push(value);
-    }
-  }
-
-  return deck;
-};
-
-const createGame = (): Points24GameState => {
-  const deck = createDeck();
-  const cards: string[] = [];
-
-  for (let i = 0; i < 4; i += 1) {
-    const randomIndex = Math.floor(Math.random() * deck.length);
-    cards.push(deck.splice(randomIndex, 1)[0]);
-  }
-
-  return {
-    cards,
-    title: cards.join(" "),
-    startTime: Date.now(),
-    status: "playing",
-  };
-};
+import { createPoints24Game, POINTS24_GAME, type Points24GameState } from "@src/api/games/points24";
+import { bindSingleGameSession } from "@src/api/gameToolActions";
 
 export default async (event) => {
   const [message] = useMessage();
   const current = gamePools.getGame<Points24GameState>(event, POINTS24_GAME);
 
   if (current?.status === "playing") {
+    bindSingleGameSession(event.guid, POINTS24_GAME, event);
     gameSession.activate(event, POINTS24_GAME);
     await message.send(format(Text(`当前已有24点游戏进行中，抽取的牌是：${current.title}`)));
     return;
   }
 
-  const game = createGame();
+  const game = createPoints24Game();
   gamePools.saveGame(event, POINTS24_GAME, game);
+  bindSingleGameSession(event.guid, POINTS24_GAME, event);
   gameSession.activate(event, POINTS24_GAME);
   await message.send(
     format(

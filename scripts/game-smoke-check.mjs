@@ -37,6 +37,40 @@ import {
   parseAnimalChessMove,
   validateAnimalChessMove,
 } from "../lib/api/games/animalChess.js";
+import {
+  points24Start, points24Snapshot, points24Action, points24Exit,
+  sokobanStart, sokobanSnapshot, sokobanAction, sokobanExit,
+  chineseChessStart, chineseChessSnapshot, chineseChessAction, chineseChessExit,
+  animalChessStart, animalChessSnapshot, animalChessAction, animalChessExit,
+} from "../lib/api/gameToolActions.js";
+
+const toolSession = (UserId) => ({ UserId, ChannelId: "tool-smoke", IsPrivate: false });
+const toolInput = (guid, UserId = "tool-user-1") => ({ guid, session: toolSession(UserId) });
+const check = (value, message) => { if (!value) throw new Error(message); };
+
+const p24 = toolInput("tool-points24");
+check(points24Start(p24).ok && points24Snapshot(p24)?.cards.length === 4, "points24 tool start/snapshot failed");
+check(points24Action({ ...p24, expression: "1+1+1+1+1" }).ok === false, "points24 tool validation failed");
+check(points24Exit(p24).ended && points24Snapshot(p24) === null, "points24 tool exit failed");
+
+const sokobanTool = toolInput("tool-sokoban");
+check(sokobanStart(sokobanTool).ok && sokobanSnapshot(sokobanTool)?.board.length === 16, "sokoban tool start/snapshot failed");
+check(sokobanAction({ ...sokobanTool, operation: "move", directions: "invalid" }).ok === false, "sokoban tool validation failed");
+check(sokobanExit(sokobanTool).ended && sokobanSnapshot(sokobanTool) === null, "sokoban tool exit failed");
+
+const chineseTool = toolInput("tool-chinese-chess");
+check(chineseChessStart(chineseTool).snapshot.status === "waiting", "chinese chess tool start failed");
+check(chineseChessStart(toolInput(chineseTool.guid, "tool-user-2")).snapshot.status === "playing", "chinese chess tool join failed");
+check(chineseChessAction({ ...chineseTool, move: "D1 E1" }).ok, "chinese chess tool move failed");
+check(chineseChessSnapshot(chineseTool)?.current === "黑", "chinese chess tool snapshot failed");
+check(chineseChessExit(chineseTool).ended, "chinese chess tool exit failed");
+
+const animalTool = toolInput("tool-animal-chess");
+check(animalChessStart(animalTool).snapshot.status === "waiting", "animal chess tool start failed");
+check(animalChessStart(toolInput(animalTool.guid, "tool-user-2")).snapshot.status === "playing", "animal chess tool join failed");
+check(animalChessAction({ ...animalTool, move: "A0 B0" }).ok, "animal chess tool move failed");
+check(animalChessSnapshot(animalTool)?.current === "蓝", "animal chess tool snapshot failed");
+check(animalChessExit(animalTool).ended, "animal chess tool exit failed");
 
 const groupEvent = {
   UserId: "user-1",

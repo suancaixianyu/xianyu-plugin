@@ -3,6 +3,12 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
+import {
+  points24Snapshot, points24Start, points24Action, points24Exit,
+  sokobanSnapshot, sokobanStart, sokobanAction, sokobanExit,
+  chineseChessSnapshot, chineseChessStart, chineseChessAction, chineseChessExit,
+  animalChessSnapshot, animalChessStart, animalChessAction, animalChessExit,
+} from "./gameToolActions";
 import { boardRooms } from "./boardRooms";
 import { gamePools } from "./gamePools";
 import { gameSession } from "./gameSession";
@@ -560,7 +566,7 @@ export const requestGobangAgentTurn = async (guid?: string) => {
 
 export const xianyuGameExpose = Expose.create().provide({
   name: XIANYU_GAME_PROTOCOL,
-  description: "咸鱼插件游戏服务：查询可用游戏，并提供五子棋与扫雷的安全操作接口。",
+  description: "咸鱼插件游戏服务：查询可用游戏，并提供各游戏的开始、操作、退出和快照接口。",
   actions: {
     status: {
       description: "检查咸鱼游戏插件是否可用，并返回可用游戏和当前 guid 的 AI 对手状态。",
@@ -602,5 +608,21 @@ export const xianyuGameExpose = Expose.create().provide({
         session?: ScopedEvent;
       } = {}) => actMinesweeperFromTool(input),
     },
+    points24Snapshot: { description: "读取当前24点牌面。", handler: (input: { guid?: string; session?: ScopedEvent } = {}) => points24Snapshot(input) },
+    points24Start: { description: "在当前玩家作用域开始24点。", handler: (input: { guid?: string; session?: ScopedEvent } = {}) => points24Start(input) },
+    points24Action: { description: "提交24点表达式。", handler: (input: { guid?: string; session?: ScopedEvent; expression?: string } = {}) => points24Action(input) },
+    points24Exit: { description: "结束当前24点游戏。", handler: (input: { guid?: string; session?: ScopedEvent } = {}) => points24Exit(input) },
+    sokobanSnapshot: { description: "读取当前推箱子关卡和棋盘。", handler: (input: { guid?: string; session?: ScopedEvent } = {}) => sokobanSnapshot(input) },
+    sokobanStart: { description: "开始指定推箱子关卡，level 从1开始。", handler: (input: { guid?: string; session?: ScopedEvent; level?: number } = {}) => sokobanStart(input) },
+    sokobanAction: { description: "推箱子移动或撤回；移动方向使用 wasd。", handler: (input: { guid?: string; session?: ScopedEvent; operation?: "move" | "undo"; directions?: string } = {}) => sokobanAction(input) },
+    sokobanExit: { description: "结束当前推箱子游戏。", handler: (input: { guid?: string; session?: ScopedEvent } = {}) => sokobanExit(input) },
+    chineseChessSnapshot: { description: "读取当前中国象棋棋盘。", handler: (input: { guid?: string } = {}) => chineseChessSnapshot(input) },
+    chineseChessStart: { description: "发起或加入中国象棋对局。", handler: (input: { guid?: string; session?: ScopedEvent; nickname?: string } = {}) => chineseChessStart(input) },
+    chineseChessAction: { description: "按坐标或棋谱移动中国象棋棋子。", handler: (input: { guid?: string; session?: ScopedEvent; move?: string } = {}) => chineseChessAction(input) },
+    chineseChessExit: { description: "由参与者结束当前中国象棋对局。", handler: (input: { guid?: string; session?: ScopedEvent } = {}) => chineseChessExit(input) },
+    animalChessSnapshot: { description: "读取当前斗兽棋棋盘。", handler: (input: { guid?: string } = {}) => animalChessSnapshot(input) },
+    animalChessStart: { description: "发起或加入斗兽棋对局。", handler: (input: { guid?: string; session?: ScopedEvent; nickname?: string } = {}) => animalChessStart(input) },
+    animalChessAction: { description: "按 A0 B0 格式移动斗兽棋棋子。", handler: (input: { guid?: string; session?: ScopedEvent; move?: string } = {}) => animalChessAction(input) },
+    animalChessExit: { description: "由参与者结束当前斗兽棋对局。", handler: (input: { guid?: string; session?: ScopedEvent } = {}) => animalChessExit(input) },
   },
 });
