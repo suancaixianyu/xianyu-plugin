@@ -1,6 +1,6 @@
 {
   "name": "alemonjs-app",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "template app",
   "main": "lib/index.js",
   "type": "module",
@@ -12,7 +12,8 @@
     "review": "npx alemonc start",
     "start": "npx pm2 startOrRestart pm2.config.cjs",
     "stop": "npx pm2 stop pm2.config.cjs",
-    "delete": "npx pm2 delete pm2.config.cjs"
+    "delete": "npx pm2 delete pm2.config.cjs",
+    "test:router": "node --experimental-test-module-mocks --test --test-force-exit scripts/router-event-context.test.mjs"
   },
   "exports": {
     ".": "./lib/index.js",
