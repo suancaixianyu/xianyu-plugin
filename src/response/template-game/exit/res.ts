@@ -3,7 +3,7 @@ import { gamePools, gameSession } from "@src/api";
 import { TEMPLATE_GAME, type TemplateGameState } from "@src/api/games/template";
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const state = gamePools.getGame<TemplateGameState>(event, TEMPLATE_GAME);
 
   if (!state) {

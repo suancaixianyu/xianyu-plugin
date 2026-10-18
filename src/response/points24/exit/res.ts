@@ -4,7 +4,7 @@ import { POINTS24_GAME } from "@src/api/games/points24";
 import { unbindSingleGameSession } from "@src/api/gameToolActions";
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const game = gamePools.getGame(event, POINTS24_GAME);
 
   if (!game) {

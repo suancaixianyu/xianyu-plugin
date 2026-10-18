@@ -4,7 +4,7 @@ import { GOBANG_AGENT_USER_ID, GOBANG_AI_USER_ID, GOBANG_GAME, type GobangRoom }
 import { getEventUserId } from "../shared";
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const userId = getEventUserId(event);
   const room = boardRooms.getRoom(event, GOBANG_GAME) as GobangRoom | undefined;
 

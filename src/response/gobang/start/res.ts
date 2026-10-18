@@ -11,7 +11,7 @@ import { getGameHubStatus } from "@src/api/gameAgents";
 import { getEventNickname, getEventUserId, renderGobangMessage } from "../shared";
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const userId = getEventUserId(event);
   const nickname = getEventNickname(event);
   const current = boardRooms.getRoom(event, GOBANG_GAME) as GobangRoom | undefined;

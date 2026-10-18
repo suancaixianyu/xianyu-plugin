@@ -21,7 +21,7 @@ const getDifficulty = (event: {
 };
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   // 获取游戏，如果游戏的状态不是playing，那么就是结束了，可以开始新的游戏
   const game = gamePools.getGame<Game>(event, MINESWEEPER_GAME);
   if (game && game.state != "playing") {

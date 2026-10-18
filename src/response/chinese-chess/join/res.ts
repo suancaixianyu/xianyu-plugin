@@ -23,7 +23,7 @@ const getNextTeam = (room: ChineseChessRoom, requested: ChineseChessTeam | null)
 };
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const userId = getEventUserId(event);
   const nickname = getEventNickname(event);
   const requestedTeam = parseRequestedTeam(event);

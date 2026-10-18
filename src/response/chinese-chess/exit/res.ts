@@ -5,7 +5,7 @@ import type { ChineseChessRoom } from "../../../api/games/chineseChess/state";
 import { getEventUserId } from "../shared";
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const userId = getEventUserId(event);
   const room = boardRooms.getRoom(event, CHINESE_CHESS_GAME) as ChineseChessRoom | undefined;
 

@@ -4,7 +4,7 @@ import { SOKOBAN_GAME, type SokobanGameState } from "@src/api/games/sokoban";
 import { unbindSingleGameSession } from "@src/api/gameToolActions";
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const game = gamePools.getGame<SokobanGameState>(event, SOKOBAN_GAME);
 
   if (game) {

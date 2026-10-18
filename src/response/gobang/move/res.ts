@@ -23,7 +23,7 @@ const finishRoom = (event, room: GobangRoom, title: string) => {
 };
 
 export default async (event, next) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const userId = getEventUserId(event);
   const room = boardRooms.getRoom(event, GOBANG_GAME) as GobangRoom | undefined;
 

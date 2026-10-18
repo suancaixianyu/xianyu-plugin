@@ -1,8 +1,8 @@
 import { Text, useMessage } from "alemonjs";
 import { sokobanLevelCount } from "@src/api/games/sokoban";
 
-export default async () => {
-  const [message] = useMessage();
+export default async (event) => {
+  const [message] = useMessage(event);
   const levels = Array.from({ length: sokobanLevelCount }, (_, index) => {
     return `${index + 1}: 原版关卡`;
   });

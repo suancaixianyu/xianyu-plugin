@@ -1,7 +1,7 @@
 import { Text, useMessage } from "alemonjs";
 
-export default async () => {
-  const [message] = useMessage();
+export default async (event) => {
+  const [message] = useMessage(event);
 
   await message.send(
     format(

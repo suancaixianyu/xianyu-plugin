@@ -3,7 +3,7 @@ import { Game, MINESWEEPER_GAME, gamePools, gameSession } from "../../../api";
 import { unbindMinesweeperSession } from "@src/api/gameAgents";
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const game = gamePools.getGame<Game>(event, MINESWEEPER_GAME);
 
   if (game) {

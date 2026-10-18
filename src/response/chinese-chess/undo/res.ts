@@ -18,7 +18,7 @@ const getUndoAction = (event) => {
 };
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const userId = getEventUserId(event);
   const room = boardRooms.getRoom(event, CHINESE_CHESS_GAME) as ChineseChessRoom | undefined;
 

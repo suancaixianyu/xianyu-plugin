@@ -14,7 +14,7 @@ const getNextTeam = (room: GobangRoom): GobangTeam | null => {
 };
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const userId = getEventUserId(event);
   const nickname = getEventNickname(event);
   let room = boardRooms.getRoom(event, GOBANG_GAME) as GobangRoom | undefined;

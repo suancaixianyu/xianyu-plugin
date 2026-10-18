@@ -47,7 +47,10 @@ for (const compactRoute of gameRegistry.getCompactRoutes()) {
   );
 }
 
-registerAliases(["你好"], () => import("./response/hello/res"));
+// 普通问候交给聊天插件；仅显式命令才由本插件响应。
+router.group({
+  routeText: { prefixes: ["/", "#"], stripPrefix: true, allowBare: false },
+}).use("你好", () => import("./response/hello/res"));
 registerAliases(
   ["帮助", "菜单", "指令", "咸鱼帮助", "xianyu帮助", "xy帮助", "咸鱼菜单", "插件帮助"],
   () => import("./response/help/res")

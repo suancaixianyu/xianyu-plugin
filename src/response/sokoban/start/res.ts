@@ -10,7 +10,7 @@ import { bindSingleGameSession } from "@src/api/gameToolActions";
 import { parseSokobanLevelNumber, renderSokobanMessage } from "../shared";
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const current = gamePools.getGame<SokobanGameState>(event, SOKOBAN_GAME);
 
   if (current?.status === "playing") {

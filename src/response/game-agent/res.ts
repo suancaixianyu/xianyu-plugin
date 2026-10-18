@@ -32,7 +32,7 @@ const renderStatus = (status: Awaited<ReturnType<typeof getGameHubStatus>>) => {
 };
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const value = readArgument(event).toLowerCase();
   const guid = String(event.guid ?? "").trim();
 

@@ -17,7 +17,7 @@ const extractInput = (event: { __route?: { parsedArgs?: string[] }; MessageText?
 };
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const state = gamePools.getGame<TemplateGameState>(event, TEMPLATE_GAME);
 
   if (!state || state.status !== "playing") {

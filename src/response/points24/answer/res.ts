@@ -44,7 +44,7 @@ const readExpression = (event: { __route?: { parsedArgs?: string[] }; MessageTex
 };
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const game = gamePools.getGame<Points24GameState>(event, POINTS24_GAME);
 
   if (!game) {

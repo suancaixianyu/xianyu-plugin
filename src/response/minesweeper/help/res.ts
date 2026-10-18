@@ -2,8 +2,8 @@ import { renderComponentIsHtmlToBuffer } from "jsxp";
 import { Text, useMessage, Image } from "alemonjs";
 import Help from "@src/image/conponent/minesweeper/help";
 
-export default async () => {
-  const [message] = useMessage();
+export default async (event) => {
+  const [message] = useMessage(event);
   const img = await renderComponentIsHtmlToBuffer(Help, {});
 
   if (typeof img != "boolean") {

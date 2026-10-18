@@ -4,7 +4,7 @@ import { createPoints24Game, POINTS24_GAME, type Points24GameState } from "@src/
 import { bindSingleGameSession } from "@src/api/gameToolActions";
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const current = gamePools.getGame<Points24GameState>(event, POINTS24_GAME);
 
   if (current?.status === "playing") {

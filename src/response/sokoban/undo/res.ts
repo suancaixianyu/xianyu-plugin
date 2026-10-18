@@ -4,7 +4,7 @@ import { SOKOBAN_GAME, undoSokoban, type SokobanGameState } from "@src/api/games
 import { renderSokobanMessage } from "../shared";
 
 export default async (event, next) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const game = gamePools.getGame<SokobanGameState>(event, SOKOBAN_GAME);
 
   if (!game) {

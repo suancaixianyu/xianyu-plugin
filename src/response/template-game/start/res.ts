@@ -10,7 +10,7 @@ const createTemplateState = (): TemplateGameState => ({
 });
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const current = gamePools.getGame<TemplateGameState>(event, TEMPLATE_GAME);
 
   if (current?.status === "playing") {

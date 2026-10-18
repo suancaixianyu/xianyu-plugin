@@ -10,7 +10,7 @@ import {
 import { parseSokobanDirections, renderSokobanMessage } from "../shared";
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const game = gamePools.getGame<SokobanGameState>(event, SOKOBAN_GAME);
 
   if (!game) {

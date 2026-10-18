@@ -9,7 +9,7 @@ import {
 import { getEventUserId } from "../shared";
 
 export default async (event) => {
-  const [message] = useMessage();
+  const [message] = useMessage(event);
   const userId = getEventUserId(event);
   const room = boardRooms.getRoom(event, ANIMAL_CHESS_GAME) as AnimalChessRoom | undefined;
 
